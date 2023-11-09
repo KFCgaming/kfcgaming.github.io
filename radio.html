@@ -13,11 +13,7 @@
             background-color: #f2f2f2;
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        h4 {
+        h1, h4 {
             text-align: center;
             color: #333;
         }
@@ -90,16 +86,14 @@
         <label for="nomRadio">Nom de la Radio :</label>
         <input type="text" id="nomRadio" name="nomRadio" required><br>
 
-        <label for "genre">Genre :</label>
+        <label for="genre">Genre :</label>
         <input type="text" id="genre" name="genre" required><br>
 
-        <label for "pays">Pays :</label>
+        <label for="pays">Pays :</label>
         <input type="text" id="pays" name="pays" required><br>
 
-        <p style="text-align: center;"><b>Tutoriel:</b> Faites votre liste, telechargez-là puis mettez-là dans le dossier suivant : </p>
-        <p style="text-align: center;"><i><ins>C:\Users\Nom utilisateur\Documents\Euro Truck Simulator 2</ins></i></p>
-        
         <button type="button" onclick="ajouterRadio()">Ajouter Radio</button>
+        <button type="button" id="supprimerRadioButton" onclick="supprimerDerniereRadio()">Supprimer Dernière Radio</button>
         <button type="button" id="telechargerListeButton">Télécharger la liste</button>
     </form>
 
@@ -131,6 +125,15 @@
             document.getElementById("nomRadio").value = "";
             document.getElementById("genre").value = "";
             document.getElementById("pays").value = "";
+        }
+
+        function supprimerDerniereRadio() {
+            var listeRadios = document.getElementById("listeRadios");
+            var dernierElement = listeRadios.lastChild;
+
+            if (dernierElement) {
+                listeRadios.removeChild(dernierElement);
+            }
         }
 
         // Fonction pour télécharger la liste au format spécifié
