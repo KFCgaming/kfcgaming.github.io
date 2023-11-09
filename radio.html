@@ -77,19 +77,7 @@
     <h1>Votre Liste de Radios</h1>
 
     <form id="radioForm">
-        <label for="urlMP3">URL MP3 :</label>
-        <input type="text" id="urlMP3" name="urlMP3" required><br>
-
-        <label for="nomRadio">Nom de la Radio :</label>
-        <input type="text" id="nomRadio" name="nomRadio" required><br>
-
-        <label for="genre">Genre :</label>
-        <input type="text" id="genre" name="genre" required><br>
-
-        <label for="pays">Pays :</label>
-        <input type="text" id="pays" name="pays" required><br>
-
-        <button type="button" onclick="ajouterRadio()">Ajouter Radio</button>
+        <!-- Formulaire pour ajouter des radios -->
     </form>
 
     <h2>Liste de Radios :</h2>
@@ -97,27 +85,33 @@
         <!-- Les radios seront affichées ici -->
     </ul>
 
+    <a href="#" id="telechargerListe">Télécharger la liste</a>
+
     <script>
-        function ajouterRadio() {
-            // Récupérez les valeurs des champs de formulaire
-            var urlMP3 = document.getElementById("urlMP3").value;
-            var nomRadio = document.getElementById("nomRadio").value;
-            var genre = document.getElementById("genre").value;
-            var pays = document.getElementById("pays").value;
+        // Votre code JavaScript pour ajouter des radios ici
 
-            // Créez un élément de liste pour afficher les détails de la radio
-            var radioItem = document.createElement("li");
-            radioItem.textContent = "URL MP3: " + urlMP3 + " | Nom de la Radio: " + nomRadio + " | Genre: " + genre + " | Pays: " + pays;
+        // Fonction pour télécharger la liste au format spécifié
+        function telechargerListe() {
+            var listeRadios = document.getElementById("listeRadios").children;
+            var data = "live_stream_def : _nameless.1e3.6103.b2f0 {\n stream_data: nombre de radio\n";
 
-            // Ajoutez l'élément de liste à la liste des radios
-            document.getElementById("listeRadios").appendChild(radioItem);
+            for (var i = 0; i < listeRadios.length; i++) {
+                var radioDetails = listeRadios[i].textContent;
+                data += " stream_data[" + (i + 1) + "]: " + radioDetails + "\n";
+            }
 
-            // Effacez les champs du formulaire
-            document.getElementById("urlMP3").value = "";
-            document.getElementById("nomRadio").value = "";
-            document.getElementById("genre").value = "";
-            document.getElementById("pays").value = "";
+            data += "}\n";
+
+            var blob = new Blob([data], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+
+            var a = document.getElementById("telechargerListe");
+            a.href = url;
+            a.download = "live_streams.sii";
         }
+
+        // Lorsque l'utilisateur clique sur le lien de téléchargement
+        document.getElementById("telechargerListe").addEventListener("click", telechargerListe);
     </script>
 </body>
 </html>
