@@ -135,7 +135,7 @@
                 data += radioDetails + " |\n"; // Ajoutez un espace après le dernier "0"
             }
 
-            data += "}\n}\n";
+            data += "}\n\n}\n";
 
             var blob = new Blob([data], { type: 'text/plain' });
             var url = URL.createObjectURL(blob);
