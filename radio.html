@@ -85,10 +85,10 @@
         <label for="nomRadio">Nom de la Radio :</label>
         <input type="text" id="nomRadio" name="nomRadio" required><br>
 
-        <label for="genre">Genre :</label>
+        <label for "genre">Genre :</label>
         <input type="text" id="genre" name="genre" required><br>
 
-        <label for="pays">Pays :</label>
+        <label for "pays">Pays :</label>
         <input type="text" id="pays" name="pays" required><br>
 
         <button type="button" onclick="ajouterRadio()">Ajouter Radio</button>
@@ -113,7 +113,7 @@
 
             // Créez un élément de liste pour afficher les détails de la radio
             var radioItem = document.createElement("li");
-            radioItem.textContent = "stream_data[" + numeroRadio + "]: " + urlMP3 + " | " + nomRadio + " | " + genre + " | " + pays + "|0|0";
+            radioItem.textContent = ` stream_data[${numeroRadio}]: "${urlMP3}" | ${nomRadio} | ${genre} | ${pays} | 0 | 0`;
 
             // Ajoutez l'élément de liste à la liste des radios
             document.getElementById("listeRadios").appendChild(radioItem);
@@ -132,7 +132,7 @@
 
             for (var i = 0; i < listeRadios.length; i++) {
                 var radioDetails = listeRadios[i].textContent;
-                data += radioDetails + "\n";
+                data += radioDetails + " |\n"; // Ajoutez un espace après le dernier "0"
             }
 
             data += "}\n}\n";
