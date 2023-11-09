@@ -85,7 +85,8 @@
         <!-- Les radios seront affichées ici -->
     </ul>
 
-    <a href="#" id="telechargerListe">Télécharger la liste</a>
+    <button type="button" id="ajouterRadioButton">Ajouter Radio</button>
+    <button type="button" id="telechargerListeButton">Télécharger la liste</button>
 
     <script>
         // Votre code JavaScript pour ajouter des radios ici
@@ -105,14 +106,17 @@
             var blob = new Blob([data], { type: 'text/plain' });
             var url = URL.createObjectURL(blob);
 
-            var a = document.getElementById("telechargerListe");
+            var a = document.createElement("a");
             a.href = url;
             a.download = "live_streams.sii";
+            a.click();
         }
 
-        // Lorsque l'utilisateur clique sur le lien de téléchargement
-        document.getElementById("telechargerListe").addEventListener("click", telechargerListe);
+        // Lorsque l'utilisateur clique sur le bouton de téléchargement
+        document.getElementById("telechargerListeButton").addEventListener("click", telechargerListe);
+
+        // Lorsque l'utilisateur clique sur le bouton "Ajouter Radio"
+        document.getElementById("ajouterRadioButton").addEventListener("click", ajouterRadio);
     </script>
 </body>
 </html>
-
