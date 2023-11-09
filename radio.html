@@ -5,21 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votre Liste de Radios</title>
     <style>
-                /* Style de base pour le corps de la page */
+        /* Votre CSS ici */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             padding: 0;
             background-color: #f2f2f2;
         }
-        
-        /* Style pour l'en-tête */
+
         h1 {
             text-align: center;
             color: #333;
         }
-        
-        /* Style pour le formulaire */
+
         form {
             background-color: #fff;
             padding: 20px;
@@ -28,12 +26,12 @@
             margin: 20px auto;
             max-width: 400px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 5px;
         }
-        
+
         input[type="text"] {
             width: 100%;
             padding: 10px;
@@ -41,7 +39,7 @@
             border: 1px solid #ccc;
             border-radius: 3px;
         }
-        
+
         /* Style pour les boutons */
         button {
             background-color: #007bff;
@@ -50,25 +48,24 @@
             padding: 10px 15px;
             border-radius: 3px;
             cursor: pointer;
-            margin-right: 10px; /* Espacement entre les boutons */
         }
-        
+
         button:hover {
             background-color: #0056b3;
         }
-        
+
         /* Style pour la liste de radios */
         h2 {
             text-align: center;
             color: #333;
             margin-top: 20px;
         }
-        
+
         ul {
             list-style: none;
             padding: 0;
         }
-        
+
         li {
             background-color: #fff;
             border: 1px solid #ccc;
@@ -82,7 +79,20 @@
     <h1>Votre Liste de Radios</h1>
 
     <form id="radioForm">
-        <!-- Formulaire pour ajouter des radios -->
+        <label for="urlMP3">URL MP3 :</label>
+        <input type="text" id="urlMP3" name="urlMP3" required><br>
+
+        <label for="nomRadio">Nom de la Radio :</label>
+        <input type="text" id="nomRadio" name="nomRadio" required><br>
+
+        <label for="genre">Genre :</label>
+        <input type="text" id="genre" name="genre" required><br>
+
+        <label for="pays">Pays :</label>
+        <input type="text" id="pays" name="pays" required><br>
+
+        <button type="button" onclick="ajouterRadio()">Ajouter Radio</button>
+        <button type="button" id="telechargerListeButton">Télécharger la liste</button>
     </form>
 
     <h2>Liste de Radios :</h2>
@@ -90,23 +100,42 @@
         <!-- Les radios seront affichées ici -->
     </ul>
 
-    <button type="button" id="ajouterRadioButton">Ajouter Radio</button>
-    <button type="button" id="telechargerListeButton">Télécharger la liste</button>
-
     <script>
-        // Votre code JavaScript pour ajouter des radios ici
+        function ajouterRadio() {
+            // Récupérez les valeurs des champs de formulaire
+            var urlMP3 = document.getElementById("urlMP3").value;
+            var nomRadio = document.getElementById("nomRadio").value;
+            var genre = document.getElementById("genre").value;
+            var pays = document.getElementById("pays").value;
+
+            // Récupérez le nombre de radios déjà présentes
+            var numeroRadio = document.getElementById("listeRadios").children.length + 1;
+
+            // Créez un élément de liste pour afficher les détails de la radio
+            var radioItem = document.createElement("li");
+            radioItem.textContent = "stream_data[" + numeroRadio + "]: " + urlMP3 + " | " + nomRadio + " | " + genre + " | " + pays + "|0|0";
+
+            // Ajoutez l'élément de liste à la liste des radios
+            document.getElementById("listeRadios").appendChild(radioItem);
+
+            // Effacez les champs du formulaire
+            document.getElementById("urlMP3").value = "";
+            document.getElementById("nomRadio").value = "";
+            document.getElementById("genre").value = "";
+            document.getElementById("pays").value = "";
+        }
 
         // Fonction pour télécharger la liste au format spécifié
         function telechargerListe() {
             var listeRadios = document.getElementById("listeRadios").children;
-            var data = "live_stream_def : _nameless.1e3.6103.b2f0 {\n stream_data: nombre de radio\n";
+            var data = "SiiNunit\n{\nlive_stream_def : _nameless.1e3.6103.b2f0 {\n stream_data: " + listeRadios.length + "\n";
 
             for (var i = 0; i < listeRadios.length; i++) {
                 var radioDetails = listeRadios[i].textContent;
-                data += " stream_data[" + (i + 1) + "]: " + radioDetails + "\n";
+                data += radioDetails + "\n";
             }
 
-            data += "}\n";
+            data += "}\n}\n";
 
             var blob = new Blob([data], { type: 'text/plain' });
             var url = URL.createObjectURL(blob);
@@ -119,9 +148,6 @@
 
         // Lorsque l'utilisateur clique sur le bouton de téléchargement
         document.getElementById("telechargerListeButton").addEventListener("click", telechargerListe);
-
-        // Lorsque l'utilisateur clique sur le bouton "Ajouter Radio"
-        document.getElementById("ajouterRadioButton").addEventListener("click", ajouterRadio);
     </script>
 </body>
 </html>
