@@ -159,7 +159,7 @@
         // Fonction pour télécharger la liste au format spécifié
         function telechargerListe() {
             var listeRadios = document.getElementById("listeRadios").children;
-            var data = "SiiNunit\n{\nlive_stream_def : _nameless.1e3.6103.b2f0 {\n stream_data: " + listeRadios.length + "\n";
+            var data = "SiiNunit\n{\nlive_stream_def : _nameless.1e3.6103.b2f0 {\n stream_data: " + listeRadios.length + `\n stream_data[0]: "http://128.0.0.0|Crée avec ETS2 Radio Creator|Credit|FR|0|0"\n `;
 
             for (var i = 0; i < listeRadios.length; i++) {
                 var radioDetails = listeRadios[i].textContent;
