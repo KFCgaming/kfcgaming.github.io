@@ -28,7 +28,7 @@
             border-radius: 5px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
             margin: 20px auto;
-            max-width: 400px;
+            max-width: 450px;
         }
 
         label {
@@ -37,7 +37,7 @@
         }
 
         input[type="text"] {
-            width: 100%;
+            width: 95%;
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
@@ -49,8 +49,8 @@
             background-color: #007bff;
             color: #fff;
             border: none;
-            padding: 10px 15px;
-            border-radius: 3px;
+            padding: 7px 10px;
+            border-radius: 8px;
             cursor: pointer;
         }
 
@@ -76,6 +76,13 @@
             border-radius: 3px;
             padding: 10px;
             margin-bottom: 10px;
+            position: relative;
+        }
+
+        .supprimerRadioButton {
+            position: absolute;
+            top: 5px;
+            right: 5px;
         }
     </style>
 </head>
@@ -99,9 +106,9 @@
         <p style="text-align: center;"><b>Tutoriel:</b> Faites votre liste, telechargez-là puis mettez-là dans le dossier suivant : </p>
         <p style="text-align: center;"><i><ins>C:\Users\Nom utilisateur\Documents\Euro Truck Simulator 2</ins></i></p>
         
-        <button type="button" onclick="ajouterRadio()">Ajouter Radio</button>
-        <button type="button" id="supprimerRadioButton" onclick="supprimerDerniereRadio()">Supprimer Radio</button>
-        <button type="button" id="telechargerListeButton">Télécharger la liste</button>
+        <button type="button" onclick="ajouterRadio()">Ajouter Radio➕</button>
+        <button type="button" id="supprimerToutButton">Supprimer Tout🚮</button>
+        <button type="button" id="telechargerListeButton">Télécharger la liste📥</button>
     </form>
 
     <h2>Liste de Radios :</h2>
@@ -122,7 +129,9 @@
 
             // Créez un élément de liste pour afficher les détails de la radio
             var radioItem = document.createElement("li");
-            radioItem.textContent = ` stream_data[${numeroRadio}]: "${urlMP3}" | ${nomRadio} | ${genre} | ${pays} | 0 | 0`;
+            
+            // Ajoutez les guillemets autour de l'URL et après le dernier "0"
+            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "${urlMP3} | ${nomRadio} | ${genre} | ${pays} | 0 | 0" <button class="supprimerRadioButton" onclick="supprimerRadio(this)">Supprimer</button>`;
 
             // Ajoutez l'élément de liste à la liste des radios
             document.getElementById("listeRadios").appendChild(radioItem);
@@ -133,16 +142,20 @@
             document.getElementById("genre").value = "";
             document.getElementById("pays").value = "";
         }
-        
-        function supprimerDerniereRadio() {
-            var listeRadios = document.getElementById("listeRadios");
-            var dernierElement = listeRadios.lastChild;
 
-            if (dernierElement) {
-                listeRadios.removeChild(dernierElement);
+        function supprimerRadio(button) {
+            var listeRadios = document.getElementById("listeRadios");
+            var radioItem = button.parentNode;
+            listeRadios.removeChild(radioItem);
+        }
+
+        function supprimerTout() {
+            var listeRadios = document.getElementById("listeRadios");
+            while (listeRadios.firstChild) {
+                listeRadios.removeChild(listeRadios.firstChild);
             }
         }
-        
+
         // Fonction pour télécharger la liste au format spécifié
         function telechargerListe() {
             var listeRadios = document.getElementById("listeRadios").children;
@@ -166,6 +179,9 @@
 
         // Lorsque l'utilisateur clique sur le bouton de téléchargement
         document.getElementById("telechargerListeButton").addEventListener("click", telechargerListe);
+
+        // Lorsque l'utilisateur clique sur le bouton de suppression de tout
+        document.getElementById("supprimerToutButton").addEventListener("click", supprimerTout);
     </script>
 </body>
 </html>
