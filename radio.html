@@ -131,7 +131,7 @@
             var radioItem = document.createElement("li");
             
             // Ajoutez les guillemets autour de l'URL et après le dernier "0"
-            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "${urlMP3} | ${nomRadio} | ${genre} | ${pays} | 0 | 0" <button class="supprimerRadioButton" onclick="supprimerRadio(this)">Supprimer</button>`;
+            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "${urlMP3} | ${nomRadio} | ${genre} | ${pays} | 0 | 0" <button class="supprimerRadioButton" onclick="supprimerRadio(this)"></button>`;
 
             // Ajoutez l'élément de liste à la liste des radios
             document.getElementById("listeRadios").appendChild(radioItem);
@@ -163,7 +163,7 @@
 
             for (var i = 0; i < listeRadios.length; i++) {
                 var radioDetails = listeRadios[i].textContent;
-                data += radioDetails + " |\n"; // Ajoutez un espace après le dernier "0"
+                data += radioDetails + "  \n"; // Ajoutez un espace après le dernier "0"
             }
 
             data += "}\n\n}\n";
