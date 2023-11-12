@@ -3,127 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://truckersmp.com/assets/icons/favicon-32x32.png" type="image/x-icon">
     <title>ETS2 Radio Creator</title>
     <style>
-            /* Votre CSS ici */
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-                padding: 0;
-                background-color: #f2f2f2;
-            }
+        /* Votre CSS ici */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
 
-            h1 {
-                text-align: center;
-                color: #333;
-            }
-            h4 {
-                text-align: center;
-                color: #333;
-            }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h4 {
+            text-align: center;
+            color: #333;
+        }
 
-            form {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-                margin: 20px auto;
-                max-width: 450px;
-            }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            max-width: 550px;
+        }
 
-            label {
-                display: block;
-                margin-bottom: 5px;
-            }
+        /* Style pour les boutons */
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 4px 7px;
+            border-radius: 9px;
+            cursor: pointer;
+            margin: 2px;
+        }
 
-            input[type="text"] {
-                width: 95%;
-                padding: 10px;
-                margin-bottom: 10px;
-                border: 1px solid #ccc;
-                border-radius: 3px;
-            }
+        button:hover {
+            background-color: #0056b3;
+        }
+	    delbut {
+            background-color: #ff4d4d;
+            color: #fff;
+            border: none;
+            padding: 10px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+        }
 
-            /* Style pour les boutons */
-            button {
-                background-color: #007bff;
-                color: #fff;
-                border: none;
-                padding: 7px 10px;
-                border-radius: 8px;
-                cursor: pointer;
-            }
+        delbut:hover {
+            background-color: #cc0000;
+        }
+        /* Style pour la liste de radios */
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
 
-            button:hover {
-                background-color: #0056b3;
-            }
-            delbut {
-                background-color: #ff4d4d;
-                color: #fff;
-                border: none;
-                padding: 10px 10px;
-                border-radius: 15px;
-                cursor: pointer;
-            }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
 
-            delbut:hover {
-                background-color: #cc0000;
-            }
+        li {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
 
-            /* Style pour la liste de radios */
-            h2 {
-                text-align: center;
-                color: #333;
-                margin-top: 20px;
-            }
-
-            ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            li {
-                background-color: #fff;
-                border: 1px solid #ccc;
-                border-radius: 3px;
-                padding: 10px;
-                margin-bottom: 10px;
-                position: relative;
-            }
-
-            .supprimerRadioButton {
-                position: absolute;
-                top: 5px;
-                right: 5px;
-            }
-       </style>
+        .supprimerRadioButton {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+    </style>
 </head>
 <body>
     <h1>Créateur de Liste Radio pour ETS2 🚚</h1>
-    <h4><ins>Crée avec Chat GPT par KFCgaming 🍗 V1</ins></h4>
+    <h4><ins>Crée avec Chat GPT par KFCgaming 🍗</ins></h4>
 
-    <form id="radioForm">
-    	<p style="text-align: center;"><b><ins>France</b></ins></p>
-        <button type="button" id="NRJButton" onclick="NRJ()">NRJ 🎶</button>
-        <button type="button" id="SkyrockButton" onclick="SKYR()">Skyrock 🎶</button>
-        <button type="button" id="FunRadioButton" onclick="Funradio()">FunRadio 🎶</button>
-        
-    	<p style="text-align: center;"><b><ins>Belgique</b></ins></p>
-        <button type="button" id="NRJButton" onclick="NRJ()">NRJ 🎶</button>
-        <button type="button" id="SkyrockButton" onclick="SKYR()">Skyrock 🎶</button>
-        <button type="button" id="FunRadioButton" onclick="Funradio()">FunRadio 🎶</button>
-
-    	<p style="text-align: center;"><b><ins>Suisse</b></ins></p>
-        <button type="button" id="NRJButton" onclick="NRJ()">NRJ 🎶</button>
-        <button type="button" id="SkyrockButton" onclick="SKYR()">Skyrock 🎶</button>
-        <button type="button" id="FunRadioButton" onclick="Funradio()">FunRadio 🎶</button>
-
-        
-
-        <p style="text-align: center;"><b>Tutoriel:</b> Faites votre liste, telechargez-là puis mettez-là dans le dossier suivant : </p>
+    <form>
+            <p style="text-align: center;"><b>France</b></p>
+            <!-- Musique FR -->
+        <button type="button" onclick="ajouterRadio('http://cdn.nrjaudio.fm/adwz2/fr/30001/mp3_128.mp3?origine=fluxradios', 'NRJ', 'Musique', 'FR')">NRJ🎶</button>
+        <button type="button" onclick="ajouterRadio('http://icecast.skyrock.net/s/natio_mp3_128k', 'SkyRock', 'Musique', 'FR')">SkyRock🎶</button>
+        <button type="button" onclick="ajouterRadio('http://icecast.funradio.fr/fun-1-44-128?listen=webCwsBCggNCQgLDQUGBAcGBg', 'FunRadio', 'Musique', 'FR')">FunRadio 🎶</button>
+        <button type="button" onclick="ajouterRadio('https://scdn.nrjaudio.fm/adwz2/fr/30201/mp3_128.mp3?origine=fluxradios', 'Cherie FM', 'Musique', 'FR')">Chérie FM 🎶</button>
+        <button type="button" onclick="ajouterRadio('https://scdn.nrjaudio.fm/adwz2/fr/30601/mp3_128.mp3?origine=fluxradios', 'Nostalgie', 'Musique', 'FR')">Nostalgie 🎶</button>
+        <button type="button" onclick="ajouterRadio('http://icecast.rtl2.fr/rtl2-1-44-128?listen=webCwsBCggNCQgLDQUGBAcGBg', 'RTL2', 'Musique', 'FR')">RTL2 🎶</button>
+        <button type="button" onclick="ajouterRadio('http://icecast.radiofrance.fr/francemusique-midfi.mp3', 'France Musique', 'Musique', 'FR')">France Musique 🎶</button>
+        <button type="button" onclick="ajouterRadio('http://stream.rfm.fr/rfm.mp3', 'RFM', 'Musique', 'FR')">RFM 🎶</button>
+        <button type="button" onclick="ajouterRadio('http://europe2.lmn.fm/europe2.mp3', 'Europe2', 'Musique', 'FR')">Europe 2 🎶</button>
+        <button type="button" onclick="ajouterRadio('http://cdn.nrjaudio.fm/adwz2/fr/30401/mp3_128.mp3?origine=fluxradios', 'Rire et Chansons', 'Musique', 'FR')">Rire et Chansons 🤣🎶</button>
+        <!-- Info FR-->
+        <button type="button" onclick="ajouterRadio('http://icecast.rtl.fr/rtl-1-44-128?listen=webCwsBCggNCQgLDQUGBAcGBg', 'RTL', 'Information', 'FR')">RTL 📰</button>
+        <button type="button" onclick="ajouterRadio('http://stream.europe1.fr/europe1.mp3', 'Europe 1', 'Information', 'FR')">Europe 1 📰</button>
+        <button type="button" onclick="ajouterRadio('http://icecast.radiofrance.fr/franceinter-midfi.mp3', 'France Inter', 'Information', 'FR')">France Inter 📰</button>
+        <button type="button" onclick="ajouterRadio('http://audio.bfmtv.com/bfmbusiness_128.mp3', 'BFM Buisness', 'Information', 'FR')">BMF Buisness 📰</button>
+        <button type="button" onclick="ajouterRadio('http://audio.bfmtv.com/rmcradio_128.mp3', 'RMC', 'Information', 'FR')">RMC 📰</button>
+        <button type="button" onclick="ajouterRadio('http://icecast.radiofrance.fr/franceinfo-midfi.mp3', 'France Info', 'Information', 'FR')">	France Info 📰</button>   
+        <!-- Musique BE-->
+        <p style="text-align: center;"><b>Tutoriel:</b> Faites votre liste, téléchargez-là, puis mettez-là dans le dossier suivant :</p>
         <p style="text-align: center;"><i><ins>C:\Users\Nom utilisateur\Documents\Euro Truck Simulator 2</ins></i></p>
-        
         <button type="button" id="telechargerListeButton">Télécharger la liste📥</button>
         <button type="button" id="supprimerToutButton">Supprimer Tout🚮</button>
     </form>
@@ -134,44 +122,31 @@
     </ul>
 
     <script>
-        function NRJ() {
+        function ajouterRadio(url, nom, genre, pays) {
             // Récupérez le nombre de radios déjà présentes
             var numeroRadio = document.getElementById("listeRadios").children.length + 1;
+
             // Créez un élément de liste pour afficher les détails de la radio
             var radioItem = document.createElement("li");
+            
             // Ajoutez les guillemets autour de l'URL et après le dernier "0"
-            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "http://cdn.nrjaudio.fm/adwz2/fr/30001/mp3_128.mp3?origine=fluxradios|NRJ|Musique|France|0|0"<delbut class="supprimerRadioButton" onclick="supprimerRadio(this)"></delbut>`;
+            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "${url} | ${nom} | ${genre} | ${pays} | 0 | 0" <delbut class="supprimerRadioButton" onclick="supprimerRadio(this)"></delbut>`;
 
             // Ajoutez l'élément de liste à la liste des radios
             document.getElementById("listeRadios").appendChild(radioItem);
         }
-        function SKYR() {
-            // Récupérez le nombre de radios déjà présentes
-            var numeroRadio = document.getElementById("listeRadios").children.length + 1;
-            // Créez un élément de liste pour afficher les détails de la radio
-            var radioItem = document.createElement("li");
-            // Ajoutez les guillemets autour de l'URL et après le dernier "0"
-            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "http://icecast.skyrock.net/s/natio_mp3_128k|SkyRock|Musique|France|0|0"<delbut class="supprimerRadioButton" onclick="supprimerRadio(this)"></delbutn>`;
-            // Ajoutez l'élément de liste à la liste des radios
-            document.getElementById("listeRadios").appendChild(radioItem);
-       }
-        function Funradio() {
-            // Récupérez le nombre de radios déjà présentes
-            var numeroRadio = document.getElementById("listeRadios").children.length + 1;
-            // Créez un élément de liste pour afficher les détails de la radio
-            var radioItem = document.createElement("li");
-            // Ajoutez les guillemets autour de l'URL et après le dernier "0"
-            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "http://icecast.funradio.fr/fun-1-44-128?listen=webCwsBCggNCQgLDQUGBAcGBg|FunRadio|Musique|France|0|0"<delbut class="supprimerRadioButton" onclick="supprimerRadio(this)"></delbutn>`;
 
-            // Ajoutez l'élément de liste à la liste des radios
-            document.getElementById("listeRadios").appendChild(radioItem);
+        function supprimerTout() {
+            var listeRadios = document.getElementById("listeRadios");
+            while (listeRadios.firstChild) {
+                listeRadios.removeChild(listeRadios.firstChild);
+            }
         }
         function supprimerRadio(button) {
             var listeRadios = document.getElementById("listeRadios");
             var radioItem = button.parentNode;
             listeRadios.removeChild(radioItem);
         }
-        // Fonction pour télécharger la liste au format spécifié
         function telechargerListe() {
             var listeRadios = document.getElementById("listeRadios").children;
             var data = "SiiNunit\n{\nlive_stream_def : _nameless.1e3.6103.b2f0 {\n stream_data: " + listeRadios.length + `\n stream_data[0]: "http://128.0.0.0|Crée avec ETS2 Radio Creator|Credit|00|0|0"\n`;
