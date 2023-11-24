@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFCavatar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1000;
+        }
+
+        h1 {
+            text-align: center;
+            color: #b3b3ff;
+            
+        }
+        h2 {
+        	text-align: center;
+            color: #b3b3ff;
+    		text-shadow: -2px -2px 0 #000066, 2px -2px 0 #000066, -2px 2px 0 #000066, 2px 2px 0 #000066;
+        } 
+        #content {
+            text-align: center;
+        }
+        #avatarContainer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .avatar {
+            margin: 10px;
+            text-align: center;
+        }
+
+        .avatar img {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #007aff;
+            border-radius: 25%;
+            margin-bottom: 10px;
+        }
+        buttonmenu {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 13px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        .lienBloc {
+            cursor: pointer;
+            background-color: rgba(51, 51, 255, 0.5);
+            border: 2px solid #007aff;
+            border-radius: 10px;
+            padding: 3px;
+            margin: -5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>    
+	  <video autoplay muted loop id="video-background">
+          <source src="https://rr1---sn-5hne6nsy.googlevideo.com/videoplayback?expire=1700884159&ei=XxphZez8JIOk1gK9qLf4Bw&ip=45.85.161.197&id=o-AFkpaXrd27OSbyD9ESEMIOBy2c1uCpA0ZWlTC01HDl7u&itag=22&source=youtube&requiressl=yes&mh=bA&mm=31,26&mn=sn-5hne6nsy,sn-4g5ednld&ms=au,onr&mv=u&mvi=1&pl=24&spc=UWF9f-cUzxRjcB8lIOIDHv1sc82RALM&vprv=1&svpuc=1&mime=video/mp4&cnr=14&ratebypass=yes&dur=115.542&lmt=1685690929857966&mt=1700861897&fvip=1&fexp=24007246&c=ANDROID&txp=1211224&sparams=expire,ei,ip,id,itag,source,requiressl,spc,vprv,svpuc,mime,cnr,ratebypass,dur,lmt&sig=ANLwegAwRQIga_YvvODF2G-xFY_i4JD9Yet1qwUcpM4JzzzA3pqINGcCIQDfepyLamkmmCghrZxOKg8AN-K6QAHZ3We4pPc2QM_xfg==&lsparams=mh,mm,mn,ms,mv,mvi,pl&lsig=AM8Gb2swRQIhALRXfqTSCXVeyBy9oprW5oDH9Vplv_Dp2orBNv1jf7ViAiB3OW1lu4ymC31E9ZhJqDP63UywRbhISTuenrWA3VNfcg==&avi=K1A%2FHwERIiwAVF9GFn5RVDcmLRorDD5HSFQmDVNZV0E1FigaFRwsBwECFkYZX0dfPF5LNQwEJQAWIgwJRkJGUj0CS0wLASEJSFQ1CEJIU1E5HgACHCc5BBADFkYZX0dfPF5LIAwQKAotGAMLdkNeej4WDA5HTn1JRi8xB0xEXEciC0tMCwEhCUhUNRZMSUsRalABAhEEd0pLQlBKGwQcAmZDR0dcQ3ddVEZVSwEdEH4xCiQfCxAOChEYERZaEwhdJR4FWkc3OBcWEwsQd1hfViMGCBsVVndHVUFVVBsHAAZlS0taRzE1ERYXBhBMQ2ZKIBdLTEcWLBYBJgkFWlRAeSNQFA%3D%3D&from_cache=False&title=%E2%9C%A8Fortnite+Stormy+Sky+4K+Live+Wallpaper+%28link+en+la+descripcion%29" type="video/mp4">
+          Votre navigateur ne prend pas en charge la balise vidéo.
+      </video>
+    <h1><b>KFCavatar 🐔</b></h1>
+    <div id="content">
+        <buttonmenu onclick="XBAvatar()">XB Avatar 🍞👨</buttonmenu><buttonmenu onclick="Soon()">Soon ... 🕰️</buttonmenu>
+    </div>
+    
+    <h1>  </h1>
+    <!--Avatar XB AVATAR-->
+    
+    <h2><ins>Couleurs</ins></h2>
+    <div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/BLEU.png" alt="Bleu" title="Bleu">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/BLEU.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/ROSE.png" alt="Rose" title="Rose">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/ROSE.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/ROUGE.png" alt="Rouge" title="Rouge">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/ROUGE.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/JAUNE.png" alt="Jaune" title="Jaune">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/JAUNE.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/VERT.png" alt="Vert" title="Vert">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/VERT.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/ORANGE.png" alt="Orange" title="Orange">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/ORANGE.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/MARRON.png" alt="Marron" title="Marron">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/MARRON.png')">Télécharger📥</div>
+        </div>
+    </div>
+    
+	<h2><ins>Vos Variantes</ins></h2>
+        <div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/NOIR.png" alt="Noir" title="Noir">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/NOIR.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/ROUGEBLEU.png" alt="Rouge/Bleu" title="Rouge/Bleu">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/ROUGEBLEU.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/BirthDay.png" alt="Anniversaire" title="Anniversaire">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/BirthDay.png')">Télécharger📥</div>
+        </div>
+        </div>
+    </div>
+</body>
+<script>
+    function XBAvatar(url) {
+        window.location.href = "https://kfcgaming.github.io/KFCAvatar/XBavatar.html";
+    }
+</script>
+<script>
+    function telechargerImage(url) {
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const urlBlob = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = urlBlob;
+                a.download = 'Avatar.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            })
+            .catch(error => console.error('Erreur lors du téléchargement de l\'image :', error));
+    }
+</script>
+</html>
