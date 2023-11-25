@@ -13,7 +13,16 @@
             padding: 0;
             background-color: #f2f2f2;
         }
-
+       #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1000;
+        }
         h1 {
             text-align: center;
             color: #333;
@@ -88,6 +97,10 @@
     </style>
 </head>
 <body>
+     <video autoplay muted loop id="video-background">
+          <source src="https://raw.githubusercontent.com/KFCgaming/kfcgaming.github.io/main/Assets/ETS2%20-%20Background.mp4" type="video/mp4">
+          Votre navigateur ne prend pas en charge la balise vidéo.
+      </video>
     <h1>Créateur de Liste Radio pour ETS2 🚚</h1>
     <h4><ins>Crée avec Chat GPT par KFCgaming 🍗 V1</ins></h4>
 
