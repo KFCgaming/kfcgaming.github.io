@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    body {
+    	background-color: #6F0712;
+        font-family: Arial, sans-serif;
+        background-image: url('https://kfcgaming.github.io/Assets/ChrismasBackgroundIA.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 0;
+    }
+
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        min-width: 100px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+        h1 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+        h2 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+        h4 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+
+        .day {
+            background-color: #F8C1C1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            /* Style pour les cases verrouillées */
+            color: #666;
+            border: 1px solid #E53D3D;
+            border-radius: 15px;
+        }
+
+        .day.unlocked {
+            /* Style pour les cases déverrouillées */
+            color: #000;
+            border: 1px solid #5898FF;
+            border-radius: 15px;
+            background-color: #AECBFA;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+	<h1><ins>Calendrier de l'Avent ☃️</ins></h1>
+    <h4>Crée par <b>KFCgaming</b> avec Chat-GPT 🤖</h4>
+    <div class="calendar">
+        <!-- Ajoute 24 cases ici -->
+        <div class="day" onclick="revealContent(1)">1</div>
+        <div class="day" onclick="revealContent(2)">2</div>
+        <div class="day" onclick="revealContent(3)">3</div>
+        <div class="day" onclick="revealContent(4)">4</div>
+        <div class="day" onclick="revealContent(5)">5</div>
+        <div class="day" onclick="revealContent(6)">6</div>
+        <div class="day" onclick="revealContent(7)">7</div>
+        <div class="day" onclick="revealContent(8)">8</div>
+        <div class="day" onclick="revealContent(9)">9</div>
+        <div class="day" onclick="revealContent(10)">10</div>
+        <div class="day" onclick="revealContent(11)">11</div>
+        <div class="day" onclick="revealContent(12)">12</div>
+        <div class="day" onclick="revealContent(13)">13</div>
+        <div class="day" onclick="revealContent(14)">14</div>
+        <div class="day" onclick="revealContent(15)">15</div>
+        <div class="day" onclick="revealContent(16)">16</div>
+        <div class="day" onclick="revealContent(17)">17</div>
+        <div class="day" onclick="revealContent(18)">18</div>
+        <div class="day" onclick="revealContent(19)">19</div>
+        <div class="day" onclick="revealContent(20)">20</div>
+        <div class="day" onclick="revealContent(21)">21</div>
+        <div class="day" onclick="revealContent(22)">22</div>
+        <div class="day" onclick="revealContent(23)">23</div>
+        <div class="day" onclick="revealContent(24)"><b>24</b></div>
+    </div>
+    <br>
+	<h2><ins>Comment sa marche ?</ins></h2>
+	<h4>Chaque jour du <ins>1er décembre au 24 décembre</ins>, une case se dévérouille.</h4> 
+    <h4>Pour savoir si une case est dévérouiller ou non, on a juste a regarder la couleur de celle ci.</h4>
+    <h4>Si elle est <ins>Rouge</ins>, c'est qu'elle est <ins>vérouiller</ins> tandis que si elle est <ins>Bleue</ins>, c'est qu'elle est <ins>dévérouiller</ins>.</h4>
+    <h4>Les cadeaux <ins>seront des images, des vidéos, des urls, des textes. En aucun cas, se seront des objets physiques.</ins></h4>    
+    <div id="contentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="dayContent"></div>
+        </div>
+    </div>
+    <div>
+
+    <script>
+        // Fonction pour déterminer si une case est déverrouillée
+        function isUnlocked(day) {
+            var currentDate = new Date();
+            var unlockDate = new Date(currentDate.getFullYear(), 11, day); // 1er décembre jusqu'au 24 décembre
+            return currentDate.getMonth() === 10 && currentDate.getDate() >= day;
+        }
+
+
+        // Fonction pour mettre à jour l'état des cases
+        function updateCalendar() {
+            var days = document.querySelectorAll('.day');
+            days.forEach(function(day, index) {
+                if (isUnlocked(index + 1)) {
+                    day.classList.add('unlocked');
+                }
+            });
+        }
+
+        // Tableau de contenu pour chaque jour
+          var contents = [
+            `Case n°1<br>Vidéo YouTube de 10HoursMovies<iframe width="720" height="480" src="https://www.youtube.com/embed/fSy97EU8Xdg" title="Huh Cat Meme 10 Hours" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+            "Case n°2<br>",
+            "Contenu pour le jour 3 : ...",
+            "Contenu pour le jour 4 : ...",
+            "Contenu pour le jour 5 : ...",
+            "Contenu pour le jour 6 : ...",
+            "Contenu pour le jour 7 : ...",
+            "Contenu pour le jour 8 : ...",
+            "Contenu pour le jour 9 : ...",
+            "Contenu pour le jour 10 : ...",
+            "Contenu pour le jour 11 : ...",
+            "Contenu pour le jour 12 : ...",
+            "Contenu pour le jour 13 : ...",
+            "Contenu pour le jour 14 : ...",
+            "Contenu pour le jour 15 : ...",
+            "Contenu pour le jour 16 : ...",
+            "Contenu pour le jour 17 : ...",
+            "Contenu pour le jour 18 : ...",
+            "Contenu pour le jour 19 : ...",
+            "Contenu pour le jour 20 : ...",
+            "Contenu pour le jour 21 : ...",
+            "Contenu pour le jour 22 : ...",
+            "Contenu pour le jour 23 : ...",
+            "Contenu pour le jour 24 : ..."
+        ];
+        // Appeler la fonction pour mettre à jour l'état des cases au chargement de la page
+        window.onload = updateCalendar;
+
+        function revealContent(day) {
+            // Vérifier si la case est déverrouillée
+            if (isUnlocked(day)) {
+                var content = contents[day - 1]; // Index dans le tableau
+                document.getElementById('dayContent').innerHTML = content;
+                document.getElementById('contentModal').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('contentModal').style.display = 'none';
+        }
+        
+    </script>
+</body>
+</html>
