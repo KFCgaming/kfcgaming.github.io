@@ -48,7 +48,27 @@
             border: 1px solid #E53D3D;
             border-radius: 15px;
         }
+        .avatar {
+            margin: 10px;
+            text-align: center;
+        }
 
+        .avatar img {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #007aff;
+            border-radius: 25%;
+            margin-bottom: 10px;
+        }
+		.lienBloc {
+            cursor: pointer;
+            background-color: rgba(51, 51, 255, 0.5);
+            border: 2px solid #007aff;
+            border-radius: 10px;
+            padding: 3px;
+            margin: -5px;
+            text-align: center;
+        }
         .day.unlocked {
             /* Style pour les cases déverrouillées */
             color: #000;
@@ -140,7 +160,7 @@
         function isUnlocked(day) {
             var currentDate = new Date();
             var unlockDate = new Date(currentDate.getFullYear(), 11, day); // 1er décembre jusqu'au 24 décembre
-            return currentDate.getMonth() === 10 && currentDate.getDate() >= day;
+            return currentDate.getMonth() === 11 && currentDate.getDate() >= day;
         }
 
 
@@ -156,11 +176,18 @@
 
         // Tableau de contenu pour chaque jour
           var contents = [
-            `Case n°1<br>Vidéo YouTube de 10HoursMovies<iframe width="720" height="480" src="https://www.youtube.com/embed/fSy97EU8Xdg" title="Huh Cat Meme 10 Hours" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+            `Case n°1<br>Vidéo YouTube de 10HoursMovies<br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/fSy97EU8Xdg" title="Huh Cat Meme 10 Hours" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+            
             "Case n°2<br>",
-            "Contenu pour le jour 3 : ...",
-            "Contenu pour le jour 4 : ...",
-            "Contenu pour le jour 5 : ...",
+            
+            "Case n°3<br>",
+            
+            `Case n°4<br><ins>Playground.AI</ins><br><br>Alternative de <b>Dall•e ou de Midjourney</b>, avec un quota de <b>500 génération d'image par jour avec l'abonnement gratuit</b> ! Utilise le modèle de génération d'image<b> Stable Diffusion XL et 1.5</b>, peut même faire <b>le remplissage génératif comme PhotoShop !</b><br><br><a href="https://playgroundai.com/">Accédez à PlaygroundAI</a><br>Nécéssite un <b>Compte Google</b><br><br><img src="https://storage.googleapis.com/pai-marketing/logo/Logo.png" title="PlaygroundAI Logo">`,
+            
+            `Case n°5<br>XbAvatar Spécial Calendrier de L'Avent<br><br><div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/VillageEnneigé2.png" alt="Spécial Calendrier de l'Avent" title="Spécial Calendrier de l'Avent">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/VillageEnneigé2.png')">Télécharger📥</div>
+        </div>`,
             "Contenu pour le jour 6 : ...",
             "Contenu pour le jour 7 : ...",
             "Contenu pour le jour 8 : ...",
@@ -196,7 +223,20 @@
         function closeModal() {
             document.getElementById('contentModal').style.display = 'none';
         }
-        
+        function telechargerImage(url) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const urlBlob = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = urlBlob;
+                    a.download = 'Avatar.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                })
+                .catch(error => console.error('Erreur lors du téléchargement de l\'image :', error));
+        }
     </script>
 </body>
 </html>
