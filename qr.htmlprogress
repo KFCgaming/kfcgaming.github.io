@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="none" type="image/x-icon">
+    <title>TITLE</title>
+    <style>
+form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            max-width: 450px;
+        }    </style>
+</head>
+<body>
+	<div>
+		 <form id="radioForm">
+        <label for="URL">URL / Données 📎 :</label>
+        <input type="text" id="URL" name="URL" required><br>
+
+        <label for="Taille">Taille ↕ (En pixel 🟦):</label>
+        <input type="text" id="Taille" name="Taille" required><br>
+        <img scr="QRCODE" alt="URL" title="TEST">
+        <br>
+        <button type="button" onclick="generateurqrcode()">Généré 🖼</button>
+        <button type="button" id="telechargerListeButton">Télécharger le QR Code📥</button>
+    </form>
+    <p>A terminé : Reussir a faire un sorte que le qr code s'actualise quand on appuie sur généré, Mettre le bouton téléchargement, faire un sorte que le qr code soit centré dans le formulaire et qu'il fasse maximum 250px, améliorer la mise en page et essayer d'introduire un système de couleur</p>
+    </div>
+    
+    <script>
+    	    function generateurqrcode() {
+            // Récupérez les valeurs des champs de formulaire
+            var URL = document.getElementById("URL").value;
+            var Taille = document.getElementById("Taille").value;
+            
+            // Ajoutez les guillemets autour de l'URL et après le dernier "0"
+            Qrcode = `https://api.qrserver.com/v1/create-qr-code/?size=${Taille}x${Taille}&data={URL}`;
+
+        }
+    </script>
+</body>
+</html>
