@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier de L'avent 2023</title>
+    <link rel="icon" href="https://kfcgaming.github.io/Assets/SnowGlobeIcon.png" type="image/x-icon">
+    <style>
+    body {
+    	background-color: #6F0712;
+        font-family: Arial, sans-serif;
+        background-image: url('https://kfcgaming.github.io/Assets/ChrismasBackgroundIA.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 0;
+    }
+
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        min-width: 100px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+        h1 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+        h2 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+        h4 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+
+        .day {
+            background-color: #F8C1C1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            /* Style pour les cases verrouillées */
+            color: #666;
+            border: 1px solid #E53D3D;
+            border-radius: 15px;
+        }
+        .avatar {
+            margin: 10px;
+            text-align: center;
+        }
+        .avatar img {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #007aff;
+            border-radius: 25%;
+            margin-bottom: 10px;
+        }
+		.lienBloc {
+            cursor: pointer;
+            background-color: rgba(51, 51, 255, 0.5);
+            border: 2px solid #007aff;
+            border-radius: 10px;
+            padding: 3px;
+            margin: -5px;
+            text-align: center;
+        }
+        .day.unlocked {
+            /* Style pour les cases déverrouillées */
+            color: #000;
+            border: 1px solid #5898FF;
+            border-radius: 15px;
+            background-color: #AECBFA;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+	<h1><ins>Calendrier de l'Avent ☃️</ins></h1>
+    <h4>Crée par <b>KFCgaming</b> avec Chat-GPT 🤖</h4>
+    <div class="calendar">
+        <!-- Ajoute 24 cases ici -->
+        <div class="day" onclick="revealContent(1)">1</div>
+        <div class="day" onclick="revealContent(2)">2</div>
+        <div class="day" onclick="revealContent(3)">3</div>
+        <div class="day" onclick="revealContent(4)">4</div>
+        <div class="day" onclick="revealContent(5)">5</div>
+        <div class="day" onclick="revealContent(6)">6</div>
+        <div class="day" onclick="revealContent(7)">7</div>
+        <div class="day" onclick="revealContent(8)">8</div>
+        <div class="day" onclick="revealContent(9)">9</div>
+        <div class="day" onclick="revealContent(10)">10</div>
+        <div class="day" onclick="revealContent(11)">11</div>
+        <div class="day" onclick="revealContent(12)">12</div>
+        <div class="day" onclick="revealContent(13)">13</div>
+        <div class="day" onclick="revealContent(14)">14</div>
+        <div class="day" onclick="revealContent(15)">15</div>
+        <div class="day" onclick="revealContent(16)">16</div>
+        <div class="day" onclick="revealContent(17)">17</div>
+        <div class="day" onclick="revealContent(18)">18</div>
+        <div class="day" onclick="revealContent(19)">19</div>
+        <div class="day" onclick="revealContent(20)">20</div>
+        <div class="day" onclick="revealContent(21)">21</div>
+        <div class="day" onclick="revealContent(22)">22</div>
+        <div class="day" onclick="revealContent(23)">23</div>
+        <div class="day" onclick="revealContent(24)"><b>24</b></div>
+    </div>
+    <br>
+	<h2><ins>Comment sa marche ?</ins></h2>
+	<h4>Chaque jour du <ins>1er décembre au 24 décembre</ins>, une case se dévérouille.</h4> 
+    <h4>Pour savoir si une case est dévérouiller ou non, on a juste a regarder la couleur de celle ci.</h4>
+    <h4>Si elle est <ins>Rouge</ins>, c'est qu'elle est <ins>vérouiller</ins> tandis que si elle est <ins>Bleue</ins>, c'est qu'elle est <ins>dévérouiller</ins>.</h4>
+    <h4>Les cadeaux <ins>seront des images, des vidéos, des urls, des textes. En aucun cas, se seront des objets physiques.</ins></h4>    
+    <div id="contentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="dayContent"></div>
+        </div>
+    </div>
+    <div>
+
+    <script>
+        // Fonction pour déterminer si une case est déverrouillée
+        function isUnlocked(day) {
+            var currentDate = new Date();
+            var unlockDate = new Date(currentDate.getFullYear(), 11, day); // 1er décembre jusqu'au 24 décembre
+            return currentDate.getMonth() === 11 && currentDate.getDate() >= day;
+        }
+
+
+        // Fonction pour mettre à jour l'état des cases
+        function updateCalendar() {
+            var days = document.querySelectorAll('.day');
+            days.forEach(function(day, index) {
+                if (isUnlocked(index + 1)) {
+                    day.classList.add('unlocked');
+                }
+            });
+        }
+
+        // Tableau de contenu pour chaque jour
+          var contents = [
+            `Case n°1<br><ins>Vidéo YouTube de 10HoursMovies</ins><br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/fSy97EU8Xdg" title="Huh Cat Meme 10 Hours" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+            
+            `<div>Case n°2<br><ins>Musique Spotify Secret 🤫</ins><br><br><a href="https://open.spotify.com/intl-fr/track/4PTG3Z6ehGkBFwjybzWkR8">Si tu n'arrives pas à scanner le code, clique ici !</a></div><br><img src="https://kfcgaming.github.io/Assets/SpotiTrackRR.png" height="50px" width="auto" title="Scan pour découvrir"><br>`,
+            
+            `Case n°3<br><ins>Discord 🗯️ : Salon Secret 🤫</ins><br><br><b>Rejoignez</b> ce serveur discord : <a href="https://discord.gg/qrGpjJFQbe">https://discord.gg/qrGpjJFQbe</a><br><b>Passez la vérification</b> ✅<br><b>Ouvrez un ticket</b> dans le salon "🎫•𝖳𝗂𝖼𝗄𝖾𝗍" <br><b>Ecrivez</b> ce code : <b>CalA23</b><br> et <b>attendez d'avoir un rôle secret</b> qui vous débloquera <br>un <b>salon secret ou uniquement les personnes ayant fait ceci y seront!</b><br><br><img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" title="DiscordLogo" height="75px">`,
+            
+            `Case n°4<br><ins>Playground.AI</ins><br><br>Alternative de <b>Dall•e ou de Midjourney</b>, avec un quota de <b>500 génération d'image par jour avec l'abonnement gratuit</b> ! Utilise le modèle de génération d'image<b> Stable Diffusion XL et 1.5</b>, peut même faire <b>le remplissage génératif comme PhotoShop !</b><br><br><a href="https://playgroundai.com/">Accédez à PlaygroundAI</a><br>Nécéssite un <b>Compte Google</b><br><br><img src="https://storage.googleapis.com/pai-marketing/logo/Logo.png" title="PlaygroundAI Logo">`,
+            
+            `Case n°5<br><ins>Code Fortnite</ins><br><br><ins>Etape 1 :</ins> Aller sur le site <a href="https://www.fortnite.com/redeem?sessionInvalidated=true">https://www.fortnite.com/redeem?sessionInvalidated=true</a><br><ins>Etape 2 :</ins>Si vous n'êtes pas connecter a votre compte Epic Games, connecter vous.<br><ins>Etape 3 :</ins>Mettez le code suivant : <b>banannananana</b> puis appuyez sur <b>Echanger</b><br>Grâce a ce code, vous aurez l'emote BanaPhone 🍌 gratuitement.<iframe width="auto" height="auto" src="https://www.youtube.com/embed/_CqyxUX0v7k" title="FREE NANNER RINGER EMOTE (LIMITED TIME)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> <br> <b>Attention !</b> Le code sera plus disponible quand le nombre de joueurs possédant cette danse sera plus que 25 Millions !`,
+            
+            `Case n°6<br><ins>XbAvatar Spécial Calendrier de L'Avent</ins><br><br><div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/VillageEnneigé2.png" alt="Spécial Calendrier de l'Avent" title="Spécial Calendrier de l'Avent">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/VillageEnneigé2.png')">Télécharger📥</div>
+        </div>`,
+        
+            `Case n°7<br><ins>Can You Run It ?</ins><br><br>Can You RUN It est un site qui permet de savoir si <b>son ordinateur est assez puissant pour faire tourner tel jeu</b>. L'utilisation de ce site est <b>totalement gratuit</b>, <b>requis juste le téléchargement</b> d'un fichier qui se nomme <i>detector.exe</i>, il permet de récupérer les informations nécéssaires de votre ordinateur (Composant, espace de stockage restant et autres...) automatiquement pour que <b>le site fonctionne</b>.<br><br><a href="https://www.systemrequirementslab.com/cyri">Accédez à CanYouRUNIT</a><br>Nécéssite <b>aucun compte.</b><br><br><img src="https://cf.systemrequirementslab.com/www/favicon.ico" title="CanYouRunIt Logo">`,
+            
+            `Case n°8<br><ins>Phrase Cryptée 🤫</ins><br><br>Cette phrase a été plusieurs fois encodée en plusieurs language codé.<br>Serais-tu l'a décodé ?<br><br>----- .---- ----- ----- ----- .---- .---- ----- / .---- .---- ----- ----- ----- ----- .---- .---- / .---- ----- .---- ----- .---- ----- ----- .---- / ----- .---- .---- ----- .---- .---- ----- ----- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- .---- .---- ----- ----- ----- .---- .---- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- .---- .---- .---- ----- .---- ----- ----- / ----- .---- .---- ----- ----- ----- ----- .---- / ----- .---- .---- .---- ----- .---- ----- ----- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- .---- .---- ----- .---- .---- .---- .---- / ----- .---- .---- ----- .---- .---- .---- ----- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- ----- .---- ----- ----- ----- ----- .---- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- ----- .---- ----- .---- .---- ----- / ----- .---- .---- ----- .---- .---- .---- .---- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- .---- .---- ----- ----- ----- .---- .---- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- .---- ----- ----- .---- ----- ----- / ----- .---- .---- ----- ----- .---- ----- .---- / ----- .---- .---- .---- ----- ----- .---- .---- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- .---- .---- ----- .---- .---- .---- ----- / ----- .---- .---- ----- ----- .---- .---- ----- / ----- .---- .---- ----- .---- .---- .---- .---- / ----- .---- .---- .---- ----- ----- .---- ----- / ----- .---- .---- ----- .---- .---- ----- .---- / ----- .---- .---- ----- ----- ----- ----- .---- / ----- .---- .---- .---- ----- .---- ----- ----- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- .---- .---- ----- .---- .---- .---- .---- / ----- .---- .---- ----- .---- .---- .---- ----- / ----- .---- .---- .---- ----- ----- .---- .---- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- .---- .---- ----- ----- .---- .---- / ----- .---- .---- .---- ----- .---- ----- .---- / ----- .---- .---- .---- ----- ----- .---- ----- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- .---- ----- .---- .---- ----- ----- / ----- .---- .---- ----- ----- ----- ----- .---- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- .---- .---- ----- ----- ----- ----- / ----- .---- .---- .---- ----- ----- .---- ----- / ----- .---- .---- ----- .---- .---- .---- .---- / ----- .---- .---- ----- ----- ----- .---- .---- / ----- .---- .---- ----- .---- ----- ----- ----- / ----- .---- .---- ----- ----- ----- ----- .---- / ----- .---- .---- ----- .---- ----- ----- .---- / ----- .---- .---- ----- .---- .---- .---- ----- / ----- .---- .---- ----- ----- .---- ----- .---- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- .---- ----- ----- ----- .---- .---- / ----- .---- .---- ----- ----- ----- ----- .---- / ----- .---- .---- .---- ----- ----- .---- .---- / ----- .---- .---- ----- ----- .---- ----- .---- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- ----- .---- .---- .---- ----- .---- ----- / ----- ----- .---- ----- ----- ----- ----- ----- / ----- .---- ----- .---- ----- .---- .---- .---- / ----- .---- ----- .---- ----- .---- ----- ----- / ----- .---- ----- ----- ----- .---- .---- -----<br><br>Indice : M...e>B...i.>Texte`,
+            
+            `Case n°9<br><ins>Site WTF🤣😂</ins><br>Cette liste regroupe 5 sites WTF :<br><br>
+            <a href="https://pixelsfighting.com/">PixelsFighting⏹️⚔️</a> : Le concept de ce site est de regarder deux couleurs se battre 🔵🟢.<br>
+            <a href="https://pointerpointer.com/">PointerPointer ↗️</a> : Le concept de ce site est que vous placiez votre curseur de souris dans la page et qu'il y ait une photo de personnes qui montre du doigt votre curseur 👉↗️.<br>
+            <a href="http://chihuahuaspin.com/">Chihuahua Spin 🐕💫</a> : Le concept de ce site est de voir un chihuahua tourner à l'infini 💫♾️.<br>
+            <a href="https://zoomquilt.org/">Zoom Quilt 🖼️♾️</a> : Le concept de ce site est de voir une qui zoom a l'infini ♾️.<br>
+            <a href="https://neal.fun/life-stats/">Life Stats 🧬📈</a> : Le concept de ce site est que grâce à son âge, on peut voir ce qu'il sait passer de quand on est née jusqu'à aujourd'hui 🧬🗞️.<br>`,
+		  
+            `Case n°10<br><ins>Vidéo Youtube : Los Pingüinos me la van a Mascar</ins><br><br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/ZiRzL_N8meU" title="Los pingüinos me la van a mascar - Edit Dika Vika" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+            
+	    `Case n°11<br><ins>VirusTotal ⚠️🦠</ins><br><br>VirusTotal est un site qui permet de<b> savoir si un lien ou un fichier est infecté par un virus !</b><br>Grâce à environ une <b>centaine d'antivirus</b>, le site est capable de determiné si le virus est <b>dangereux ou non en donnant son nom</b>.<br>Parfois, certains antivirus vous diront que ce que vous avez fait analysé est infectée alors que non. Pour sa, il suffit juste de regarder la quantité d'antivirus ayant avertit un virus, si c'est en dessous envrion 15, c'est bon. <br><br><a href="https://www.virustotal.com/gui/">Accédez à VirusTotal</a><br><img src="https://theme.zdassets.com/theme_assets/471373/d94764657d0d75c8dc3b4c65d15a3a10d3418817.png" title="VirusTotal Logo">`,
+        
+            `Case n°12<br><ins>LostGamer 🗺️</ins><br>LostGamer est une <b>alternative de Geoguessr version jeux vidéos.</b> Dans cette version, vous ne devrez pas vous situez sur le globe terreste, mais plutôt <b>sur une carte de jeux vidéos</b> comme la carte de GTA V, de RDR2 ou de Fortnite. Contrairement à Geoguessr, <b>jouer au jeu est totalement gratuit</b> !<br><a href="https://lostgamer.io/">Accédez à LostGamer</a><br><img src="https://lostgamer.io/favicon.ico" title="LostGamer Logo">`,
+            
+	    `Case n°13<br><ins>Image Cryptée 🤫</ins><br>Cette audio contient une image cryptée. Trouve un moyen de la décryptée! 😉<br>Attention les oreilles !<br><audio controls autoplay muted><source src="https://kfcgaming.github.io/Assets/Day13.wav" type="audio/wav">Votre navigateur internet ne peut pas lire l'audio 😕</audio>`,
+            
+            `Case n°14<br><ins>MonumWorld <b>Avant-première !</b><ins><br><br><div class="avatar"><img src="https://kfcgaming.github.io/Avatar/MonumWorld/EiffelTower-Chrismas.png" alt="MonumWorld Avant Première" title="MonumWorld Avant Première">`,
+		  
+            `Case n°15<br><ins>Pub Serveur Discord : 🍗 Les Chickentos 🐔</ins><br><br>Hey !<br>Tu cherches un serveur ou tu peux discuter avec des gamers passionnés, échanger sur des sujets ciblés, participer à des événements délirants, faire la promo de tes projets et même trouver de nouveaux compagnons de jeu ? 🚀<br>Si oui, nous te souhaitons la bienvenue sur le serveur communautaire de KFC GAMING France ! 🐔<br><br>Le repaire où la bonne humeur est notre plat du jour ! 🎮<br><br>Alors, prépare-toi à plonger dans l'univers déjanté des Chickentos, où le fun et la camaraderie règnent en maîtres ! 🎉<br><br>À tout de suite sur Les Chickentos ! 🐓✨<a href="https://discord.gg/7GJQZ6cd6X">Accédez au Serveur Discord</a>`,
+		  
+            `Case n°16<br><ins>FortniteGG</ins><br><br>Fortnite.gg est un site qui<b> fournit une carte interactive de Fortnite</b> 🗺️, <br> qui montre <b>les emplacements des apparitions de coffre, de véhicule et j'en passe</b>!🪡<br> Le site propose également des statistiques détaillées sur les joueurs, y compris leur niveau de passe de combat, leurs victoires, leurs éliminations et plus encore ! 📜<br><a href="https://fortnite.gg/">Accédez à FortniteGG</a><br><img src="https://fortnite.gg/favicon-32x32.png" title="FortniteGG Logo">`,
+            
+	    `Case n°17<br><ins>Meme YouTube</ins><br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/dI6e87vL4Pk" title="Meme" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+		  
+            `Case n°18<br><ins>Top 5 Des meilleurs jeux Roblox !</ins><br><br>Top 5 : King Legacy 👑<br>King Legacy est un jeu vidéo inspiré de la série One Piece. Il est apprécié par de nombreux fans de la série et du genre JRPG pour ses mécanismes de combat et ses améliorations. Le jeu propose des défis intéressants, notamment des combats contre des boss et des PNJ. Pour progresser dans le jeu, vous devrez monter de niveau, accumuler des gemmes et des Belis, et vous procurer les meilleurs fruits ou armes. Tout comme Blox Fruits, King Legacy propose plusieurs îles à explorer. 🏝️<br> <a href="https://www.roblox.com/games/4520749081/UPDATE-4-8-King-Legacy">Jouer à King Legacy</a><br><br>Top 4 :  Doors 🚪<br>Doors est un jeu d’horreur solo ou multijoueur inspiré de Spooky’s Jump Scare Mansion et nicorocks5555’s Rooms. Le but du jeu est de survivre jusqu’à la fin de chaque niveau en passant par des portes et des pièces, qui peuvent contenir des entités qui vous poursuivront, vous feront peur et même vous tueront. Pour améliorer vos chances de survie, vous pouvez utiliser certains éléments tels que des vitamines ou une lampe de poche. 🕯️<br> <a href="https://www.roblox.com/games/6516141723/DOORS">Jouer à Doors</a><br><br>Top 3 : BrookHaven 🏙️<br>Brookhaven est un jeu de simulation de vie populaire sur Roblox. Il vous permet d’interagir avec de nombreux joueurs, d’acheter des voitures et des maisons, de trouver un emploi et d’explorer la ville à votre rythme. 🏠🚗<br><a href="https://www.roblox.com/games/4924922222/Brookhaven-RP">Jouer à Brookhaven</a><br><br>Top 2 : Piggy 🐷<br>Piggy est un jeu vidéo d’horreur de survie où les joueurs peuvent être soit les survivants, soit Piggy. Les survivants doivent accomplir des tâches pour sortir de chaque étape avant que le temps ne soit écoulé ou que Piggy ne les élimine. Pendant ce temps, Piggy doit essayer de traquer autant de joueurs que possible. 🐖<br><a href="https://www.roblox.com/games/4623386862/Piggy-BOOK-2-CHAPTER-3">Jouer à Piggy</a><br><br>Top 1 : Blox Fruit 🍇🏝️<br>Blox Fruits est un jeu vidéo d’action et d’aventure basé sur One Piece. Vous visiterez diverses îles et mers pour vaincre des ennemis puissants et devenir le personnage le plus puissant. Il y a beaucoup de quêtes, de secrets et d’endroits intéressants à explorer. Pour devenir un redoutable rival, vous aurez la possibilité d’obtenir des compétences, des fruits et des armes dignes des dieux. C’est un jeu très complet avec du PvP ! 🎮<br><a href="https://www.roblox.com/games/2753915549/RACE-V4-Blox-Fruits">Jouer à BloxFruit</a><br><br>Information venant du site : <a href="https://www.meilleurgaming.com/notre-guide/meilleurs-jeux-roblox/">MeilleurGaming.com</a>`,
+            
+            `Case n°19<br><ins>MonumWorld 2eme <b>Avant-première !</b><ins><br><br><div class="avatar"><img src="https://kfcgaming.github.io/Avatar/MonumWorld/BigBen-Chrismas.png" alt="MonumWorld Avant Première" title="MonumWorld Avant Première">`,
+		  
+            `Case n°20<br><ins>Phrase Cryptée 🤫</ins><br>Cette phrase a été encodée plusieurs fois en plusieurs language codé.<br>Cette phrase donnera un indice sur ce que renferme la case n°24.<br>d3JmQ3R5RGlpSkxDdHlEaWlKTEN0OEszSU1LM3dyY2c0b2lTd3JmaWlKTEN0eURDdHlBZzRvaVN3cmZDdHlEQ3R5QWd3cmZpaUpMQ3Q4SzNJTUszNG9pU0lDRGlpSkxDdCtLSWtzSzNJTUszNG9pU0lNSzN3cmZDdHlEQ3R5QWc0b2lTd3JjZ3dyZkN0K0tJa2lEaWlKTGlpSklnd3JmQ3QrS0lrc0szd3JjZ3dyZmlpSkxDdHlEaWlKTGlpSkxpaUpJZ0lNSzN3cmZpaUpMaWlKTGlpSklnd3JmQ3Q4SzN3cmZpaUpJZ0lPS0lrdUtJa3VLSWtzSzN3cmZDdHlBZzRvaVN3cmZpaUpMQ3R5RGlpSkxpaUpMaWlKSWc0b2lTd3JmQ3R5REN0eUE9<br>B.s..4->B..e6.->.or.e `,
+		  
+	    `Case n°21<br><ins>Site WTF 🤣😂</ins><br>Cette liste regroupe 6 sites WTF :<br><br>
+            <a href="https://binarypiano.com/">Binairy Piano 🎹<a/><b>01</b></a> : Le concept de ce site et grâce au code binaire, d'entendre un piano executant les touches assignés a cela 🎹.<br>
+            <a href="https://crouton.net/">Crouton 🍞</a> : Comme le nom du site l'indique, le concept du site est d'avoir un crouton 🍞.<br>
+            <a href="https://cat-bounce.com/">Cat Bounce 🐈⬆️</a> : Le concept de ce site est de voir un des chats sauter et même de les bouger avec le curseur ou son doigt 🐈.<br>
+            <a href="https://www.koalastothemax.com/">KoalaStothemax 🖼️♾🐨</a> : Le but de ce site est de passer sa souris ou son doigt suffisament sur des orbes de couleurs pour que sa forme l'image d'un koala 🐨🟢.<br>
+            <a href="https://eelslap.com/">EllSlap😧👋</a> : Le concept de ce site est mettre des baffes a quelqu'un en bougeant sa souris ou son doigt 👋.<br>
+	     : Le concept de ce site est de faire bouger un serpent suffisament vite pour qu'il y a des effets🪩. Attention ! Fortement déconseillé au Epileptique, flash et effet indésirable. ⚠️`,
+		  
+            `Case n°22<br><ins>5 Vidéos de Memes YouTube</ins><br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/7zG6x26U8EE" title="try not to laugh memes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/yFmBhHbcH3c" title="try not to laugh, impossible memes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><iframe width="auto" height="autu" src="https://www.youtube.com/embed/rKLk0JUS4TE" title="EXTREMELY DIFFICULT Try Not To Laugh CLEAN (Reupload of Part 7)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/6c0QsMFSMkw" title="you laugh, you restart" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><iframe width="auto" height="auto" src="https://www.youtube.com/embed/9Dbh_cVXE48" title="you laugh 1 times, you restart" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`,
+            `Case n°23<br><ins>Indice pour la case n°24</ins><br>Ce 24 Décembre célèbrera la fin de ce calendrier de l'avent. Donc pour vous remerciez de votre présence, demain je vous offre enfin quelque chose qui vous plaira.<b> Le nom de la plateforme</b> (Sa peut être jeu, streaming, ...) sur laquelle la case fera effet <b>commence par un R</b>.<br><br>Attention ! Le contenu de la case sera pour <b>Une seule personne</b>. Donc si vous voulez son contenu, récupérer le le plus vite possible ! <br><br>Passez de bonnes fêtes et de bonnes vacances !`,
+            `Case n°24<br><ins>Code Roblox : <b>100 Robux</b> !<br> Pour cette dernière case, je vous offre <b>100 Robux</b>.<br>Attention, cela s'applique uniquement à la première personne qui active le code sur ce site : <a href="https://www.roblox.com/redeem">https://www.roblox.com/redeem</a> !<br><br>Code : <b>WQRSK-UJBYJ-7N3GZ</b><br>Merci beaucoup au personne ayant ouvert les cases de ce calendrier de l'avent 💝<br>Peut être il y en aura un autre l'année prochaine ! 📆`
+        ];
+        // Appeler la fonction pour mettre à jour l'état des cases au chargement de la page
+        window.onload = updateCalendar;
+
+        function revealContent(day) {
+            // Vérifier si la case est déverrouillée
+            if (isUnlocked(day)) {
+                var content = contents[day - 1]; // Index dans le tableau
+                document.getElementById('dayContent').innerHTML = content;
+                document.getElementById('contentModal').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('contentModal').style.display = 'none';
+        }
+        function telechargerImage(url) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const urlBlob = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = urlBlob;
+                    a.download = 'Avatar.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                })
+                .catch(error => console.error('Erreur lors du téléchargement de l\'image :', error));
+        }
+    </script>
+</body>
+</html>
