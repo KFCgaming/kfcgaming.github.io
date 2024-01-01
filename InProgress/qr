@@ -2,45 +2,103 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="none" type="image/x-icon">
-    <title>TITLE</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de QR Code</title>
     <style>
-form {
-            background-color: #fff;
-            padding: 20px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="color"], input[type="number"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
             border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #qrcode {
+            display: block;
             margin: 20px auto;
-            max-width: 450px;
-        }    </style>
+        }
+    </style>
 </head>
 <body>
-	<div>
-		 <form id="radioForm">
-        <label for="URL">URL / Données 📎 :</label>
-        <input type="text" id="URL" name="URL" required><br>
+    <h1>Générateur de QR Code</h1>
 
-        <label for="Taille">Taille ↕ (En pixel 🟦):</label>
-        <input type="text" id="Taille" name="Taille" required><br>
-        <img scr="QRCODE" alt="URL" title="TEST">
-        <br>
-        <button type="button" onclick="generateurqrcode()">Généré 🖼</button>
-        <button type="button" id="telechargerListeButton">Télécharger le QR Code📥</button>
-    </form>
-    <p>A terminé : Reussir a faire un sorte que le qr code s'actualise quand on appuie sur généré, Mettre le bouton téléchargement, faire un sorte que le qr code soit centré dans le formulaire et qu'il fasse maximum 250px, améliorer la mise en page et essayer d'introduire un système de couleur</p>
-    </div>
-    
+    <label for="dataInput">Données pour le QR Code :</label>
+    <input type="text" id="dataInput" name="dataInput" oninput="generateQRCode()">
+
+    <label for="colorInput">Couleur du QR Code :</label>
+    <input type="color" id="colorInput" name="colorInput" value="#000000" oninput="generateQRCode()">
+
+    <label for="sizeInput">Taille du QR Code :</label>
+    <input type="number" id="sizeInput" name="sizeInput" min="64" max="1024" value="200" oninput="generateQRCode()">
+
+    <button onclick="downloadQRCode()">Télécharger</button>
+
+    <div id="qrcode"></div>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script>
-    	    function generateurqrcode() {
-            // Récupérez les valeurs des champs de formulaire
-            var URL = document.getElementById("URL").value;
-            var Taille = document.getElementById("Taille").value;
-            
-            // Ajoutez les guillemets autour de l'URL et après le dernier "0"
-            Qrcode = `https://api.qrserver.com/v1/create-qr-code/?size=${Taille}x${Taille}&data={URL}`;
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: "",
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            correctLevel: QRCode.CorrectLevel.H
+        });
 
+        function generateQRCode() {
+            var data = document.getElementById("dataInput").value;
+            var color = document.getElementById("colorInput").value;
+            var size = document.getElementById("sizeInput").value;
+
+            qrcode.clear(); // Efface le QR code existant
+            qrcode.makeCode(data); // Génère le nouveau QR code avec les nouvelles données
+
+            // Applique les nouvelles options de couleur et de taille
+            var canvas = document.getElementById("qrcode").getElementsByTagName("canvas")[0];
+            canvas.style.backgroundColor = "white"; // Réinitialise l'arrière-plan à blanc
+            canvas.style.border = "5px solid " + color; // Applique la nouvelle couleur de bordure
+            canvas.style.width = size + "px";
+            canvas.style.height = size + "px";
         }
+
+        function downloadQRCode() {
+            var canvas = document.getElementById("qrcode").getElementsByTagName("canvas")[0];
+            var link = document.createElement('a');
+            link.href = canvas.toDataURL("image/png");
+            link.download = 'qrcode.png';
+            link.click();
+        }
+
     </script>
 </body>
 </html>
