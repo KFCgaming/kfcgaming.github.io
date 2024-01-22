@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Message Sender V1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://kfcgaming.github.io/Assets/BackgroundDiscord.png');
+            background-size: cover;
+            background-position: auto;
+            background-repeat: repeat;
+            text-align: center;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #FFFFFF;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1)
+        }
+        h4 {
+            text-align: center;
+            color: #FFFFFF;
+        }
+        p {
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        #discordForm {
+            max-width: 400px;
+            margin: auto;
+            background-color: #A5A5A5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #7289da;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+        }
+
+        button:hover {
+            background-color: #677bc4;
+        }
+    </style>
+</head>
+<body>
+    <div id="discordForm">
+    	<h2>Webhook Discord Sender V1</h2>
+        <h4>Envoyer un message avec un Webhook</h4>
+        <p>Comporte un anti-insulte !</p>
+        <input type="text" id="pseudo" placeholder="Pseudo">
+        <input type="text" id="message" placeholder="Message">
+        <input type="text" id="webhookurl" placeholder="Url du Webhook">
+        <button onclick="sendMessage()">Envoyer</button>
+    </div>
+
+    <script>
+      function getRandomReplacement(replacements) {
+          // Choisissez un élément au hasard dans le tableau des remplacements
+          return replacements[Math.floor(Math.random() * replacements.length)];
+      }
+
+      var wordFilters = {
+          'FDP, fdp, fils de pute, Fils de Pute, fisse de pute, Fisse de Pute': 'gentil',
+          'salope, Salope, SALOPE': 'gentille',
+          'connard, Connard, CONNARD, conard, Conard, CONARD, connar, Connar, CONNAR, conar, Conar, CONAR': 'cannard',
+          'connasse, Connasse, CONNASSE, conasse, Conasse, CONASSE, conase, Conase, CONASE, connace, Connace, CONNACE, conace, Conace, CONACE': 'Cannarde',
+          'Pute, pute, PUTE, PUTTE, putte, Putte': ['magnifique personne', 'être humain incroyable'],
+          'Merde, merde, MERDE': 'caca',
+          'enculé, encule, Encule, Enculé, ENCULE, enculer, Enculer, ENCULER, Anculé, ANCULE, anculé, Anculer, anculer, ANCULER': 'personne aimable',
+          'foutre, Foutre, FOUTRE': ['masser, ... puis quoi je t\'aime bien 🥰'],
+          'gueule, Gueule, GUEULE': 'vitre parce qu\'il fait froid 😉',
+          'cul, Cul, CUL, q, Q, cu, Cu, CU': ['cube', 'culte'],
+          'couille, Couille, COUILLE, couilles, Couilles, COUILLES': ['croûte', 'noisette']
+      };
+
+      function replaceWords(input) {
+          for (var words in wordFilters) {
+              if (wordFilters.hasOwnProperty(words)) {
+                  var wordArray = words.split(',').map(word => word.trim());
+                  var replacement = wordFilters[words];
+
+                  wordArray.forEach(word => {
+                      var regex = new RegExp('\\b' + word + '\\b', 'gi');
+
+                      if (Array.isArray(replacement)) {
+                          // Si le remplacement est un tableau, choisissez au hasard un élément du tableau
+                          var randomReplacement = getRandomReplacement(replacement);
+                          input = input.replace(regex, randomReplacement);
+                      } else {
+                          // Sinon, remplacez normalement
+                          input = input.replace(regex, replacement);
+                      }
+                  });
+              }
+          }
+
+          return input;
+      }
+
+      // Fonction pour obtenir un remplacement au hasard dans un tableau
+      function getRandomReplacement(replacements) {
+          return replacements[Math.floor(Math.random() * replacements.length)];
+      }
+
+
+        function sendMessage() {
+          var pseudo = document.getElementById('pseudo').value;
+          var message = document.getElementById('message').value;
+          var webhookURL = document.getElementById('webhookurl').value;
+
+          if (pseudo.trim() === '' || message.trim() === '' || webhookURL.trim() === '') {
+              alert('Veuillez remplir tous les champs.');
+              return;
+          }
+
+          // Applique le filtre de mots au message
+          var filteredMessage = replaceWords(message);
+
+          var date = new Date();
+          var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+
+          var embed = {
+              title: '',
+              description: filteredMessage,
+              author: {
+                  name: pseudo
+              },
+              footer: {
+                  text: 'Envoyé le ' + formattedDate // Remplacez 'text' par 'timestamp'
+              }
+          };
+
+          fetch(webhookURL, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ embeds: [embed] })
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Erreur lors de l\'envoi du message.');
+              }
+              alert('Message envoyé avec succès !');
+          })
+          .catch(error => {
+              alert('Erreur : ' + error.message);
+          });
+      }
+
+
+    </script>
+</body>
+</html>
