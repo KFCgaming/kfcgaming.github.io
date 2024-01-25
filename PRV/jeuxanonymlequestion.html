@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petit jeu a faire :)</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-image: url('https://kfcgaming.github.io/Assets/BackgroundDiscord.png');
+        background-size: cover;
+        background-position: auto;
+        background-repeat: repeat;
+        text-align: center;
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #FFFFFF;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1)
+    }
+
+    h4 {
+        text-align: center;
+        color: #FFFFFF;
+    }
+
+    p {
+        text-align: center;
+        color: #FFFFFF;
+    }
+
+    #discordForm {
+        max-width: 400px;
+        margin: auto;
+        background-color: #A5A5A5;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input, button, label {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #FFFFFF; /* Texte en blanc */
+    }
+
+    button {
+        background-color: #7289da;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+        background-color: #677bc4;
+    }
+</style>
+
+
+
+</head>
+<body>
+    <div id="discordForm">
+        <h2>Jeu des questions Anonymes 👤</h2>
+        <h4>Crée par Mathys (Il ne vera pas qui a envoyé quoi !)</h4>
+        <p>Ecrit ta question en dessous et met le mot de passe que je t'aurais envoyé puis catégoris ta question (Si la question s'adresse a tout le monde, si la question est hardcore.) et une fois que tu auras finis, appuie sur envoyer. Sa enverra le message sur Discord grâce à un petit robot qui cachera la phrase et qui dira si elle est hardcore ou pas et si elle est en groupe ou pas.<br><br>Je te conseilles de mettre au moins une dizaine de questions pour que le jeu dure longtemps quand même 😉</p>
+        <input type="text" id="message" placeholder="La Petite Question">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <label>
+            <input type="checkbox" id="enGroupe"> Question en Groupe 👥
+        </label>
+        <label>
+            <input type="checkbox" id="hardcore"> Question Hardcore 🌶️
+        </label>
+        <button onclick="sendMessage()">Envoyer</button>
+    </div>
+
+ <script>
+        function sendMessage() {
+            var message = document.getElementById('message').value;
+            var password = document.getElementById('password').value;
+            var enGroupe = document.getElementById('enGroupe').checked;
+            var hardcore = document.getElementById('hardcore').checked;
+
+            if (message.trim() === '' || password.trim() === '') {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+
+            // Vérification du mot de passe
+            if (password !== '46372154679') {
+                alert('Mot de passe incorrect.');
+                return;
+            }
+
+            var color = '#00FF00'; // Vert par défaut
+            var footerText = 'Solo';
+
+            if (enGroupe && !hardcore) {
+                color = '#0000FF'; // Bleu
+                footerText = 'Groupe';
+            } else if (!enGroupe && hardcore) {
+                color = '#FF0000'; // Rouge
+                footerText = 'Solo & Hardcore';
+            } else if (enGroupe && hardcore) {
+                color = '#800080'; // Violet
+                footerText = 'Groupe & Hardcore';
+            }
+
+            var embed = {
+                title: '',
+                description: `||${message}||`, // Le message est encadré par || pour le rendre en spoiler
+                color: parseInt(color.slice(1), 16), // Convertit la couleur hexadécimale en décimal
+                footer: {
+                    text: footerText
+                }
+            };
+
+            fetch('https://discord.com/api/webhooks/1200115204806160444/sF-6PtpeM71hXnfR9DSsBxMA22nFsboh-mxjFlT2061sjLdYAs9NEpNu5lZx9f4QEZb_', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ embeds: [embed] })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de l\'envoi du message.');
+                }
+                alert('Message envoyé avec succès !');
+            })
+            .catch(error => {
+                alert('Erreur : ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
