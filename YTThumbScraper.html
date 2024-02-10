@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://ia903204.us.archive.org/4/items/discordprofilepictures/discordgrey.png" type="image/x-icon">
+    <title>YouTube Thumbnail Scraper 🔗</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #924747;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #FFFFFF;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h4 {
+            text-align: center;
+            color: #FFFFFF;
+        }
+        p {
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        #discordForm {
+            max-width: 400px;
+            margin: auto;
+            background-color: #9C8484;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #thumbnailForm {
+            max-width: 400px;
+            margin: auto;
+            background-color: #9C8484;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(05, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        #thumbnailResults {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 400px;
+            margin-bottom: 10px;
+        }
+
+        .downloadButton {
+            display: block;
+            max-width: 150px; /* ajustez la largeur selon vos préférences */
+            padding: 4px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: #924747;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto; /* centrez horizontalement */
+            cursor: pointer; /* ajouté pour montrer qu'il est interactif */
+        }
+         #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1000;
+        }
+    </style>
+</head>
+<body>
+      <video autoplay muted loop id="video-background">
+          <source src="https://raw.githubusercontent.com/KFCgaming/kfcgaming.github.io/main/Assets/YTB-Background.mp4" type="video/mp4">
+          Votre navigateur ne prend pas en charge la balise vidéo.
+      </video>
+    <!-- Votre formulaire existant -->
+    <div id="discordForm">
+       <h2>YouTube Thumbnail Scraper 🔗</h2>
+       <p>Crée par KFCgaming et Chat-GPT 🤖</p>
+    </div>
+
+    <!-- Formulaire pour récupérer l'ID de la vidéo YouTube -->
+    <div id="thumbnailForm">
+        <p>Entrez Une URL de Vidéo YouTube Valide : </p>
+        <input type="text" id="youtubeUrl" placeholder="URL...">
+        <button onclick="scrapeThumbnail()">Scrapper</button>
+    </div>
+
+    <!-- Affichage des miniatures et boutons de téléchargement -->
+    <div id="thumbnailResults"></div>
+
+    <script>
+        function scrapeThumbnail() {
+            var youtubeUrl = document.getElementById('youtubeUrl').value;
+
+            // Extraire l'ID de la vidéo depuis l'URL
+            var videoId = youtubeUrl.split('v=')[1];
+            var ampersandPosition = videoId.indexOf('&');
+            if (ampersandPosition !== -1) {
+                videoId = videoId.substring(0, ampersandPosition);
+            }
+
+            // Construire les URL des miniatures avec différentes résolutions
+            var thumbnailUrls = [
+                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                `https://img.youtube.com/vi/${videoId}/default.jpg`
+            ];
+
+            // Afficher les miniatures et boutons de téléchargement
+            var thumbnailResults = document.getElementById('thumbnailResults');
+            thumbnailResults.innerHTML = '';
+
+            thumbnailUrls.forEach(function (url) {
+                var thumbnailContainer = document.createElement('div');
+
+                thumbnailContainer.className = 'thumbnailContainer';
+
+                var imgElement = document.createElement('img');
+                imgElement.src = url;
+                thumbnailContainer.appendChild(imgElement);
+
+                var downloadButton = document.createElement('a');
+                downloadButton.className = 'downloadButton';
+                downloadButton.href = url;
+                downloadButton.download = 'thumbnail.jpg';
+                downloadButton.innerText = 'Télécharger📥';
+                thumbnailContainer.appendChild(downloadButton);
+
+                thumbnailResults.appendChild(thumbnailContainer);
+                
+                 var brElement = document.createElement('br');
+                 thumbnailResults.appendChild(brElement);
+              
+            });
+        }
+    </script>
+</body>
+</html>
