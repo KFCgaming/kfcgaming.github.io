@@ -94,7 +94,7 @@
 
     <!-- Formulaire pour récupérer l'ID de la vidéo YouTube -->
     <div id="thumbnailForm">
-        <p>Entrez Une URL de Vidéo YouTube Valide :<br><b>Prend pas en charge les liens <ins>youtu.be</ins></b> </p>
+        <p>Entrez Une URL de Vidéo YouTube Valide :</p>
         <input type="text" id="youtubeUrl" placeholder="URL...">
         <button onclick="scrapeThumbnail()">Scrapper</button>
     </div>
@@ -103,52 +103,74 @@
     <div id="thumbnailResults"></div>
 
     <script>
-        function scrapeThumbnail() {
-            var youtubeUrl = document.getElementById('youtubeUrl').value;
+		    function scrapeThumbnail() {
+    var youtubeUrl = document.getElementById('youtubeUrl').value;
 
-            // Extraire l'ID de la vidéo depuis l'URL
-            var videoId = youtubeUrl.split('v=')[1];
-            var ampersandPosition = videoId.indexOf('&');
-            if (ampersandPosition !== -1) {
-                videoId = videoId.substring(0, ampersandPosition);
-            }
+    // Vérificateur d'URL pour extraire l'ID de la vidéo
+    var videoId = extractVideoId(youtubeUrl);
 
-            // Construire les URL des miniatures avec différentes résolutions
-            var thumbnailUrls = [
-                `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
-                `https://img.youtube.com/vi/${videoId}/default.jpg`
-            ];
+    if (!videoId) {
+        alert('URL de vidéo YouTube non valide. Veuillez entrer une URL valide.');
+        return;
+    }
 
-            // Afficher les miniatures et boutons de téléchargement
-            var thumbnailResults = document.getElementById('thumbnailResults');
-            thumbnailResults.innerHTML = '';
+    // Construire les URL des miniatures avec différentes résolutions
+    var thumbnailUrls = [
+        `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+        `https://img.youtube.com/vi/${videoId}/default.jpg`
+    ];
 
-            thumbnailUrls.forEach(function (url) {
-                var thumbnailContainer = document.createElement('div');
+    // Afficher les miniatures et boutons de téléchargement
+    var thumbnailResults = document.getElementById('thumbnailResults');
+    thumbnailResults.innerHTML = '';
 
-                thumbnailContainer.className = 'thumbnailContainer';
+    thumbnailUrls.forEach(function (url, index) {
+        var thumbnailContainer = document.createElement('div');
+        thumbnailContainer.className = 'thumbnailContainer';
 
-                var imgElement = document.createElement('img');
-                imgElement.src = url;
-                thumbnailContainer.appendChild(imgElement);
+        var imgElement = document.createElement('img');
+        imgElement.src = url;
+        thumbnailContainer.appendChild(imgElement);
 
-                var downloadButton = document.createElement('a');
-                downloadButton.className = 'downloadButton';
-                downloadButton.href = url;
-                downloadButton.download = 'thumbnail.jpg';
-                downloadButton.innerText = 'Télécharger📥';
-                thumbnailContainer.appendChild(downloadButton);
+        var downloadButton = document.createElement('a');
+        downloadButton.className = 'downloadButton';
+        downloadButton.href = url;
+        downloadButton.download = 'thumbnail.jpg';
+        downloadButton.innerText = 'Télécharger📥';
+        thumbnailContainer.appendChild(downloadButton);
 
-                thumbnailResults.appendChild(thumbnailContainer);
-                
-                 var brElement = document.createElement('br');
-                 thumbnailResults.appendChild(brElement);
-              
-            });
+        thumbnailResults.appendChild(thumbnailContainer);
+
+        // Ajouter un <br> après chaque image sauf la dernière
+        if (index < thumbnailUrls.length - 1) {
+            var brElement = document.createElement('br');
+            thumbnailResults.appendChild(brElement);
         }
+    });
+}
+
+// Fonction pour extraire l'ID de la vidéo à partir de différentes URL YouTube
+function extractVideoId(url) {
+    var match;
+    // Formats d'URL pris en charge
+    var patterns = [
+        /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i
+    ];
+
+    for (var i = 0; i < patterns.length; i++) {
+        match = url.match(patterns[i]);
+        if (match && match[1]) {
+            return match[1];
+        }
+    }
+
+    return null; // Retourne null si l'ID de la vidéo n'a pas pu être extrait
+}
+
     </script>
 </body>
 </html>
