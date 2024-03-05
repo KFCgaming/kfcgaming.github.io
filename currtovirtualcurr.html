@@ -83,6 +83,12 @@
             <option value="robux4500">4500 Robux</option>
             <option value="robux10000">10.000 Robux</option>
             <option value="robux22500">22.500 Robux</option>
+            <option value="vbuck">-----Minecoins-----</option>
+            <option value="minecoin320">320 Minecoins</option>
+            <option value="minecoin960">960 Minecoins</option>
+            <option value="minecoin1600">1600 Minecoins</option>
+            <option value="minecoin3200">3200 Minecoins</option>
+            <option value="minecoin8000">8000 Minecoins</option>
         </select>
 
         <!-- Sélection de la devise réelle avec icônes -->
@@ -113,6 +119,11 @@
                 "robux4500": 59.99 / 4500,
                 "robux10000": 119.99 / 10000,
                 "robux22500": 239.99 / 22500,
+                "minecoin320": 1.99 / 320,
+                "minecoin960": 5.99 / 960,
+                "minecoin1600": 9.99 / 1600,
+                "minecoin3200": 19.99 / 3200,
+                "minecoin8000": 49.99 / 8000,
             };
 
             if (virtualCurrencyType in conversionRates) {
@@ -138,6 +149,11 @@
                 select.style.backgroundPosition = "95% center";
             } else if (selectedOption.value.startsWith("robux")) {
                 select.style.backgroundImage = "url('https://kfcgaming.github.io/Assets/RobuxIcon128.png')";
+                select.style.backgroundRepeat = "no-repeat";
+                select.style.backgroundSize = "28px";
+                select.style.backgroundPosition = "95% center";
+            } else if (selectedOption.value.startsWith("minecoin")) {
+                select.style.backgroundImage = "url('https://www.minecraft.net/content/dam/games/minecraft/marketplace/images/Minecraft_Desktop_1366_Minecoin.png')";
                 select.style.backgroundRepeat = "no-repeat";
                 select.style.backgroundSize = "28px";
                 select.style.backgroundPosition = "95% center";
