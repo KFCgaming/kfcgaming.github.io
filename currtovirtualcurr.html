@@ -89,6 +89,12 @@
             <option value="minecoin1600">1600 Minecoins</option>
             <option value="minecoin3200">3200 Minecoins</option>
             <option value="minecoin8000">8000 Minecoins</option>
+            <option value="vbuck">-----Émissous-----</option>
+            <option value="emissous600">600 Émissous</option>
+            <option value="emissous1000">1000 Émissous</option>
+            <option value="emissous2800">2800 Émissous</option>
+            <option value="emissous5000">5000 Émissous</option>
+            <option value="emissous13500">13500 Émissous</option>
         </select>
 
         <!-- Sélection de la devise réelle avec icônes -->
@@ -124,6 +130,11 @@
                 "minecoin1600": 9.99 / 1600,
                 "minecoin3200": 19.99 / 3200,
                 "minecoin8000": 49.99 / 8000,
+                "emissous600": 5.49 / 600,
+                "emissous1000": 8.99 / 1000,
+                "emissous2800": 22.99 / 2800,
+                "emissous5000": 36.99 / 5000,
+                "emissous13500": 89.99 / 13500,
             };
 
             if (virtualCurrencyType in conversionRates) {
@@ -154,6 +165,11 @@
                 select.style.backgroundPosition = "95% center";
             } else if (selectedOption.value.startsWith("minecoin")) {
                 select.style.backgroundImage = "url('https://www.minecraft.net/content/dam/games/minecraft/marketplace/images/Minecraft_Desktop_1366_Minecoin.png')";
+                select.style.backgroundRepeat = "no-repeat";
+                select.style.backgroundSize = "28px";
+                select.style.backgroundPosition = "95% center";
+            } else if (selectedOption.value.startsWith("emissous")) {
+                select.style.backgroundImage = "url('https://kfcgaming.github.io/Assets/EmissousIcon.png')";
                 select.style.backgroundRepeat = "no-repeat";
                 select.style.backgroundSize = "28px";
                 select.style.backgroundPosition = "95% center";
