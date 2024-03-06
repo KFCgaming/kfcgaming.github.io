@@ -94,7 +94,13 @@
             <option value="emissous1000">1000 Émissous</option>
             <option value="emissous2800">2800 Émissous</option>
             <option value="emissous5000">5000 Émissous</option>
-            <option value="emissous13500">13500 Émissous</option>
+            <option value="emissous13500">13.500 Émissous</option>
+            <option value="sharkcard">-----Shark Card-----</option>
+            <option value="sharkcard250k">250.000 $ SharkCard</option>
+            <option value="sharkcard600k">600.000 $ SharkCard</option>
+            <option value="sharkcard1500k">1.500.000 $ SharkCard</option>
+            <option value="sharkcard4250k">4.250.000 $ SharkCard</option>
+            <option value="sharkcard10000k">10.000.000 $ SharkCard</option>
         </select>
 
         <!-- Sélection de la devise réelle avec icônes -->
@@ -135,6 +141,11 @@
                 "emissous2800": 22.99 / 2800,
                 "emissous5000": 36.99 / 5000,
                 "emissous13500": 89.99 / 13500,
+                "sharkcard250k": 3.99 / 250000,
+                "sharkcard600k": 6.99 / 600000,
+                "sharkcard1500k": 14.99 / 1500000,
+                "sharkcard4250k": 37.99 / 4250000,
+                "sharkcard10000k": 74.99 / 10000000,
             };
 
             if (virtualCurrencyType in conversionRates) {
@@ -172,6 +183,11 @@
                 select.style.backgroundImage = "url('https://kfcgaming.github.io/Assets/EmissousIcon.png')";
                 select.style.backgroundRepeat = "no-repeat";
                 select.style.backgroundSize = "28px";
+                select.style.backgroundPosition = "95% center";
+           } else if (selectedOption.value.startsWith("shark")) {
+                select.style.backgroundImage = "url('https://gta-market.com/wp-content/uploads/2020/05/200.000.000-dengi-gta-5-online.png')";
+                select.style.backgroundRepeat = "no-repeat";
+                select.style.backgroundSize = "40px";
                 select.style.backgroundPosition = "95% center";
             }
         }
