@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Counter</title>
+    <style>
+        body {
+            background-color: green;
+            margin: 0;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        // Fonction pour lancer la vidéo
+        function launchVideo() {
+            // Remplacez le lien de la vidéo par le lien de votre vidéo sur GitHub
+            const videoUrl = 'https://kfcgaming.github.io/Assets/LIVE 200Sub.mp4';
+
+            const videoElement = document.createElement('video');
+            videoElement.src = videoUrl;
+            videoElement.autoplay = true;
+            videoElement.muted = false; // Ajout de l'attribut muted pour activer l'autoplay
+
+            // Ajout de la balise vidéo au corps de la page
+            document.body.appendChild(videoElement);
+        }
+
+        // Fonction pour récupérer les données depuis l'API
+        async function fetchSubscriberCount() {
+            const apiUrl = 'https://api-superplaycounts.onrender.com/api/youtube-channel-counter/user/UC2BS8WfI9nFKZciHwomz7eg';
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const subscribersCount = data.statistics[0].counts.find(item => item.value === 'subscribers').count;
+
+                // Vérifier si le nombre d'abonnés est supérieur ou égal à 200
+                if (subscribersCount >= 195) {
+                    launchVideo();
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des données depuis l\'API', error);
+            }
+
+            // Relancer la fonction toutes les 1 minute
+            setTimeout(fetchSubscriberCount, 60000);
+        }
+
+        // Appel initial de la fonction au chargement de la page
+        fetchSubscriberCount();
+    </script>
+
+</body>
+</html>
