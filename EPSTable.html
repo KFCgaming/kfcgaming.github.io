@@ -19,34 +19,24 @@
             margin: 5px;
             padding: 10px 15px;
         }
+        #classSelect {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
-    <input type="file" id="fileInput" accept=".txt" style="margin-bottom: 20px;">
+    <label for="classSelect">Sélectionnez ou ajoutez une classe :</label>
+    <input list="classes" id="classSelect">
+    <datalist id="classes"></datalist>
+    <button onclick="loadClass()">Charger</button>
+    <button onclick="saveClass()">Sauvegarder</button>
+
     <table id="table">
         <tr>
             <th>Nom</th>
             <th>Buts</th>
             <th>Tirs</th>
             <th>Passes</th>
-        </tr>
-        <tr>
-            <td>Élève 1</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-        </tr>
-        <tr>
-            <td>Élève 2</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-        </tr>
-        <tr>
-            <td>Élève 3</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
         </tr>
     </table>
     <button onclick="changeValue('Tirs')">Changer les Tirs</button>
@@ -56,49 +46,79 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        document.getElementById('fileInput').addEventListener('change', loadFile);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClassList();
+        });
 
-        function loadFile(event) {
-            const input = event.target;
-            if ('files' in input && input.files.length > 0) {
-                placeFileContent(input.files[0]);
+        function loadClassList() {
+            let classes = getCookie('classes');
+            if (classes) {
+                classes = JSON.parse(classes);
+                let datalist = document.getElementById('classes');
+                datalist.innerHTML = '';
+                classes.forEach(className => {
+                    let option = document.createElement('option');
+                    option.value = className;
+                    datalist.appendChild(option);
+                });
             }
         }
 
-        function placeFileContent(file) {
-            readFileContent(file).then(content => {
-                const names = content.split('\n').map(name => name.trim()).filter(name => name !== "");
-                updateTable(names);
-            }).catch(error => console.log(error));
+        function loadClass() {
+            let className = document.getElementById('classSelect').value;
+            if (className) {
+                let classData = getCookie(className);
+                if (classData) {
+                    classData = JSON.parse(classData);
+                    updateTable(classData);
+                } else {
+                    alert('Classe non trouvée.');
+                }
+            }
         }
 
-        function readFileContent(file) {
-            const reader = new FileReader();
-            return new Promise((resolve, reject) => {
-                reader.onload = event => resolve(event.target.result);
-                reader.onerror = error => reject(error);
-                reader.readAsText(file);
-            });
+        function saveClass() {
+            let className = document.getElementById('classSelect').value;
+            if (className) {
+                let table = document.getElementById('table');
+                let data = [];
+                for (let i = 1; i < table.rows.length; i++) {
+                    let row = table.rows[i];
+                    let rowData = [];
+                    for (let j = 0; j < row.cells.length; j++) {
+                        rowData.push(row.cells[j].innerText);
+                    }
+                    data.push(rowData);
+                }
+                setCookie(className, JSON.stringify(data), 365);
+
+                let classes = getCookie('classes');
+                if (classes) {
+                    classes = JSON.parse(classes);
+                } else {
+                    classes = [];
+                }
+                if (!classes.includes(className)) {
+                    classes.push(className);
+                    setCookie('classes', JSON.stringify(classes), 365);
+                }
+
+                loadClassList();
+            }
         }
 
-        function updateTable(names) {
+        function updateTable(data) {
             const table = document.getElementById("table");
             while (table.rows.length > 1) {
                 table.deleteRow(1);
             }
-            names.forEach(name => {
+            data.forEach(rowData => {
                 let row = table.insertRow();
-                let cellName = row.insertCell(0);
-                let cellButs = row.insertCell(1);
-                let cellTirs = row.insertCell(2);
-                let cellPasses = row.insertCell(3);
-                cellName.innerText = name;
-                cellButs.innerText = "0";
-                cellTirs.innerText = "0";
-                cellPasses.innerText = "0";
-                cellButs.contentEditable = "true";
-                cellTirs.contentEditable = "true";
-                cellPasses.contentEditable = "true";
+                rowData.forEach(cellData => {
+                    let cell = row.insertCell();
+                    cell.innerText = cellData;
+                    cell.contentEditable = "true";
+                });
             });
         }
 
@@ -120,6 +140,29 @@
             let table = document.getElementById("table");
             let wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
             XLSX.writeFile(wb, "statistiques_eleves.xlsx");
+        }
+
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days*24*60*60*1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            let cname = name + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
         }
     </script>
 </body>
