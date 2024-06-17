@@ -19,24 +19,36 @@
             margin: 5px;
             padding: 10px 15px;
         }
-        #classSelect {
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
-    <label for="classSelect">Sélectionnez ou ajoutez une classe :</label>
-    <input list="classes" id="classSelect">
-    <datalist id="classes"></datalist>
-    <button onclick="loadClass()">Charger</button>
-    <button onclick="saveClass()">Sauvegarder</button>
-
+    <textarea id="studentNames" rows="4" cols="50" placeholder="Entrez les noms des élèves, séparés par des virgules..."></textarea>
+    <br>
+    <button onclick="updateStudentList()">Mettre à jour la liste</button>
     <table id="table">
         <tr>
             <th>Nom</th>
             <th>Buts</th>
             <th>Tirs</th>
             <th>Passes</th>
+        </tr>
+        <tr>
+            <td>Élève 1</td>
+            <td contenteditable="true">0</td>
+            <td contenteditable="true">0</td>
+            <td contenteditable="true">0</td>
+        </tr>
+        <tr>
+            <td>Élève 2</td>
+            <td contenteditable="true">0</td>
+            <td contenteditable="true">0</td>
+            <td contenteditable="true">0</td>
+        </tr>
+        <tr>
+            <td>Élève 3</td>
+            <td contenteditable="true">0</td>
+            <td contenteditable="true">0</td>
+            <td contenteditable="true">0</td>
         </tr>
     </table>
     <button onclick="changeValue('Tirs')">Changer les Tirs</button>
@@ -46,79 +58,29 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            loadClassList();
-        });
+        function updateStudentList() {
+            let names = document.getElementById('studentNames').value.split(',');
+            let table = document.getElementById('table');
 
-        function loadClassList() {
-            let classes = getCookie('classes');
-            if (classes) {
-                classes = JSON.parse(classes);
-                let datalist = document.getElementById('classes');
-                datalist.innerHTML = '';
-                classes.forEach(className => {
-                    let option = document.createElement('option');
-                    option.value = className;
-                    datalist.appendChild(option);
-                });
-            }
-        }
-
-        function loadClass() {
-            let className = document.getElementById('classSelect').value;
-            if (className) {
-                let classData = getCookie(className);
-                if (classData) {
-                    classData = JSON.parse(classData);
-                    updateTable(classData);
-                } else {
-                    alert('Classe non trouvée.');
-                }
-            }
-        }
-
-        function saveClass() {
-            let className = document.getElementById('classSelect').value;
-            if (className) {
-                let table = document.getElementById('table');
-                let data = [];
-                for (let i = 1; i < table.rows.length; i++) {
-                    let row = table.rows[i];
-                    let rowData = [];
-                    for (let j = 0; j < row.cells.length; j++) {
-                        rowData.push(row.cells[j].innerText);
-                    }
-                    data.push(rowData);
-                }
-                setCookie(className, JSON.stringify(data), 365);
-
-                let classes = getCookie('classes');
-                if (classes) {
-                    classes = JSON.parse(classes);
-                } else {
-                    classes = [];
-                }
-                if (!classes.includes(className)) {
-                    classes.push(className);
-                    setCookie('classes', JSON.stringify(classes), 365);
-                }
-
-                loadClassList();
-            }
-        }
-
-        function updateTable(data) {
-            const table = document.getElementById("table");
+            // Clear existing rows except the header
             while (table.rows.length > 1) {
                 table.deleteRow(1);
             }
-            data.forEach(rowData => {
+
+            // Add new rows
+            names.forEach(name => {
                 let row = table.insertRow();
-                rowData.forEach(cellData => {
-                    let cell = row.insertCell();
-                    cell.innerText = cellData;
-                    cell.contentEditable = "true";
-                });
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let cell4 = row.insertCell(3);
+                cell1.innerText = name.trim();
+                cell2.innerText = "0";
+                cell3.innerText = "0";
+                cell4.innerText = "0";
+                cell2.contentEditable = "true";
+                cell3.contentEditable = "true";
+                cell4.contentEditable = "true";
             });
         }
 
@@ -140,29 +102,6 @@
             let table = document.getElementById("table");
             let wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
             XLSX.writeFile(wb, "statistiques_eleves.xlsx");
-        }
-
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days*24*60*60*1000));
-            let expires = "expires=" + d.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
-        }
-
-        function getCookie(name) {
-            let cname = name + "=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(cname) == 0) {
-                    return c.substring(cname.length, c.length);
-                }
-            }
-            return "";
         }
     </script>
 </body>
