@@ -5,59 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableur de Statistiques d'Élèves</title>
     <style>
+    	body {background-color: #579BDE}
+        
         table {
-            width: 50%;
+            width: 80%;
+            font-family: arial;
             border-collapse: collapse;
-            margin: 20px 0;
-        }
+            margin: 20px 0;}
+            
         th, td {
             border: 1px solid black;
             text-align: center;
-            padding: 8px;
-        }
+            padding: 8px;}
+        
         button {
             margin: 5px;
+            padding: 10px 15px;}
+            
+        form {
+            background-color: #CCE2EE;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            max-width: 450px;}
+            
+        h2 {text-align: center; font-family: calibri}
+        p {font-family: arial}
+        
+        button {
+            background-color: #039BE5;
+            color: #fff;
+            border: none;
             padding: 10px 15px;
-        }
+            border-radius: 4px;
+            cursor: pointer;}
+
+        button:hover {
+            background-color: #0277BD;}
     </style>
 </head>
 <body>
-    <textarea id="studentNames" rows="4" cols="50" placeholder="Entrez les noms des élèves, séparés par des virgules..."></textarea>
-    <br>
-    <button onclick="updateStudentList()">Mettre à jour la liste</button>
-    <table id="table">
-        <tr>
-            <th>Nom</th>
-            <th>Buts</th>
-            <th>Tirs</th>
-            <th>Passes</th>
-        </tr>
-        <tr>
-            <td>Élève 1</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-        </tr>
-        <tr>
-            <td>Élève 2</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-        </tr>
-        <tr>
-            <td>Élève 3</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-            <td contenteditable="true">0</td>
-        </tr>
-    </table>
-    <button onclick="changeValue('Tirs')">Changer les Tirs</button>
-    <button onclick="changeValue('Buts')">Changer les Buts</button>
-    <button onclick="changeValue('Passes')">Changer les Passes</button>
-    <button onclick="exportToExcel()">Exporter en Excel</button>
-
+    <form onsubmit="return false;">
+    	<h2><ins>Tableur EPS 🏀</ins></h2>
+        <textarea id="studentNames" rows="4" cols="50" placeholder="Entrez les noms des élèves, séparés par des virgules..."></textarea>
+        <br>
+        <p>Menu des Listes 📜 : </p>
+        <button type="button" onclick="updateStudentList()">Mettre à jour la liste</button>
+        <button type="button" onclick="saveData()">Sauvegarder la liste et les données</button>
+        <button type="button" onclick="loadData()">Charger les données sauvegardées</button>
+        <p>Menu des Colonnes 📊 : </p>
+        <button type="button" onclick="addColumn()">Ajouter une colonne</button>
+        <button type="button" onclick="removeColumn()">Supprimer une colonne</button>
+        <table id="table">
+            <tr id="headerRow">
+                <th contenteditable="true">Nom</th>
+                <th contenteditable="true">Buts</th>
+                <th contenteditable="true">Tirs</th>
+                <th contenteditable="true">Passes</th>
+            </tr>
+        </table>
+        <p>Menu du Tableur 📅 : </p>
+        <button type="button" onclick="changeValue('Tirs')">Changer les Tirs</button>
+        <button type="button" onclick="changeValue('Buts')">Changer les Buts</button>
+        <button type="button" onclick="changeValue('Passes')">Changer les Passes</button>
+        <button type="button" onclick="exportToExcel()">Exporter en Excel</button>
+    </form>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            document.cookie = name + '=; Max-Age=-99999999;';
+        }
+
         function updateStudentList() {
             let names = document.getElementById('studentNames').value.split(',');
             let table = document.getElementById('table');
@@ -69,19 +109,111 @@
 
             // Add new rows
             names.forEach(name => {
-                let row = table.insertRow();
-                let cell1 = row.insertCell(0);
-                let cell2 = row.insertCell(1);
-                let cell3 = row.insertCell(2);
-                let cell4 = row.insertCell(3);
-                cell1.innerText = name.trim();
-                cell2.innerText = "0";
-                cell3.innerText = "0";
-                cell4.innerText = "0";
-                cell2.contentEditable = "true";
-                cell3.contentEditable = "true";
-                cell4.contentEditable = "true";
+                if (name.trim() !== "") {
+                    let row = table.insertRow();
+                    let cell = row.insertCell(0);
+                    cell.innerText = name.trim();
+                    for (let i = 1; i < table.rows[0].cells.length; i++) {
+                        let cell = row.insertCell(i);
+                        cell.innerText = "0";
+                        cell.contentEditable = "true";
+                    }
+                }
             });
+        }
+
+        function saveData() {
+            let listName = prompt("Nom de la liste à sauvegarder :");
+            if (listName) {
+                let table = document.getElementById('table');
+                let data = [];
+                for (let i = 1; i < table.rows.length; i++) {
+                    let row = table.rows[i];
+                    let rowData = [];
+                    for (let j = 0; j < row.cells.length; j++) {
+                        rowData.push(row.cells[j].innerText);
+                    }
+                    data.push(rowData);
+                }
+                let columns = [];
+                for (let i = 0; i < table.rows[0].cells.length; i++) {
+                    columns.push(table.rows[0].cells[i].innerText);
+                }
+                let saveData = {columns: columns, rows: data};
+                setCookie(listName, JSON.stringify(saveData), 30);
+                alert('Données sauvegardées sous le nom : ' + listName);
+            }
+        }
+
+        function loadData() {
+            let listName = prompt("Nom de la liste à charger :");
+            if (listName) {
+                let data = getCookie(listName);
+                if (data) {
+                    data = JSON.parse(data);
+                    let table = document.getElementById('table');
+
+                    // Clear existing rows
+                    while (table.rows.length > 0) {
+                        table.deleteRow(0);
+                    }
+
+                    // Set header row
+                    let headerRow = table.insertRow();
+                    data.columns.forEach(col => {
+                        let th = document.createElement("th");
+                        th.innerText = col;
+                        th.contentEditable = "true";
+                        headerRow.appendChild(th);
+                    });
+
+                    // Add rows from cookie data
+                    data.rows.forEach(item => {
+                        let row = table.insertRow();
+                        item.forEach(cellData => {
+                            let cell = row.insertCell();
+                            cell.innerText = cellData;
+                            cell.contentEditable = "true";
+                        });
+                    });
+                    alert('Données chargées pour la liste : ' + listName);
+                } else {
+                    alert('Aucune donnée trouvée pour la liste : ' + listName);
+                }
+            }
+        }
+
+
+        function addColumn() {
+            let table = document.getElementById('table');
+            let columnName = prompt("Nom de la nouvelle colonne :");
+            if (columnName) {
+                let headerRow = table.rows[0];
+                let newHeader = document.createElement("th");
+                newHeader.contentEditable = "true";
+                newHeader.innerText = columnName;
+                headerRow.appendChild(newHeader);
+                for (let i = 1; i < table.rows.length; i++) {
+                    let newCell = table.rows[i].insertCell(-1);
+                    newCell.contentEditable = "true";
+                    newCell.innerText = "0";
+                }
+            }
+        }
+
+        function removeColumn() {
+            let table = document.getElementById('table');
+            let columnIndex = prompt("Index de la colonne à supprimer (Ex : 1ère colonne = 1):");
+            if (columnIndex) {
+                columnIndex = parseInt(columnIndex);
+                if (!isNaN(columnIndex) && columnIndex > 0 && columnIndex <= table.rows[0].cells.length) {
+                    for (let i = 0; i < table.rows.length; i++) {
+                        table.rows[i].deleteCell(columnIndex - 1);
+                    }
+                } else {
+                    alert("Index invalide.");
+                }
+            }
         }
 
         function changeValue(stat) {
@@ -91,9 +223,12 @@
             let table = document.getElementById("table");
             for (let i = 1; i < table.rows.length; i++) {
                 if (table.rows[i].cells[0].innerText === name) {
-                    let index = stat === 'Buts' ? 1 : stat === 'Tirs' ? 2 : 3;
-                    table.rows[i].cells[index].innerText = value;
-                    break;
+                    for (let j = 0; j < table.rows[0].cells.length; j++) {
+                        if (table.rows[0].cells[j].innerText === stat) {
+                            table.rows[i].cells[j].innerText = value;
+                            return;
+                        }
+                    }
                 }
             }
         }
