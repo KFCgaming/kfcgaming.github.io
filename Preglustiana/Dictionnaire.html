@@ -80,9 +80,9 @@
         <h5>Crée par KFCgaming</h5>
         <form id="menu">
           <h3>Preglustiana</h3>
-          <button id="dictionnarybutton"style="background-color: #4993c4"><ins>Dictionnaire 📖</ins></button>
-          <button id="menu" >Menu 🏠</button>
-          <button id="credits">Crédits 📜</button>
+          <button id="dictionnarybutton" style="background-color: #4993c4"><ins>Dictionnaire 📖</ins></button>
+          <button id="menu" onclick="menu()">Menu 🏠</button>
+          <button id="credits" onclick="credits()">Crédits 📜</button>
       </form>
         <form>
             <h4><ins>Dictionnaire 📖</ins></h4>
@@ -97,7 +97,12 @@
 
     <script>
         let dictionary = [];
-
+	function menu() {
+	    window.location.href = "https://kfcgaming.github.io/Preglustiana/menu.html";
+	}
+	function credits() {
+	    window.location.href = "https://kfcgaming.github.io/Preglustiana/credits.html";
+	}
         // Charger le fichier JSON
         fetch('https://kfcgaming.github.io/Preglustiana/dictionaryfrps.json')
             .then(response => response.json())
