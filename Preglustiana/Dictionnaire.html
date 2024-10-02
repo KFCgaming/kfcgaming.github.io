@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://yt3.ggpht.com/OQvZj1f_JdZl0SLcZ7jLWPJSnMoc-qXtNQ3QBbRDKgcJfPmp6XhKbzq8mpey1JgG28g6cNY75M8=s800-c-k-c0x00ffffff-no-rj" type="image/x-icon">
+    <title>Preglustiana Dictionary</title>
+    <style>
+        body {
+            justify-content: center;
+            align-items: center;
+            margin: 1%;
+            background-color: #1C1B20;
+            font-family: arial, sans-serif;
+        }
+        #content {
+            text-align: center;
+        }
+        button {
+            background-color: #688baf;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 3px;
+        }
+        button:hover {background-color: #475d75}
+        form {
+            background-color: #3b3b3b;
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            max-width: 450px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .dictionary-entry {
+            background-color: #27272a;
+            padding: 10px;
+            margin-top: 10px;
+            color: white;
+        }
+        .dictionary-entry h5 {
+            margin: 0;
+        }
+        .toggle-button {
+            margin-top: 5px;
+            padding: 5px;
+            background-color: #688baf;
+            color: white;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        img {
+            margin: 15px;
+            text-align: center;
+            width: auto;
+            height: auto;
+            max-width: 350px;
+            max-height: 350px;
+        }
+        h1{color: #FFFF}
+        h2{color: #FFFF}
+        h4{color: #FFFF}
+        h3{color: #FFFF}
+        h5{color: #FFFF}
+        p{color : #FFFF}
+    </style>
+</head>
+<body>
+	<div id="content">
+        <img src="https://github.com/KFCgaming/Preglustiana/raw/main/Thumbnail.png">
+        <h5>Crée par KFCgaming</h5>
+        <form id="menu">
+          <h3>Preglustiana</h3>
+          <button id="dictionnarybutton"style="background-color: #4993c4"><ins>Dictionnaire 📖</ins></button>
+          <button id="menu" >Menu 🏠</button>
+          <button id="credits">Crédits 📜</button>
+      </form>
+        <form>
+            <h4><ins>Dictionnaire 📖</ins></h4>
+            <p>Ce dictionnaire vous permet de rechercher des mots dans deux langues différentes pour le moment. 🌐</p><p>Ce sont le Preglustiana et le Français. 📘📙</p><p>Grâce à ce dernier, vous pourrez avoir non seulement une liste des mots disponible dans cette langue mais surtout, une définition traduite dans ces 2 langues. 🔎</p>
+            <input type="text" id="searchInput" placeholder="Rechercher un mot..." oninput="searchWord()">
+        </form>
+        <div id="results"></div>
+        <br>
+    <form id="links"><a href="https://github.com/KFCgaming" style="color: #8064ad;">Github 🐈‍⬛<a>ㅤ<a href="https://kfcgaming.github.io/portal.html" style="color: #868686">Portal 📎</a>ㅤ<a href="https://github.com/KFCgaming/Preglustiana" style="color: #b94a4a;">Repository 🧰<a></form>
+
+    </div>
+
+    <script>
+        let dictionary = [];
+
+        // Charger le fichier JSON
+        fetch('dictionary.json')
+            .then(response => response.json())
+            .then(data => {
+                dictionary = data; // Stocker le dictionnaire dans la variable
+            })
+            .catch(error => console.error('Erreur lors du chargement du dictionnaire:', error));
+
+        function searchWord() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const resultsDiv = document.getElementById('results');
+            
+            // Si la barre de recherche est vide ou contient moins de 3 caractères, on vide les résultats
+            if (query.length < 3) {
+                resultsDiv.innerHTML = '';
+                return; // Sortir de la fonction si moins de 3 caractères sont saisis
+            }
+
+            resultsDiv.innerHTML = ''; // Réinitialiser les résultats
+
+            // Filtrer les résultats en fonction de la saisie
+            const results = dictionary.filter(entry => 
+                entry.preglustiana.toLowerCase().startsWith(query) || entry.french.toLowerCase().startsWith(query)
+            );
+
+            // Trier les résultats par longueur de mot pour privilégier les mots plus courts
+            results.sort((a, b) => {
+                const lenA = Math.min(a.preglustiana.length, a.french.length);
+                const lenB = Math.min(b.preglustiana.length, b.french.length);
+                return lenA - lenB; // Les mots plus courts apparaîtront en premier
+            });
+
+            // Afficher les résultats filtrés et triés
+            results.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'dictionary-entry';
+
+                const wordDisplay = document.createElement('h5');
+                wordDisplay.textContent = `${entry.preglustiana} (Français: ${entry.french})`;
+
+                const definitionDisplay = document.createElement('p');
+                definitionDisplay.textContent = entry.definitionPreg;
+                definitionDisplay.className = 'definition';
+
+                const toggleButton = document.createElement('button');
+                toggleButton.textContent = 'Afficher en Français';
+                toggleButton.className = 'toggle-button';
+                toggleButton.onclick = function() {
+                    if (definitionDisplay.textContent === entry.definitionPreg) {
+                        definitionDisplay.textContent = entry.definitionFr;
+                        toggleButton.textContent = 'Afficher en Preglustiana';
+                    } else {
+                        definitionDisplay.textContent = entry.definitionPreg;
+                        toggleButton.textContent = 'Afficher en Français';
+                    }
+                };
+
+                entryDiv.appendChild(wordDisplay);
+                entryDiv.appendChild(definitionDisplay);
+                entryDiv.appendChild(toggleButton);
+
+                resultsDiv.appendChild(entryDiv);
+            });
+        }
+    </script>
+</body>
+</html>
