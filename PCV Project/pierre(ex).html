@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pierre Voyageuse - Améthyste Voyageuse</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">Pierre Voyageuse</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="classement.html">Classement</a></li>
+                    <li><a href="login.html">Connexion</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container stone-page">
+        <div class="stone-header">
+            <div class="stone-gallery">
+                <img src="https://medias.coeurdepierres.fr/uploads/IMG_9363.03jpg.jpg" alt="Améthyste Voyageuse" class="main-image">
+                <div class="thumbnails">
+                    <img src="https://theeyeofjewelry.com/wp-content/uploads/2016/02/amethyst_photo02.jpg" alt="">
+                    <img src="https://i.etsystatic.com/20926947/c/1993/1993/339/0/il/2b6431/2329823501/il_600x600.2329823501_ek3w.jpg" alt="">
+                    <img src="https://crystalsofatlantis.com/wp-content/uploads/2017/11/000008-2-2.jpg" alt="">
+                </div>
+            </div>
+            
+            <div class="stone-details">
+                <h2>Améthyste Voyageuse</h2>
+                <p class="author">Par <a href="#">PierreDupont</a> - Créée le 12/05/2022</p>
+                <p class="description">Cette magnifique améthyste a commencé son voyage dans les Alpes françaises. Elle a déjà traversé 5 pays !</p>
+                
+                <div class="stone-stats">
+                    <div class="stat">
+                        <i class="fas fa-road"></i>
+                        <span>1,245 km</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-flag"></i>
+                        <span>5 frontières</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-heart"></i>
+                        <span>128 likes</span>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="like-btn"><i class="fas fa-heart"></i> J'aime</button>
+                    <button class="found-btn"><i class="fas fa-map-marker-alt"></i> Je l'ai trouvée</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stone-map">
+                <h3>Son parcours</h3>
+                <div id="map" style="height: 400px;"></div>
+            </div>
+        </div>
+        
+        <div class="stone-comments">
+            <h3>Commentaires (12)</h3>
+            <form class="comment-form">
+                <textarea placeholder="Ajouter un commentaire..."></textarea>
+                <button type="submit">Publier</button>
+            </form>
+            
+            <div class="comments-list">
+                <div class="comment">
+                    <img src="https://this-person-does-not-exist.com/img/avatar-gen55763f84c97cb9f3b8daaaf2ebac1abc.jpg" alt="Utilisateur" class="avatar">
+                    <div class="comment-content">
+                        <p class="comment-author">Jean123 <span class="comment-date">- 15/05/2023</span></p>
+                        <p class="comment-text">Je l'ai trouvée dans un parc à Gap il y a 4 jours, magnifique pierre ! Elle est maintenant à Paris au pied de la Tour Eiffel.</p>
+                    </div>
+                </div>
+                
+                <div class="comment">
+                    <img src="https://thispersonnotexist.org/downloadimage/Ac3RhdGljL3dvbWFuL3NlZWQyNTk0MC5qcGVn" alt="Utilisateur" class="avatar">
+                    <div class="comment-content">
+                        <p class="comment-author">MarieVoyage <span class="comment-date">- 22/06/2023</span></p>
+                        <p class="comment-text">Elle est maintenant à Lille, je l'ai déposée ce matin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Pierre Voyageuse - Tous droits réservés</p>
+        </div>
+    </footer>
+    <script>
+                // Initialisation de la carte
+        const map = L.map('map').setView([48.8566, 2.3522], 6); // Vue centrée sur Paris
+
+        // Ajout des tuiles OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Coordonnées des étapes du parcours
+        const parcours = [
+            { lat: 44.5586, lng: 6.0789, label: "Gap : 13/03/2023" },
+            { lat: 48.8566, lng: 2.3522, label: "Paris : 15/05/2023" },
+            { lat: 50.6292, lng: 3.0573, label: "Lille : 22/06/2023" },
+            { lat: 50.8503, lng: 4.3517, label: "Bruxelles : 03/07/2023" }
+        ];
+
+        // Ajout des marqueurs et tracé des lignes entre les points
+        const points = parcours.map((point, index) => {
+            L.marker([point.lat, point.lng]).addTo(map)
+                .bindPopup(`${point.label}`);
+            return [point.lat, point.lng];
+        });
+
+        // Dessiner les lignes reliant les points
+        L.polyline(points, { color: 'blue' }).addTo(map);
+    </script>
+</body>
+</html>
+

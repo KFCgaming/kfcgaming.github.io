@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pierre Voyageuse - Publier</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Leaflet pour la carte -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <style>
+        .publish-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .publish-title {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        #map-preview {
+            height: 300px;
+            margin-top: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .photo-upload {
+            border: 2px dashed #ddd;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .photo-upload:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .photo-upload i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .photo-preview {
+            display: none;
+            max-width: 100%;
+            max-height: 300px;
+            margin: 1rem auto;
+            border-radius: 8px;
+        }
+        
+        .btn-publish {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        .btn-publish:hover {
+            background-color: #4a7694;
+        }
+        
+        .login-required {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+        
+        .login-required a {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">Pierre Voyageuse</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="classement.html">Classement</a></li>
+                    <li><a href="login.html">Connexion</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Section visible seulement si connecté -->
+        <div id="publish-form" class="publish-container">
+            <h2 class="publish-title">Publier une nouvelle pierre</h2>
+            
+            <form id="stone-form">
+                <div class="form-group">
+                    <label for="stone-name">Nom de la pierre *</label>
+                    <input type="text" id="stone-name" class="form-control" placeholder="Ex: Granit Nomade" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Photo de la pierre *</label>
+                    <div class="photo-upload" id="upload-area">
+                        <i class="fas fa-camera"></i>
+                        <p>Cliquez pour téléverser une photo</p>
+                        <input type="file" id="stone-photo" accept="image/*" style="display: none;">
+                        <img id="photo-preview" class="photo-preview" alt="Aperçu de la pierre">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stone-description">Description *</label>
+                    <textarea id="stone-description" class="form-control" placeholder="Décrivez votre pierre (couleur, taille, particularités...)"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Localisation actuelle *</label>
+                    <div id="map-preview"></div>
+                    <p class="hint"><small>Cliquez sur la carte pour positionner la pierre</small></p>
+                    <input type="hidden" id="stone-lat">
+                    <input type="hidden" id="stone-lng">
+                </div>
+                
+                <button type="submit" class="btn-publish">Publier la pierre</button>
+            </form>
+        </div>
+        
+        <!-- Message si non connecté -->
+        <div id="login-required" class="login-required">
+            <h2>Connectez-vous pour publier</h2>
+            <p>Vous devez être connecté pour ajouter une nouvelle pierre voyageuse.</p>
+            <a href="login.html">Se connecter</a> ou <a href="login.html?tab=register">Créer un compte</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 Pierre Voyageuse - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script>
+        
+        // Initialisation de la carte
+        let map;
+        let marker;
+        
+        if (isLoggedIn) {
+            map = L.map('map-preview').setView([46.603354, 1.888334], 5); // Centré sur la France
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            
+            // Gestion du clic sur la carte
+            map.on('click', function(e) {
+                const { lat, lng } = e.latlng;
+                document.getElementById('stone-lat').value = lat;
+                document.getElementById('stone-lng').value = lng;
+                
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                
+                marker = L.marker([lat, lng]).addTo(map)
+                    .bindPopup('Position actuelle de la pierre')
+                    .openPopup();
+            });
+        }
+        
+        // Gestion de l'upload de photo
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('stone-photo');
+        const photoPreview = document.getElementById('photo-preview');
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    photoPreview.src = event.target.result;
+                    photoPreview.style.display = 'block';
+                    uploadArea.querySelector('p').textContent = 'Cliquez pour changer de photo';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Soumission du formulaire
+        document.getElementById('stone-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Validation
+            const name = document.getElementById('stone-name').value;
+            const photo = fileInput.files[0];
+            const description = document.getElementById('stone-description').value;
+            const lat = document.getElementById('stone-lat').value;
+            const lng = document.getElementById('stone-lng').value;
+            
+            if (!name || !photo || !description || !lat || !lng) {
+                alert('Veuillez remplir tous les champs obligatoires (*)');
+                return;
+            }
+            
+            // Ici, tu enverrais les données au backend
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('photo', photo);
+            formData.append('description', description);
+            formData.append('lat', lat);
+            formData.append('lng', lng);
+            
+            console.log('Données à envoyer:', {
+                name,
+                description,
+                lat,
+                lng,
+                photo: photo.name
+            });
+            
+            // Exemple de requête AJAX (à adapter avec ton backend)
+            /*
+            fetch('/api/stones', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                window.location.href = 'pierre.html?id=' + data.id;
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+            */
+            
+            // Simulation de succès (à supprimer)
+            alert('Pierre publiée avec succès !');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
