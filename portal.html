@@ -1,108 +1,121 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://yt3.googleusercontent.com/QT2KorGQb2lDhKYJ6o7Rg-cWGy11tRcf3lIvkm_wevXrLn1A92-fx5HxHDDaEI0fZOn1LiAq=s160-c-k-c0x00ffffff-no-rj" type="image/x-icon">
-    <title>KFCgaming Portal</title>
-    <style>
-        /* CSS pour centrer le contenu */
-        body {
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="https://yt3.googleusercontent.com/QT2KorGQb2lDhKYJ6o7Rg-cWGy11tRcf3lIvkm_wevXrLn1A92-fx5HxHDDaEI0fZOn1LiAq=s160-c-k-c0x00ffffff-no-rj" type="image/x-icon">
+  <title>KFCgaming Portal</title>
+  <style>
+    :root {
+      --bg-color: #fff;
+      --text-color: #000;
+      --form-bg: rgb(228, 228, 228);
+      --form-shadow: rgb(126, 126, 126) 1px 0 15px;
+      --button-bg: #007bff;
+      --button-hover-bg: #0056b3;
+    }
 
-        #content {
-            text-align: center;
-            padding: auto;
-        }
-	    img {
-            margin: 15px;
-            text-align: center;
-            width: auto;
-            height: auto;
-            max-width: 350px;
-            max-height: 350px;
-            brder: none;
-            border-radius: 50in;
-        }
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-	    margin: 3px;
-        }
+    .dark-mode {
+      --bg-color: #1f1e1e;
+      --text-color: #fff;
+      --form-bg: rgb(38, 38, 39);
+      --form-shadow: rgb(0, 0, 0) 1px 0 15px;
+      --button-bg: #6302d3;
+      --button-hover-bg: #2b0670;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.5s, color 0.5s;
+    }
+
+    p {
+      font-family: Arial, Helvetica, sans-serif;
+      transition: color 0.5s;
+    }
+
+    h1 {
+      font-family: Verdana;
+      transition: color 0.5s;
+    }
+
+    img {
+      margin: 15px;
+      text-align: center;
+      width: auto;
+      height: auto;
+      max-width: 350px;
+      max-height: 350px;
+      border: none;
+      border-radius: 50in;
+    }
+
+    button {
+      background-color: var(--button-bg);
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 3px;
+      transition: background-color 0.5s;
+    }
+
+    button:hover {
+      background-color: var(--button-hover-bg);
+    }
+
+    form {
+      background-color: var(--form-bg);
+      border-radius: 5px;
+      padding: 5px;
+      box-shadow: var(--form-shadow);
+      margin: 20px auto;
+      max-width: 650px;
+      transition: background-color 0.5s, box-shadow 0.5s;
+    }
+  </style>
 </head>
 <body>
-    <div id="content">
-    	<img src="https://yt3.googleusercontent.com/QT2KorGQb2lDhKYJ6o7Rg-cWGy11tRcf3lIvkm_wevXrLn1A92-fx5HxHDDaEI0fZOn1LiAq=s160-c-k-c0x00ffffff-no-rj" alt"Logo">
-        <h1>KFCgaming🍗</h1>
-        <p><ins>Portail De Site</ins></p>
-        <p>Reseaux Sociaux 📱</p>
-        <button onclick="Discord()">Discord 💬</button>
-        <button onclick="Youtube()">YouTube 📹</button>
-	<button onclick="Insta()">Instagram 📷</button>
-	<button onclick="Twitter()">Twitter 🐦</button>
-	<button onclick="BlueSky()">BlueSky 🦋</button>
-	<button onclick="insgmg()">Instant-Gaming 🎮</button>
-        <button onclick="git()">Github 🐈</button>
-        <p>Boite à trucs 📦</p>
-        <button onclick="ETS2()">ETS2 Radio Creator 🚚📻</button>
-        <button onclick="KFCavatar()">KFCavatar 🖼️📱</button>
-	<button onclick="webhooksender()">WebHook Sender 📨🤖</button>
-	<button onclick="YTScrap()">YouTube Thumbnail Scrapper 🔗🖼️</button>
-	<button onclick="currtovcurr()">Monnaie vers Monnaie Virtuel 🪙👾</button>
-	<button onclick="jeuxurl()">Jeux URL 🎮</button>
-    </div>
-    
-    <script>
-	function Insta() {
-	    window.location.href = "https://www.instagram.com/mathys_fr__/";
-	}
-	function insgmg() {
-	    window.location.href = "https://www.instant-gaming.com/?igr=kfcgaming";
-	}
-	function BlueSky() {
-	    window.location.href = "https://bsky.app/profile/kfcgamingfr.bsky.social";
-	}
-	function Twitter() {
-	    window.location.href = "https://x.com/KFCgamingFR";
-	}
-        function KFCavatar() {
-            window.location.href = "https://kfcgaming.github.io/KFCAvatar/XBavatar.html";
-	}
-	function currtovcurr() {
-		window.location.href = "https://kfcgaming.github.io/currtovirtualcurr.html";
-        }
-        function ETS2() {
-            window.location.href = "https://kfcgaming.github.io/radio.html";
-        }
-        function Discord() {
-            window.location.href = "https://discord.gg/ffj4W5hska";
-        }
-        function Youtube() {
-            window.location.href = "https://www.youtube.com/channel/UC2BS8WfI9nFKZciHwomz7eg";
-        }
-        function git() {
-            window.location.href = "https://github.com/KFCgaming";
-        }
-	function webhooksender() {
-            window.location.href = "https://kfcgaming.github.io/webhooksender.html";
-        }
-	function YTScrap() {
-	    window.location.href = "https://kfcgaming.github.io/YTThumbScraper.html";
-	}
-	function jeuxurl() { window.location.href = "https://kfcgaming.github.io/JeuxURL.html"}
-    </script>
+  <div id="content" style="text-align: center; padding: auto">
+    <form id="titleimg"><img src="https://yt3.googleusercontent.com/QT2KorGQb2lDhKYJ6o7Rg-cWGy11tRcf3lIvkm_wevXrLn1A92-fx5HxHDDaEI0fZOn1LiAq=s160-c-k-c0x00ffffff-no-rj" alt="Logo"><h1>KFCgaming🍗</h1></form>
+    <form id="theme"><button type="button" id="themetoggle">⚪ Thème clair</button></form>
+    <form id="socialnetworks"><p>Reseaux Sociaux 📱</p>     <button onclick="Discord()">Discord 💬</button> <button onclick="Youtube()">YouTube 📹</button> <button onclick="Insta()">Instagram 📷</button> <button onclick="Twitter()">Twitter 🐦</button> <button onclick="BlueSky()">BlueSky 🦋</button> <button onclick="insgmg()">Instant-Gaming 🎮</button> <button onclick="git()">Github 🐈</button></form>
+    <form id="news"><p>News 📰</p>      <p><button style="padding: 6px;">21 / 06 / 2025 :</button> Refonte intégral de la page Portal : Esthétique, Ajout du changeur de thème,  Rangement des boutons.</p> <p><button style="padding: 6px;">7 / 06 / 2025 :</button> Ajout dans la page JeuxURL : Noclip, AutoGuessr, Wolfy, LostGamer .</p></form>
+    <form id="outil"><p>Outils ⚒️</p>   <button onclick="ETS2()">ETS2 Radio Creator 🚚📻</button> <button onclick="YTScrap()">YouTube Thumbnail Scrapper 🔗🖼️</button> <button onclick="webhooksender()">WebHook Sender 📨🤖</button></form>
+    <form id="jeuxvideo"><p>Jeux Vidéos 🎮</p>      <button onclick="currtovcurr()">Monnaie vers Monnaie Virtuel 🪙👾</button> <button onclick="jeuxurl()">Jeux URL 🎮</button></form>
+    <form id="autres"><p>Autres 📦</p>      <button onclick="KFCavatar()">KFCavatar 🖼️📱</button></form>
+  </div>
+
+  <script>
+    function Insta() { window.location.href = "https://www.instagram.com/mathys_fr__/"; }
+    function insgmg() { window.location.href = "https://www.instant-gaming.com/?igr=kfcgaming"; }
+    function BlueSky() { window.location.href = "https://bsky.app/profile/kfcgamingfr.bsky.social"; }
+    function Twitter() { window.location.href = "https://x.com/KFCgamingFR"; }
+    function KFCavatar() { window.location.href = "https://kfcgaming.github.io/KFCAvatar/XBavatar.html"; }
+    function currtovcurr() { window.location.href = "https://kfcgaming.github.io/currtovirtualcurr.html"; }
+    function ETS2() { window.location.href = "https://kfcgaming.github.io/radio.html"; }
+    function Discord() { window.location.href = "https://discord.gg/ffj4W5hska"; }
+    function Youtube() { window.location.href = "https://www.youtube.com/channel/UC2BS8WfI9nFKZciHwomz7eg"; }
+    function git() { window.location.href = "https://github.com/KFCgaming"; }
+    function webhooksender() { window.location.href = "https://kfcgaming.github.io/webhooksender.html"; }
+    function YTScrap() { window.location.href = "https://kfcgaming.github.io/YTThumbScraper.html"; }
+    function jeuxurl() { window.location.href = "https://kfcgaming.github.io/JeuxURL.html"; }
+
+    //Themetoggle Script
+    const toggleButton = document.getElementById("themetoggle");
+    let isDark = false;
+
+    toggleButton.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      isDark = !isDark;
+      toggleButton.textContent = isDark ? "⚫ Thème foncé" : "⚪ Thème clair";
+    });
+  </script>
 </body>
 </html>
