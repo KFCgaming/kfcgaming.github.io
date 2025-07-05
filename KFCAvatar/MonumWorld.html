@@ -86,65 +86,55 @@
             height: 75px;
             margin-bottom: 10px;
         }
+        form {
+                background-color: rgba(23, 114, 233, 0.8);
+                border-radius: 5px;
+                padding: 5px;
+                margin: 20px auto;
+                max-width: 55%;
+            }
     </style>
 </head>
 <body>    
-	  <video autoplay muted loop id="video-background">
-          <source src="https://raw.githubusercontent.com/KFCgaming/kfcgaming.github.io/main/Assets/ParisBackgroundPixabay.mp4" type="video/mp4">
-          Votre navigateur ne prend pas en charge la balise vidéo.
-      </video>
-    <h1><b>MonumWorld 🗼</b></h1>
-    <div id="content">
-        <buttonmenu onclick="XBAvatar()">XB Avatar 🍞👨</buttonmenu><buttonmenu onclick="MNW()">MonumWorld 🗼</buttonmenu>
-    </div>
+	<!-- Video Background --> <video autoplay muted loop id="video-background"><source src="https://raw.githubusercontent.com/KFCgaming/kfcgaming.github.io/main/Assets/ParisBackgroundPixabay.mp4" type="video/mp4">Votre navigateur ne prend pas en charge la balise vidéo.</video>
+    <div>
+    <form id="title"><h1><b>MonumWorld 🗼</b></h1></form>
+    <form id="othercollection" style="text-align: center; padding-bottom: 20px; padding-top: 20px;"><div id="content"><buttonmenu onclick="XBAvatar()">XB Avatar 🍞👨</buttonmenu><buttonmenu onclick="MNW()">MonumWorld 🗼</buttonmenu></div></form>
+    <br>
+    <form id="mostpopular"><h2><ins>Les Plus Populaires 🔥</ins></h2><div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div></div></form>
     
-    <h1>  </h1>
-    <!--Avatar XB AVATAR-->
-    </div>
-    <h2><ins>Les Plus Populaires 🔥</ins></h2>
-    <div id="avatarContainer">
+	<form id="europeanmonuments"><h2><ins>Monuments Européens 🏛️🌍</ins></h2><div id="avatarContainer">
         <div class="avatar">
             <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
             <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
-        </div>
+        </div></div></form>
+  	<form id="americanmonuments"><h2><ins>Monuments Américains 🏛️🌎</ins></h2><div id="avatarContainer">
         <div class="avatar">
             <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
             <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
-        </div>
+        </div></div></form>
+  	<form id="africanmonuments"><h2><ins>Monuments Africains 🏛️🌍</ins></h2><div id="avatarContainer">
         <div class="avatar">
             <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
             <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
-        </div>
-    </div>
-    
-	<h2><ins>Monuments Européens 🏛️🌍</ins></h2>
-        <div id="avatarContainer">
+        </div></div></form>
+  	<form id="asianmonuments"><h2><ins>Monuments Asiatiques 🏛️🌏</ins></h2><div id="avatarContainer">
         <div class="avatar">
             <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
             <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
-        </div>
-  </div>
-  	<h2><ins>Monuments Américains 🏛️🌎</ins></h2>
-        <div id="avatarContainer">
-        <div class="avatar">
-            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
-            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
-        </div>
-  </div>
-  	<h2><ins>Monuments Africains 🏛️🌍</ins></h2>
-        <div id="avatarContainer">
-        <div class="avatar">
-            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
-            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
-        </div>
-  </div>
-  	<h2><ins>Monuments Asiatiques 🏛️🌏</ins></h2>
-        <div id="avatarContainer">
-        <div class="avatar">
-            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
-            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
-        </div>
-  </div>
+        </div></div></form>
 
 
 </body>
