@@ -95,86 +95,101 @@
 
     </div>
 
-	<script>
-	    let dictionary = [];
-	
-	    // Charger le fichier JSON
-	    fetch('dictionaryfrps.json')
-	        .then(response => response.json())
-	        .then(data => {
-	            dictionary = data; // Stocker le dictionnaire dans la variable
-	        })
-	        .catch(error => console.error('Erreur lors du chargement du dictionnaire:', error));
-	
-	    function searchWord() {
-	        const query = document.getElementById('searchInput').value.toLowerCase();
-	        const resultsDiv = document.getElementById('results');
-	        
-	        // Si la barre de recherche est vide ou contient moins de 3 caractères, on vide les résultats
-	        if (query.length < 3) {
-	            resultsDiv.innerHTML = '';
-	            return; // Sortir de la fonction si moins de 3 caractères sont saisis
-	        }
-	
-	        resultsDiv.innerHTML = ''; // Réinitialiser les résultats
-	
-	        // Filtrer les résultats en fonction de la saisie
-	        const results = dictionary.filter(entry =>
-	            (entry.ps && typeof entry.ps === 'string' && entry.ps.toLowerCase().startsWith(query)) ||
-	            (entry.fr && typeof entry.fr === 'string' && entry.fr.toLowerCase().startsWith(query))
-	        );
-	
-	        // Trier les résultats par longueur de mot pour privilégier les mots plus courts
-	        results.sort((a, b) => {
-	            const lenA = Math.min(
-	                (a.ps && typeof a.ps === 'string' ? a.ps.length : Infinity),
-	                (a.fr && typeof a.fr === 'string' ? a.fr.length : Infinity)
-	            );
-	            const lenB = Math.min(
-	                (b.ps && typeof b.ps === 'string' ? b.ps.length : Infinity),
-	                (b.fr && typeof b.fr === 'string' ? b.fr.length : Infinity)
-	            );
-	            return lenA - lenB; // Les mots plus courts apparaîtront en premier
-	        });
-	
-	        // Afficher les résultats filtrés et triés
-	 results.forEach(entry => {
-	            const entryDiv = document.createElement('div');
-	            entryDiv.className = 'dictionary-entry';
-	
-	            const wordDisplay = document.createElement('h5');
-	            wordDisplay.textContent = `${entry.ps} (Français: ${entry.fr})`;
-	
-	            const definitionDisplay = document.createElement('p');
-	            // MODIFICATION ICI : Affiche la définition française en premier
-	            definitionDisplay.textContent = entry.definitionFr;
-	            definitionDisplay.className = 'definition';
-	
-	            const toggleButton = document.createElement('button');
-	            // MODIFICATION ICI : Le texte initial du bouton doit être "Afficher en Preglustiana"
-	            toggleButton.textContent = 'Afficher en Preglustiana';
-	            toggleButton.className = 'toggle-button';
-	            toggleButton.onclick = function() {
-	                // MODIFICATION ICI : Inverse la condition
-	                if (definitionDisplay.textContent === entry.definitionFr) {
-	                    definitionDisplay.textContent = entry.definitionPreg;
-	                    toggleButton.textContent = 'Afficher en Français';
-	                } else {
-	                    definitionDisplay.textContent = entry.definitionFr;
-	                    toggleButton.textContent = 'Afficher en Preglustiana';
-	                }
-	            };
-	
-	            entryDiv.appendChild(wordDisplay);
-	            entryDiv.appendChild(definitionDisplay);
-	            entryDiv.appendChild(toggleButton);
-	
-	            resultsDiv.appendChild(entryDiv);
-	        });
-	    }
-	</script>
+<script>
+    let dictionary = [];
+
+    // Fonction pour normaliser une chaîne de caractères pour la recherche
+    function normalizeString(str) {
+        if (typeof str !== 'string') {
+            return ''; // Gère les entrées non-chaînes pour éviter les erreurs
+        }
+        return str
+            .toLowerCase() // Convertit en minuscules
+            .normalize("NFD") // Normalise pour décomposer les caractères accentués
+            .replace(/[\u0300-\u036f]/g, "") // Supprime les diacritiques (accents)
+            .replace(/[^a-z0-9]/g, ''); // Supprime les caractères non-alphanumériques (espaces, tirets, etc.)
+    }
+
+    // Charger le fichier JSON
+    fetch('dictionaryfrps.json')
+        .then(response => response.json())
+        .then(data => {
+            dictionary = data; // Stocker le dictionnaire dans la variable
+        })
+        .catch(error => console.error('Erreur lors du chargement du dictionnaire:', error));
+
+    function searchWord() {
+        const query = document.getElementById('searchInput').value; // Récupère la requête sans la mettre en minuscule tout de suite
+        const normalizedQuery = normalizeString(query); // Normalise la requête de l'utilisateur
+        const resultsDiv = document.getElementById('results');
+        
+        // Si la barre de recherche est vide ou contient moins de 3 caractères, on vide les résultats
+        // Note : La vérification de la longueur doit se faire sur la requête originale ou une version cohérente
+        // Ici, on utilise la longueur de la requête normalisée pour la cohérence de la recherche.
+        if (normalizedQuery.length < 3) {
+            resultsDiv.innerHTML = '';
+            return; // Sortir de la fonction si moins de 3 caractères normalisés sont saisis
+        }
+
+        resultsDiv.innerHTML = ''; // Réinitialiser les résultats
+
+        // Filtrer les résultats en fonction de la saisie normalisée
+        const results = dictionary.filter(entry => {
+            const normalizedPs = normalizeString(entry.ps);
+            const normalizedFr = normalizeString(entry.fr);
+
+            return normalizedPs.startsWith(normalizedQuery) || normalizedFr.startsWith(normalizedQuery);
+        });
+
+        // Trier les résultats par longueur de mot (en utilisant les longueurs originales pour un affichage plus pertinent)
+        results.sort((a, b) => {
+            const lenA = Math.min(
+                (a.ps && typeof a.ps === 'string' ? a.ps.length : Infinity),
+                (a.fr && typeof a.fr === 'string' ? a.fr.length : Infinity)
+            );
+            const lenB = Math.min(
+                (b.ps && typeof b.ps === 'string' ? b.ps.length : Infinity),
+                (b.fr && typeof b.fr === 'string' ? b.fr.length : Infinity)
+            );
+            return lenA - lenB; // Les mots plus courts apparaîtront en premier
+        });
+
+        // Afficher les résultats filtrés et triés
+        results.forEach(entry => {
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'dictionary-entry';
+
+            const wordDisplay = document.createElement('h5');
+            wordDisplay.textContent = `${entry.ps} (Français: ${entry.fr})`;
+
+            const definitionDisplay = document.createElement('p');
+            definitionDisplay.textContent = entry.definitionFr; // Affiche la définition française en premier
+            definitionDisplay.className = 'definition';
+
+            const toggleButton = document.createElement('button');
+            toggleButton.textContent = 'Afficher en Preglustiana'; // Texte initial du bouton
+            toggleButton.className = 'toggle-button';
+            toggleButton.onclick = function() {
+                if (definitionDisplay.textContent === entry.definitionFr) {
+                    definitionDisplay.textContent = entry.definitionPreg;
+                    toggleButton.textContent = 'Afficher en Français';
+                } else {
+                    definitionDisplay.textContent = entry.definitionFr;
+                    toggleButton.textContent = 'Afficher en Preglustiana';
+                }
+            };
+
+            entryDiv.appendChild(wordDisplay);
+            entryDiv.appendChild(definitionDisplay);
+            entryDiv.appendChild(toggleButton);
+
+            resultsDiv.appendChild(entryDiv);
+        });
+    }
+</script>
 </body>
 </html>
+
 
 
 
