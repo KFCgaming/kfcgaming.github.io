@@ -95,76 +95,82 @@
 
     </div>
 
-    <script>
-        let dictionary = [];
-
-        // Charger le fichier JSON
-        fetch('dictionaryfrps.json')
-            .then(response => response.json())
-            .then(data => {
-                dictionary = data; // Stocker le dictionnaire dans la variable
-            })
-            .catch(error => console.error('Erreur lors du chargement du dictionnaire:', error));
-
-        function searchWord() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const resultsDiv = document.getElementById('results');
-            
-            // Si la barre de recherche est vide ou contient moins de 3 caractères, on vide les résultats
-            if (query.length < 3) {
-                resultsDiv.innerHTML = '';
-                return; // Sortir de la fonction si moins de 3 caractères sont saisis
-            }
-
-            resultsDiv.innerHTML = ''; // Réinitialiser les résultats
-
-            // Filtrer les résultats en fonction de la saisie
-            const results = dictionary.filter(entry => 
-                const results = dictionary.filter(entry =>
-		    (entry.ps && typeof entry.ps === 'string' && entry.ps.toLowerCase().startsWith(query)) ||
-		    (entry.fr && typeof entry.fr === 'string' && entry.fr.toLowerCase().startsWith(query))
-		);
-
-            // Trier les résultats par longueur de mot pour privilégier les mots plus courts
-            results.sort((a, b) => {
-                const lenA = Math.min(a.ps.length, a.fr.length);
-                const lenB = Math.min(b.ps.length, b.fr.length);
-                return lenA - lenB; // Les mots plus courts apparaîtront en premier
-            });
-
-            // Afficher les résultats filtrés et triés
-            results.forEach(entry => {
-                const entryDiv = document.createElement('div');
-                entryDiv.className = 'dictionary-entry';
-
-                const wordDisplay = document.createElement('h5');
-                wordDisplay.textContent = `${entry.ps} (Français: ${entry.fr})`;
-
-                const definitionDisplay = document.createElement('p');
-                definitionDisplay.textContent = entry.definitionPreg;
-                definitionDisplay.className = 'definition';
-
-                const toggleButton = document.createElement('button');
-                toggleButton.textContent = 'Afficher en Français';
-                toggleButton.className = 'toggle-button';
-                toggleButton.onclick = function() {
-                    if (definitionDisplay.textContent === entry.definitionPreg) {
-                        definitionDisplay.textContent = entry.definitionFr;
-                        toggleButton.textContent = 'Afficher en Preglustiana';
-                    } else {
-                        definitionDisplay.textContent = entry.definitionPreg;
-                        toggleButton.textContent = 'Afficher en Français';
-                    }
-                };
-
-                entryDiv.appendChild(wordDisplay);
-                entryDiv.appendChild(definitionDisplay);
-                entryDiv.appendChild(toggleButton);
-
-                resultsDiv.appendChild(entryDiv);
-            });
-        }
-    </script>
+	<script>
+	    let dictionary = [];
+	
+	    // Charger le fichier JSON
+	    fetch('dictionaryfrps.json')
+	        .then(response => response.json())
+	        .then(data => {
+	            dictionary = data; // Stocker le dictionnaire dans la variable
+	        })
+	        .catch(error => console.error('Erreur lors du chargement du dictionnaire:', error));
+	
+	    function searchWord() {
+	        const query = document.getElementById('searchInput').value.toLowerCase();
+	        const resultsDiv = document.getElementById('results');
+	        
+	        // Si la barre de recherche est vide ou contient moins de 3 caractères, on vide les résultats
+	        if (query.length < 3) {
+	            resultsDiv.innerHTML = '';
+	            return; // Sortir de la fonction si moins de 3 caractères sont saisis
+	        }
+	
+	        resultsDiv.innerHTML = ''; // Réinitialiser les résultats
+	
+	        // Filtrer les résultats en fonction de la saisie
+	        const results = dictionary.filter(entry =>
+	            (entry.ps && typeof entry.ps === 'string' && entry.ps.toLowerCase().startsWith(query)) ||
+	            (entry.fr && typeof entry.fr === 'string' && entry.fr.toLowerCase().startsWith(query))
+	        );
+	
+	        // Trier les résultats par longueur de mot pour privilégier les mots plus courts
+	        results.sort((a, b) => {
+	            const lenA = Math.min(
+	                (a.ps && typeof a.ps === 'string' ? a.ps.length : Infinity),
+	                (a.fr && typeof a.fr === 'string' ? a.fr.length : Infinity)
+	            );
+	            const lenB = Math.min(
+	                (b.ps && typeof b.ps === 'string' ? b.ps.length : Infinity),
+	                (b.fr && typeof b.fr === 'string' ? b.fr.length : Infinity)
+	            );
+	            return lenA - lenB; // Les mots plus courts apparaîtront en premier
+	        });
+	
+	        // Afficher les résultats filtrés et triés
+	        results.forEach(entry => {
+	            const entryDiv = document.createElement('div');
+	            entryDiv.className = 'dictionary-entry';
+	
+	            const wordDisplay = document.createElement('h5');
+	            wordDisplay.textContent = `${entry.ps} (Français: ${entry.fr})`;
+	
+	            const definitionDisplay = document.createElement('p');
+	            definitionDisplay.textContent = entry.definitionPreg;
+	            definitionDisplay.className = 'definition';
+	
+	            const toggleButton = document.createElement('button');
+	            toggleButton.textContent = 'Afficher en Français';
+	            toggleButton.className = 'toggle-button';
+	            toggleButton.onclick = function() {
+	                if (definitionDisplay.textContent === entry.definitionPreg) {
+	                    definitionDisplay.textContent = entry.definitionFr;
+	                    toggleButton.textContent = 'Afficher en Preglustiana';
+	                } else {
+	                    definitionDisplay.textContent = entry.definitionPreg;
+	                    toggleButton.textContent = 'Afficher en Français';
+	                }
+	            };
+	
+	            entryDiv.appendChild(wordDisplay);
+	            entryDiv.appendChild(definitionDisplay);
+	            entryDiv.appendChild(toggleButton);
+	
+	            resultsDiv.appendChild(entryDiv);
+	        });
+	    }
+	</script>
 </body>
 </html>
+
 
