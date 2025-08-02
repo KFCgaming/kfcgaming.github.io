@@ -138,7 +138,7 @@
 	        });
 	
 	        // Afficher les résultats filtrés et triés
-	        results.forEach(entry => {
+	 results.forEach(entry => {
 	            const entryDiv = document.createElement('div');
 	            entryDiv.className = 'dictionary-entry';
 	
@@ -146,19 +146,22 @@
 	            wordDisplay.textContent = `${entry.ps} (Français: ${entry.fr})`;
 	
 	            const definitionDisplay = document.createElement('p');
-	            definitionDisplay.textContent = entry.definitionPreg;
+	            // MODIFICATION ICI : Affiche la définition française en premier
+	            definitionDisplay.textContent = entry.definitionFr;
 	            definitionDisplay.className = 'definition';
 	
 	            const toggleButton = document.createElement('button');
-	            toggleButton.textContent = 'Afficher en Français';
+	            // MODIFICATION ICI : Le texte initial du bouton doit être "Afficher en Preglustiana"
+	            toggleButton.textContent = 'Afficher en Preglustiana';
 	            toggleButton.className = 'toggle-button';
 	            toggleButton.onclick = function() {
-	                if (definitionDisplay.textContent === entry.definitionPreg) {
-	                    definitionDisplay.textContent = entry.definitionFr;
-	                    toggleButton.textContent = 'Afficher en Preglustiana';
-	                } else {
+	                // MODIFICATION ICI : Inverse la condition
+	                if (definitionDisplay.textContent === entry.definitionFr) {
 	                    definitionDisplay.textContent = entry.definitionPreg;
 	                    toggleButton.textContent = 'Afficher en Français';
+	                } else {
+	                    definitionDisplay.textContent = entry.definitionFr;
+	                    toggleButton.textContent = 'Afficher en Preglustiana';
 	                }
 	            };
 	
@@ -172,5 +175,6 @@
 	</script>
 </body>
 </html>
+
 
 
