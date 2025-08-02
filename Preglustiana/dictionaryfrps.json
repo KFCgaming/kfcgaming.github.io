@@ -1,10 +1,14 @@
-
 [
+    { "version" : "V0.004"},
+    { "versiondate" : "02/08/25"},
+    { "wordnbr" : "497"},
+ 
+ 
     { "ps": "lingione", "fr": "langue", "definitionPreg": "None", "definitionFr": "Système de communication." },
     { "ps": "lingiones", "fr": "langues", "definitionPreg": "None", "definitionFr": "Plusieurs systèmes de communication." },
     { "ps": "mido", "fr": "mot", "definitionPreg": "None", "definitionFr": "Unité de langage avec un sens." },
     { "ps": "midos", "fr": "mots", "definitionPreg": "None", "definitionFr": "Ensemble de mots." },
-
+ 
     { "ps": "un", "fr": "un", "definitionPreg": "None", "definitionFr": "Nombre unique." },
     { "ps": "une", "fr": "une", "definitionPreg": "None", "definitionFr": "Forme féminine de un." },
     { "ps": "da", "fr": "de", "definitionPreg": "None", "definitionFr": "Indique l'origine ou possession." },
@@ -24,7 +28,7 @@
     {"ps": "bunita", "fr": "mais", "definitionPreg": "None", "definitionFr": "Conjonction de coordination introduisant une opposition."},
     {"ps": "surni", "fr": "sur", "definitionPreg": "None", "definitionFr": "Au-dessus de, en contact avec."},
     {"ps" : "y", "fr": "et", "definitionPreg":"None", "definitionFr": "Conjonction de coordination, lie deux éléments."},
-
+ 
     { "ps": "quenide", "fr": "quand", "definitionPreg": "None", "definitionFr": "Adverbe de temps." },
     { "ps": "quenido", "fr": "qui", "definitionPreg": "None", "definitionFr": "Pronom pour une personne." },
     { "ps": "que", "fr": "que", "definitionPreg": "None", "definitionFr": "Pronom ou conjonction." },
@@ -43,7 +47,7 @@
     { "ps": "elqueel", "fr": "lequel", "definitionPreg": "None", "definitionFr": "Pronom relatif masculin singulier." },
     { "ps": "elsiqueels", "fr": "lesquels", "definitionPreg": "None", "definitionFr": "Pronom relatif masculin pluriel." },
     { "ps": "quonno ce que", "fr": "qu'est-ce que", "definitionPreg": "None", "definitionFr": "Demande une explication." },
-
+ 
     { "ps": "prunia", "fr": "pronom", "definitionPreg": "None", "definitionFr": "Mot qui remplace un nom." },
     { "ps": "prunias", "fr": "pronoms", "definitionPreg": "None", "definitionFr": "Mots qui remplacent des noms." },
     { "ps": "perjoninio", "fr": "personnel", "definitionPreg": "None", "definitionFr": "Propre à une personne." },
@@ -57,10 +61,10 @@
     { "ps": "voute", "fr": "vous", "definitionPreg": "None", "definitionFr": "Pronom personnel (2e plur. ou politesse)." },
     { "ps": "iles", "fr": "ils", "definitionPreg": "None", "definitionFr": "Pronom personnel (3e plur. masc.)." },
     { "ps": "eles", "fr": "elles", "definitionPreg": "None", "definitionFr": "Pronom personnel (3e plur. fém.)." },
-
+ 
     { "ps": "berve", "fr": "verbe", "definitionPreg": "None", "definitionFr": "Indique action ou état." },
     { "ps": "berves", "fr": "verbes", "definitionPreg": "None", "definitionFr": "Mots exprimant actions ou états." },
-
+ 
     { "ps": "connerte", "fr": "être", "definitionPreg": "None", "definitionFr": "Exprime l'existence." },
     { "ps": "conne", "fr": "suis", "definitionPreg": "None", "definitionFr": "Être (1re sing. présent)." },
     { "ps": "conne", "fr": "es", "definitionPreg": "None", "definitionFr": "Être (2e sing. présent)." },
@@ -84,7 +88,7 @@
     { "ps": "connessoers", "fr": "serions", "definitionPreg": "None", "definitionFr": "Être (1re plur. conditionnel)." },
     { "ps": "connessoers", "fr": "seriez", "definitionPreg": "None", "definitionFr": "Être (2e plur. conditionnel)." },
     { "ps": "conneneer", "fr": "seraient", "definitionPreg": "None", "definitionFr": "Être (3e plur. conditionnel)." },
-
+ 
     { "ps": "havanto", "fr": "avoir", "definitionPreg":"None", "definitionFr":"Posséder." },
     { "ps": "havano", "fr": "ai", "definitionPreg":"None", "definitionFr": "Avoir (1re sing. présent)." },
     { "ps": "havano", "fr": "as", "definitionPreg":"None", "definitionFr": "Avoir (2e sing. présent)." },
@@ -103,7 +107,7 @@
     { "ps": "havanoues", "fr" : "aurons", "definitionPreg":"None", "definitionFr": "Avoir (1re plur. futur)." },
     { "ps": "havanoues", "fr" : "aurez", "definitionPreg":"None", "definitionFr": "Avoir (2e plur. futur)." },
     { "ps": "havanouer", "fr" : "auront", "definitionPreg":"None", "definitionFr": "Avoir (3e plur. futur)." },
-
+ 
     { "ps": "drangarte", "fr": "manger", "definitionPreg" : "None", "definitionFr": "Avaler des aliments." },
     { "ps": "dranga", "fr": "mange", "definitionPreg" : "None", "definitionFr": "Manger (1re/3e sing. présent)." },
     { "ps": "dranga", "fr": "manges", "definitionPreg" : "None", "definitionFr": "Manger (2e sing. présent)." },
@@ -121,7 +125,7 @@
     { "ps": "drangoes", "fr": "mangerons", "definitionPreg" : "None", "definitionFr": "Manger (1re plur. futur)." },
     { "ps": "drangoes", "fr": "mangerez", "definitionPreg" : "None", "definitionFr": "Manger (2e plur. futur)." },
     { "ps": "drangoer", "fr": "mangeront", "definitionPreg" : "None", "definitionFr": "Manger (3e plur. futur)." },
-
+ 
     {"ps": "mikanite", "fr": "habiter", "definitionPreg": "None", "definitionFr": "Résider dans un lieu."},
     {"ps": "mikani", "fr": "habite", "definitionPreg": "None", "definitionFr": "Habiter (1re/3e sing. présent)."},
     {"ps": "mikani", "fr": "habites", "definitionPreg": "None", "definitionFr": "Habiter (2e sing. présent)."},
@@ -139,7 +143,7 @@
     {"ps": "mikanoes", "fr": "habiterons", "definitionPreg": "None", "definitionFr": "Habiter (1re plur. futur)."},
     {"ps": "mikanoes", "fr": "habiterez", "definitionPreg": "None", "definitionFr": "Habiter (2e plur. futur)."},
     {"ps": "mikanoer", "fr": "habiteront", "definitionPreg": "None", "definitionFr": "Habiter (3e plur. futur)."},
-
+ 
     {"ps": "vidamte", "fr": "vivre", "definitionPreg": "None", "definitionFr": "Exister, être en vie."},
     {"ps": "vidami", "fr": "vis", "definitionPreg": "None", "definitionFr": "Vivre (1re/2e sing. présent)."},
     {"ps": "vidami", "fr": "vit", "definitionPreg": "None", "definitionFr": "Vivre (3e sing. présent)."},
@@ -157,7 +161,7 @@
     {"ps": "vidamoes", "fr": "vivrons", "definitionPreg": "None", "definitionFr": "Vivre (1re plur. futur)."},
     {"ps": "vidamoes", "fr": "vivrez", "definitionPreg": "None", "definitionFr": "Vivre (2e plur. futur)."},
     {"ps": "vidamoer", "fr": "vivront", "definitionPreg": "None", "definitionFr": "Vivre (3e plur. futur)."},
-
+ 
     {"ps": "akadante", "fr": "acheter", "definitionPreg": "None", "definitionFr": "Acquérir contre paiement."},
     {"ps": "akadane", "fr": "achete", "definitionPreg": "None", "definitionFr": "Acheter (1re/3e sing. présent)."},
     {"ps": "akadane", "fr": "achetes", "definitionPreg": "None", "definitionFr": "Acheter (2e sing. présent)."},
@@ -175,7 +179,7 @@
     {"ps": "akadanuenes", "fr": "acheterons", "definitionPreg": "None", "definitionFr": "Acheter (1re plur. futur)."},
     {"ps": "akadanuenes", "fr": "acheterez", "definitionPreg": "None", "definitionFr": "Acheter (2e plur. futur)."},
     {"ps": "akadanuer", "fr": "acheteront", "definitionPreg": "None", "definitionFr": "Acheter (3e plur. futur)."},
-
+ 
     {"ps": "viendamote", "fr": "vendre", "definitionPreg": "None", "definitionFr": "Céder contre paiement."},
     {"ps": "viendamo", "fr": "vends", "definitionPreg": "None", "definitionFr": "Vendre (1re/2e sing. présent)."},
     {"ps": "viendamo", "fr": "vend", "definitionPreg": "None", "definitionFr": "Vendre (3e sing. présent)."},
@@ -193,7 +197,7 @@
     {"ps": "viendamoues", "fr": "vendrons", "definitionPreg": "None", "definitionFr": "Vendre (1re plur. futur)."},
     {"ps": "viendamoues", "fr": "vendrez", "definitionPreg": "None", "definitionFr": "Vendre (2e plur. futur)."},
     {"ps": "viendamouer", "fr": "vendront", "definitionPreg": "None", "definitionFr": "Vendre (3e plur. futur)."},
-
+ 
     {"ps": "slidonote", "fr": "dormir", "definitionPreg": "None", "definitionFr": "Reposer en dormant."},
     {"ps": "slidono", "fr": "dors", "definitionPreg": "None", "definitionFr": "Dormir (1re/2e sing. présent)."},
     {"ps": "slidono", "fr": "dort", "definitionPreg": "None", "definitionFr": "Dormir (3e sing. présent)."},
@@ -211,7 +215,7 @@
     {"ps": "slidonoues", "fr": "dormirons", "definitionPreg": "None", "definitionFr": "Dormir (1re plur. futur)."},
     {"ps": "slidonoues", "fr": "dormirez", "definitionPreg": "None", "definitionFr": "Dormir (2e plur. futur)."},
     {"ps": "slidonouer", "fr": "dormiront", "definitionPreg": "None", "definitionFr": "Dormir (3e plur. futur)."},
-
+ 
     {"ps": "jujenote", "fr": "jouer", "definitionPreg": "None", "definitionFr": "S'amuser, pratiquer un jeu."},
     {"ps": "jujeno", "fr": "joue", "definitionPreg": "None", "definitionFr": "Jouer (1re/3e sing. présent)."},
     {"ps": "jujeno", "fr": "joues", "definitionPreg": "None", "definitionFr": "Jouer (2e sing. présent)."},
@@ -229,7 +233,7 @@
     {"ps": "jujenoues", "fr": "jouerons", "definitionPreg": "None", "definitionFr": "Jouer (1re plur. futur)."},
     {"ps": "jujenoues", "fr": "jouerez", "definitionPreg": "None", "definitionFr": "Jouer (2e plur. futur)."},
     {"ps": "jujenouer", "fr": "joueront", "definitionPreg": "None", "definitionFr": "Jouer (3e plur. futur)."},
-
+ 
     {"ps": "marguerane", "fr": "marcher", "definitionPreg": "None", "definitionFr": "Avancer à pied."},
     {"ps": "marguera", "fr": "marche", "definitionPreg": "None", "definitionFr": "Marcher (1re/3e sing. présent)."},
     {"ps": "marguera", "fr": "marches", "definitionPreg": "None", "definitionFr": "Marcher (2e sing. présent)."},
@@ -247,7 +251,7 @@
     {"ps": "margueroes", "fr": "marcherons", "definitionPreg": "None", "definitionFr": "Marcher (1re plur. futur)."},
     {"ps": "margueroes", "fr": "marcherez", "definitionPreg": "None", "definitionFr": "Marcher (2e plur. futur)."},
     {"ps": "margueroer", "fr": "marcheront", "definitionPreg": "None", "definitionFr": "Marcher (3e plur. futur)."},
-
+ 
     {"ps": "couronate", "fr": "courir", "definitionPreg": "None", "definitionFr": "Se déplacer vite à pied."},
     {"ps": "courona", "fr": "cours", "definitionPreg": "None", "definitionFr": "Courir (1re/2e sing. présent)."},
     {"ps": "courona", "fr": "court", "definitionPreg": "None", "definitionFr": "Courir (3e sing. présent)."},
@@ -265,7 +269,7 @@
     {"ps": "couronoes", "fr": "courrons", "definitionPreg": "None", "definitionFr": "Courir (1re plur. futur)."},
     {"ps": "couronoes", "fr": "courrez", "definitionPreg": "None", "definitionFr": "Courir (2e plur. futur)."},
     {"ps": "couronoer", "fr": "courront", "definitionPreg": "None", "definitionFr": "Courir (3e plur. futur)."},
-
+ 
     {"ps": "funegote", "fr": "faire", "definitionPreg": "None", "definitionFr": "Exécuter, créer."},
     {"ps": "funego", "fr": "fais", "definitionPreg": "None", "definitionFr": "Faire (1re/2e sing. présent)."},
     {"ps": "funego", "fr": "fait", "definitionPreg": "None", "definitionFr": "Faire (3e sing. présent)."},
@@ -283,12 +287,12 @@
     {"ps": "funegoues", "fr": "ferons", "definitionPreg": "None", "definitionFr": "Faire (1re plur. futur)."},
     {"ps": "funegoues", "fr": "ferez", "definitionPreg": "None", "definitionFr": "Faire (2e plur. futur)."},
     {"ps": "funegouer", "fr": "feront", "definitionPreg": "None", "definitionFr": "Faire (3e plur. futur)."},
-
+ 
     {"ps": "frenni", "fr": "fruit", "definitionPreg": "None", "definitionFr": "Produit végétal comestible."},
     {"ps": "frennis", "fr": "fruits", "definitionPreg": "None", "definitionFr": "Plusieurs produits végétaux comestibles."},
     {"ps": "lejuma", "fr": "legume", "definitionPreg": "None", "definitionFr": "Plante potagère comestible."},
     {"ps": "lejumas", "fr": "legumes", "definitionPreg": "None", "definitionFr": "Plusieurs plantes potagères comestibles."},
-
+ 
     {"ps": "manzomma", "fr": "pomme", "definitionPreg": "None", "definitionFr": "Fruit rond, souvent rouge ou vert."},
     {"ps": "manzommas", "fr": "pommes", "definitionPreg": "None", "definitionFr": "Plusieurs pommes."},
     {"ps": "monzammo", "fr": "poire", "definitionPreg": "None", "definitionFr": "Fruit charnu, en forme de goutte."},
@@ -431,7 +435,7 @@
     {"ps": "pruenes", "fr": "prunes", "definitionPreg": "None", "definitionFr": "Plusieurs prunes."},
     {"ps": "rakitis", "fr": "radis", "definitionPreg": "None", "definitionFr": "Petite racine potagère, piquante."},
     {"ps": "suelfisios", "fr": "salsifis", "definitionPreg": "None", "definitionFr": "Racine comestible, saveur douce."},
-
+ 
     {"ps": "vilajenio", "fr": "village", "definitionPreg": "None", "definitionFr": "Petite agglomération rurale."},
     {"ps": "vilajenios", "fr": "villages", "definitionPreg": "None", "definitionFr": "Plusieurs petits groupements d'habitations."},
     {"ps": "agilolatione", "fr": "agglomeration", "definitionPreg": "None", "definitionFr": "Ensemble urbain, plusieurs communes."},
@@ -463,7 +467,7 @@
     {"ps": "cuenatinentes", "fr": "continents", "definitionPreg": "None", "definitionFr": "Plusieurs vastes masses terrestres."},
     {"ps": "etanidone", "fr": "monde", "definitionPreg": "None", "definitionFr": "La Terre et ses habitants."},
     {"ps": "etanidones", "fr": "mondes", "definitionPreg": "None", "definitionFr": "Plusieurs univers ou sphères."},
-
+ 
     {"ps": "trotterestro", "fr": "terrestre", "definitionPreg": "None", "definitionFr": "Relatif à la Terre. (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
     {"ps": "trotterestros", "fr": "terrestres", "definitionPreg": "None", "definitionFr": "Pluriel de terrestre. (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
     {"ps": "Trotto", "fr": "Terre", "definitionPreg": "None", "definitionFr": "Notre planète."},
@@ -473,7 +477,7 @@
     {"ps": "planetas", "fr": "planètes", "definitionPreg": "None", "definitionFr": "Pluriel de planète."},
     {"ps": "exoplaneta", "fr": "exoplanète", "definitionPreg": "None", "definitionFr": "Planète située en dehors du système solaire."},
     {"ps": "exoplanetas", "fr": "exoplanètes", "definitionPreg": "None", "definitionFr": "Pluriel d'exoplanète."},
-    
+   
     {"ps": "damon", "fr": "jour", "definitionPreg": "None", "definitionFr": "Période de clarté entre le lever et le coucher du soleil."},
     {"ps": "damons", "fr": "jours", "definitionPreg": "None", "definitionFr": "Pluriel de jour."},
     {"ps": "damonni", "fr": "journée", "definitionPreg": "None", "definitionFr": "Durée du jour, de matin à soir."},
@@ -482,10 +486,10 @@
     {"ps": "damoffs", "fr": "nuits", "definitionPreg": "None", "definitionFr": "Pluriel de nuit."},
     {"ps": "damoffni", "fr": "nuitée", "definitionPreg": "None", "definitionFr": "Durée d'une nuit."},
     {"ps": "damoffnis", "fr": "nuitées", "definitionPreg": "None", "definitionFr": "Pluriel de nuitée."},
-
+ 
     {"ps": "mulus", "fr": "plus", "definitionPreg": "None", "definitionFr": "Indique une quantité supérieure."},
     {"ps": "molun", "fr": "moins", "definitionPreg": "None", "definitionFr": "Indique une quantité inférieure."},
-
+ 
     {"ps": "lonetti", "fr": "long", "definitionPreg": "None", "definitionFr": "Qui a une grande dimension en longueur. (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
     {"ps": "lonettis", "fr": "longs", "definitionPreg": "None", "definitionFr": "Pluriel de long (masculin). (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
     {"ps": "lonatti", "fr": "longue", "definitionPreg": "None", "definitionFr": "Féminin de long. (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
@@ -494,11 +498,11 @@
     {"ps": "strottis", "fr": "courts", "definitionPreg": "None", "definitionFr": "Pluriel de court (masculin). (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
     {"ps": "strottani", "fr": "courte", "definitionPreg": "None", "definitionFr": "Féminin de court. (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
     {"ps": "strottanis", "fr": "courtes", "definitionPreg": "None", "definitionFr": "Pluriel de courte (féminin). (Attention : si l'adjectif est collé au nom, ils sont inversés. Exemple : un jour court -> un lonetti damon)"},
-
+ 
     {"ps": "amnetta", "fr": "année", "definitionPreg": "None", "definitionFr": "Durée de 365 ou 366 jours."},
     {"ps": "amnettas", "fr": "années", "definitionPreg": "None", "definitionFr": "Pluriel d'année."},
-
-
+ 
+ 
     {"ps": "dali", "fr": "deux", "definitionPreg": "None", "definitionFr": "Le nombre 2."},
     {"ps": "traze", "fr": "trois", "definitionPreg": "None", "definitionFr": "Le nombre 3."},
     {"ps": "kotani", "fr": "quatre", "definitionPreg": "None", "definitionFr": "Le nombre 4."},
@@ -513,10 +517,10 @@
     {"ps": "traze-cente", "fr": "trois-cent", "definitionPreg": "None", "definitionFr": "Trois fois cent, soit 300. (Attention : la dizaine se transforme en unité. Exemple : cent vingt cinq -> cente dali y cinti)"},
     {"ps": "kotani-cente", "fr": "quatre-cent", "definitionPreg": "None", "definitionFr": "Quatre fois cent, soit 400. (Attention : la dizaine se transforme en unité. Exemple : cent vingt cinq -> cente dali y cinti)"},
     {"ps": "cinti-cente", "fr": "cinq-cent", "definitionPreg": "None", "definitionFr": "Cinq fois cent, soit 500. (Attention : la dizaine se transforme en unité. Exemple : cent vingt cinq -> cente dali y cinti)"},
-
+ 
     {"ps": "latodo", "fr": "tour", "definitionPreg": "None", "definitionFr": "Action de tourner ou structure élevée."},
     {"ps": "latodos", "fr": "tours", "definitionPreg": "None", "definitionFr": "Pluriel de tour."},
-
+ 
     {"ps": "mema-ele", "fr": "elle-même", "definitionPreg": "None", "definitionFr": "Pronom pour renforcer le féminin singulier."},
     {"ps": "mema-ile", "fr": "lui-même", "definitionPreg": "None", "definitionFr": "Pronom pour renforcer le masculin singulier."},
     {"ps": "mema-nouve", "fr": "nous-mêmes", "definitionPreg": "None", "definitionFr": "Pronom pour renforcer la première personne du pluriel."},
