@@ -120,8 +120,10 @@
 
             // Filtrer les résultats en fonction de la saisie
             const results = dictionary.filter(entry => 
-                entry.ps.toLowerCase().startsWith(query) || entry.fr.toLowerCase().startsWith(query)
-            );
+                const results = dictionary.filter(entry =>
+		    (entry.ps && typeof entry.ps === 'string' && entry.ps.toLowerCase().startsWith(query)) ||
+		    (entry.fr && typeof entry.fr === 'string' && entry.fr.toLowerCase().startsWith(query))
+		);
 
             // Trier les résultats par longueur de mot pour privilégier les mots plus courts
             results.sort((a, b) => {
@@ -165,3 +167,4 @@
     </script>
 </body>
 </html>
+
