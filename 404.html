@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="https://images.emojiterra.com/microsoft/fluent-emoji/15.1/512px/1f972_color.png" type="image/x-icon">
+  <title>KFCgaming | 404</title>
+  <style>
+    :root {
+      --bg-color: #fff;
+      --text-color: #000;
+      --form-bg: rgb(228, 228, 228);
+      --form-shadow: rgb(126, 126, 126) 1px 0 15px;
+      --button-bg: #007bff;
+      --button-hover-bg: #0056b3;
+    }
+
+    .dark-mode {
+      --bg-color: #1f1e1e;
+      --text-color: #fff;
+      --form-bg: rgb(38, 38, 39);
+      --form-shadow: rgb(0, 0, 0) 1px 0 15px;
+      --button-bg: #6302d3;
+      --button-hover-bg: #2b0670;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      transition: background-color 0.5s, color 0.5s;
+    }
+
+    p {
+      font-family: Arial, Helvetica, sans-serif;
+      transition: color 0.5s;
+    }
+
+    h1, h3 {
+      font-family: Verdana;
+      transition: color 0.5s;
+    }
+
+    img {
+      margin: 15px;
+      text-align: center;
+      width: auto;
+      height: auto;
+      max-width: 250px;
+      border: none;
+      border-radius: 10%;
+    }
+
+    button {
+      background-color: var(--button-bg);
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 3px;
+      transition: background-color 0.5s;
+    }
+
+    button:hover {
+      background-color: var(--button-hover-bg);
+    }
+
+    form {
+      background-color: var(--form-bg);
+      border-radius: 5px;
+      padding: 5px;
+      box-shadow: var(--form-shadow);
+      margin: 20px auto;
+      max-width: 650px;
+      transition: background-color 0.5s, box-shadow 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <div id="content" style="text-align: center; padding: auto">
+    <form id="404"><h1>404 Error</h1><img id="404img"><h3 id="404sentence"></h3></form>
+    <form id="portalform"><p></p><button id="return" onclick="returnurl()">Aller sur la Page Principale  🏠 </button><p></p></form>
+  </div>
+
+    <script>
+    function returnurl() {
+        window.location.href = "https://kfcgaming.github.io/portal";
+    }
+
+    // Mode sombre automatique selon l'heure locale
+    (function autoDarkMode() {
+        const hour = new Date().getHours();
+        const isNight = hour >= 22 || hour < 8;
+        if (isNight) {
+        document.body.classList.add("dark-mode");
+        }
+    })();
+
+    // Liste d'images
+    const images = [
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDVlM281ZHJmOGZtemhhNHI0cWRkamQyM3E0MjA2bXo0OW56emxkaiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/8vQSQ3cNXuDGo/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDVlM281ZHJmOGZtemhhNHI0cWRkamQyM3E0MjA2bXo0OW56emxkaiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lJNoBCvQYp7nq/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWd0M2h5MHF5b2prYXd4ZXZlZnd5aHo1Y3VodnFoMWRvNjBqbnJzcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/MDJ9IbxxvDUQM/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWd0M2h5MHF5b2prYXd4ZXZlZnd5aHo1Y3VodnFoMWRvNjBqbnJzcCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/HMSLfCl5BsXoQ/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YnhxZmsyZmVpbHN5YWNlNnBsdTdmbHdzbDdpNjI1eHp2czU2bXRpaSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/tBxyh2hbwMiqc/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YnhxZmsyZmVpbHN5YWNlNnBsdTdmbHdzbDdpNjI1eHp2czU2bXRpaSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/B7ppUExX92PjW/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b2NjNjU2MGUyMzZrOW5ncWtzZzdra3djbHViZW9qOHExdzVwa3VoZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l4KibK3JwaVo0CjDO/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bTZoeTdseGNybzU2aW5sc2p0YThjdTFjcW05dWwzdWZsa2VuMTc0byZlcD12MV9naWZzX3NlYXJjaCZjdD1n/In0Lpu4FVivjISX9HT/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG55aDV6MGt0MGs1dW52eGV5cXZna3MzemQ2Znl0aDR0Y3A4OW1wMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/P4GxohAK1vaKI2yH8E/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG55aDV6MGt0MGs1dW52eGV5cXZna3MzemQ2Znl0aDR0Y3A4OW1wMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/wr7oA0rSjnWuiLJOY5/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG55aDV6MGt0MGs1dW52eGV5cXZna3MzemQ2Znl0aDR0Y3A4OW1wMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2zUn8hAwJwG4abiS0p/giphy.gif",
+        "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnloaWQ0NHV3Z3hlbjExaTBtamVxOW10b2s5aXFxOG5qcHd4NG03ayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/ztisqLhP99tVSHG136/giphy.gif"
+    ];
+
+    const sentences = ["Oups... Vous vous êtes égaré 😥","Bravo ! Vous avez trouvé le refuge des chats ! 😹", "Oh Miaou... Vous vous êtes trompé de maison 😿", "OIIAI 🐈🍃", "Vous vous êtes trompé de chemin. Heureusement il y a Lakitu pour vous remettre sur la route ! ☁️🙃","Impasse des ronroneurs, faites demi-tour. ↙️↖️","Salut, je suis Romy le chat, sache que tu t'es trompé de chemin 🙃"]
+
+    // Randomizer Selection
+    const randomIndexIMG = Math.floor(Math.random() * images.length);     const selectedImage = images[randomIndexIMG];
+    const randomIndexSTCS = Math.floor(Math.random() * sentences.length); const selectedSentences = sentences[randomIndexSTCS];
+
+    // Randomizer Img+Sentences
+    document.addEventListener("DOMContentLoaded", () => {
+    const imgElement = document.getElementById("404img");
+    if (imgElement) {
+        imgElement.src = selectedImage;
+    }
+
+    const stcsElement = document.getElementById("404sentence");
+    if (stcsElement) {
+        stcsElement.textContent = selectedSentences;
+    }
+    });
+
+    </script>
+
+</body>
+</html>
