@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoneTraveler - Suivez les pierres</title>
+    
+    <!-- Outils (CDN pour fonctionnement statique) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        /* Styles personnalisés */
+        #map { height: 350px; width: 100%; border-radius: 0.5rem; z-index: 0;}
+        #map-step, #map-create { height: 200px; width: 100%; border-radius: 0.5rem; z-index: 0; }
+        .stone-card:hover { transform: translateY(-2px); transition: all 0.2s; }
+        .like-anim { animation: beat 0.3s; }
+        @keyframes beat { 0%{transform: scale(1);} 50%{transform: scale(1.3);} 100%{transform: scale(1);} }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .dropdown-content { padding-top: 10px; margin-top: -5px; }
+        .loading-dots:after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 40% { color: #333; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 60% { text-shadow: .25em 0 0 #333, .5em 0 0 rgba(0,0,0,0);} 80%, 100% { text-shadow: .25em 0 0 #333, .5em 0 0 #333;} }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- 1. NAVIGATION -->
+    <nav class="bg-white shadow-md z-50 shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center cursor-pointer" onclick="app.showPage('home')">
+                    <i class="fa-solid fa-shapes text-emerald-600 text-2xl mr-2"></i>
+                    <span class="font-bold text-xl tracking-tight">StoneTraveler</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="app.showPage('ranking')" class="text-gray-600 hover:text-emerald-600 hidden sm:block"><i class="fa-solid fa-trophy mr-1"></i>Classement</button>
+                    <div id="nav-buttons" class="flex items-center gap-3"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. CONTENU PRINCIPAL -->
+    <div class="flex-1 overflow-hidden relative">
+        
+        <!-- PAGE: ACCUEIL -->
+        <div id="page-home" class="h-full flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 fade-in">
+            <div class="bg-white p-4 rounded-lg shadow-sm mb-4 flex flex-col sm:flex-row gap-3 shrink-0 items-center">
+                <div class="relative flex-1 w-full">
+                    <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <input type="text" id="search-input" onkeyup="app.handleSearch()" placeholder="Rechercher..." class="w-full border border-gray-300 rounded-md pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="app.openModal('create')" class="flex-1 sm:flex-none bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 text-sm font-bold"><i class="fa-solid fa-plus circle mr-1"></i> Créer</button>
+                    <button onclick="app.openModal('step')" class="flex-1 sm:flex-none bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 text-sm font-bold"><i class="fa-solid fa-location-dot mr-1"></i> J'ai trouvé !</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-hidden pb-4">
+                <div class="lg:col-span-4 h-full flex flex-col">
+                    <div class="flex justify-between items-end mb-2 px-1"><h3 class="font-bold text-gray-700">Dernières Publications</h3></div>
+                    <div class="overflow-y-auto pr-2 space-y-3 h-full" id="rocks-list"></div>
+                </div>
+
+                <div class="lg:col-span-8 bg-white rounded-lg shadow-lg border border-gray-200 h-full overflow-hidden flex flex-col" id="rock-details-panel">
+                    <div id="empty-state" class="h-full flex flex-col items-center justify-center text-gray-400 p-8 text-center">
+                        <div class="bg-emerald-50 p-6 rounded-full mb-4"><i class="fa-solid fa-map-location-dot text-6xl text-emerald-200"></i></div>
+                        <h3 class="text-xl font-bold text-gray-600">Explorez le monde des pierres</h3>
+                    </div>
+                    <div id="details-content" class="hidden h-full flex flex-col overflow-y-auto">
+                        <div class="p-6 border-b sticky top-0 bg-white z-10 shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1"><h2 class="text-2xl font-bold text-gray-800" id="detail-name">Nom</h2><span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded border font-mono" id="detail-code">CODE</span></div>
+                                    <p class="text-sm text-gray-500">Par <span id="detail-author" class="font-medium text-emerald-600">Auteur</span> • <span id="detail-date">Date</span></p>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <button onclick="app.toggleLike()" class="text-gray-400 hover:text-red-500 transition transform active:scale-125 group" id="like-btn"><i class="fa-solid fa-heart text-2xl group-hover:scale-110 transition"></i></button>
+                                    <span class="text-sm font-bold text-gray-600" id="detail-likes">0</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 mt-4 text-sm">
+                                <div class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2"><i class="fa-solid fa-road"></i> <span id="detail-km" class="font-bold">0</span> km</div>
+                                <div class="bg-purple-50 text-purple-700 px-3 py-1 rounded-full flex items-center gap-2"><i class="fa-solid fa-flag"></i> <span id="detail-borders" class="font-bold">0</span> frontières</div>
+                            </div>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="relative w-full h-72 bg-gray-100 rounded-xl overflow-hidden group shadow-inner">
+                                <img id="carousel-img" src="" class="w-full h-full object-cover transition-opacity duration-300">
+                                <div class="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                    <button onclick="app.moveCarousel(-1)" class="pointer-events-auto bg-black/50 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/70 transition"><i class="fa-solid fa-chevron-left"></i></button>
+                                    <button onclick="app.moveCarousel(1)" class="pointer-events-auto bg-black/50 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/70 transition"><i class="fa-solid fa-chevron-right"></i></button>
+                                </div>
+                                <div class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm"><span id="carousel-counter">1/1</span></div>
+                            </div>
+                            <div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
+                                <h3 class="font-bold text-emerald-800 mb-2 text-sm uppercase tracking-wide">L'Histoire</h3>
+                                <p class="text-gray-700 text-sm leading-relaxed italic" id="detail-desc">Description...</p>
+                            </div>
+                            <div><h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2"><i class="fa-solid fa-map-marked-alt text-emerald-600"></i> Le Voyage</h3><div id="map" class="shadow-md border border-gray-200"></div></div>
+                            <div class="border-t pt-6"><h3 class="font-bold text-gray-800 mb-4">Commentaires (<span id="comments-count">0</span>)</h3><div id="comments-list" class="space-y-4 mb-6"></div><div id="comment-form-container"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE: CLASSEMENT -->
+        <div id="page-ranking" class="hidden h-full max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-10 overflow-y-auto fade-in">
+             <h2 class="text-3xl font-bold mb-6 text-center text-emerald-800">🏆 Tableau des Leaders</h2>
+            <div class="flex justify-center gap-4 mb-6">
+                <button onclick="app.renderRanking('likes')" class="px-4 py-2 rounded-full bg-white border shadow-sm hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500 font-medium text-sm active-filter"><i class="fa-solid fa-heart text-red-500 mr-1"></i> Likes</button>
+                <button onclick="app.renderRanking('km')" class="px-4 py-2 rounded-full bg-white border shadow-sm hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500 font-medium text-sm"><i class="fa-solid fa-road text-blue-500 mr-1"></i> Distance</button>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Rang</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Pierre</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Stats</th><th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase">Action</th></tr></thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="ranking-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PAGE: LOGIN / SIGNUP -->
+        <div id="page-auth" class="hidden h-full flex items-center justify-center bg-gray-100 fade-in">
+            <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full border-t-4 border-emerald-500">
+                <div id="auth-login">
+                    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Connexion</h2>
+                    <form onsubmit="app.handleLogin(event)">
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Email</label><input type="email" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500" value="test@test.com"></div>
+                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2">Mdp</label><input type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500" value="123456"></div>
+                        <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-700 transition">Se connecter</button>
+                    </form>
+                    <p class="mt-6 text-center text-sm text-gray-500">Pas de compte ? <span onclick="app.toggleAuthMode('signup')" class="text-emerald-600 font-bold cursor-pointer hover:underline">Créer un compte</span></p>
+                </div>
+                <div id="auth-signup" class="hidden">
+                    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Inscription</h2>
+                    <form onsubmit="app.handleSignup(event)">
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Pseudo</label><input id="signup-name" type="text" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Email</label><input id="signup-email" type="email" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2">Mdp</label><input type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-700 transition">S'inscrire</button>
+                    </form>
+                    <p class="mt-6 text-center text-sm text-gray-500">Déjà un compte ? <span onclick="app.toggleAuthMode('login')" class="text-emerald-600 font-bold cursor-pointer hover:underline">Se connecter</span></p>
+                </div>
+                <p class="mt-4 text-center text-xs text-gray-400 cursor-pointer hover:text-gray-600" onclick="app.showPage('home')">← Retour</p>
+            </div>
+        </div>
+
+        <!-- PAGE: PROFIL -->
+        <div id="page-profile" class="hidden h-full flex items-center justify-center bg-gray-50 fade-in">
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-lg w-full">
+                <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-gray-800">Mon Profil</h2><button onclick="app.showPage('home')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times"></i></button></div>
+                <form onsubmit="app.handleUpdateProfile(event)">
+                    <div class="flex flex-col items-center mb-6">
+                        <div class="relative w-24 h-24 mb-4 group cursor-pointer">
+                            <img id="profile-preview-img" src="" class="w-full h-full rounded-full object-cover border-4 border-emerald-100 shadow-md">
+                            <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs font-bold">Changer</div>
+                        </div>
+                        <input id="edit-avatar" type="text" class="w-full text-xs text-gray-400 border p-1 rounded text-center mb-2" placeholder="URL de l'avatar" onchange="document.getElementById('profile-preview-img').src = this.value">
+                    </div>
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-bold text-gray-700 mb-1">Pseudo</label><input id="edit-name" type="text" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"></div>
+                        <div><label class="block text-sm font-bold text-gray-700 mb-1">Bio</label><textarea id="edit-bio" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"></textarea></div>
+                    </div>
+                    <button type="submit" class="w-full mt-6 bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 shadow-md transition">Sauvegarder</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL: CREATE -->
+    <div id="modal-create" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[60] backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative">
+            <button onclick="app.closeModal('create')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-bold mb-1 text-emerald-800">Créer une Pierre</h2>
+            <form onsubmit="app.handleCreateStone(event)" class="space-y-4 mt-4">
+                <input id="create-name-input" type="text" required placeholder="Nom de la pierre" class="w-full border p-2 rounded-lg">
+                <textarea id="create-desc-input" rows="3" required placeholder="Histoire..." class="w-full border p-2 rounded-lg"></textarea>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Point de départ</label>
+                    <div class="relative">
+                        <div id="map-create" class="border border-gray-300 overflow-hidden h-48 rounded-lg z-0"></div>
+                        <button type="button" onclick="app.locateUser('create')" class="absolute bottom-2 right-2 bg-white p-2 rounded shadow-md hover:bg-gray-100 text-gray-600 z-[400]" title="Me localiser"><i class="fa-solid fa-crosshairs"></i></button>
+                    </div>
+                    <div class="relative mt-2">
+                         <input type="text" id="create-location-name" readonly required placeholder="Cliquez sur la carte" class="w-full border p-2 rounded-lg bg-gray-50 text-sm text-gray-600">
+                         <div id="geo-loading-create" class="absolute right-3 top-2 text-xs text-gray-400 hidden loading-dots">Recherche</div>
+                    </div>
+                    <input type="hidden" id="create-lat"><input type="hidden" id="create-lng">
+                </div>
+                <div class="grid grid-cols-1 gap-4"><input id="create-img-input" type="text" placeholder="Photo URL (Optionnel)" class="w-full border p-2 rounded-lg"></div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="app.closeModal('create')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Annuler</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: STEP -->
+    <div id="modal-step" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[60] backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative">
+            <button onclick="app.closeModal('step')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-bold mb-1 text-orange-600">J'ai trouvé une pierre !</h2>
+            <form onsubmit="app.handleStep(event)" class="space-y-4 mt-4">
+                <input type="text" required placeholder="Code Unique (Ex: ST-001)" class="w-full border p-2 rounded-lg bg-gray-50 font-mono">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Localisation</label>
+                    <div id="map-step" class="border border-gray-300 overflow-hidden"></div>
+                    <div class="relative mt-2">
+                        <input type="text" id="step-location-name" readonly required placeholder="Cliquez sur la carte" class="w-full border p-2 rounded-lg bg-gray-50 text-sm text-gray-600">
+                        <div id="geo-loading" class="absolute right-3 top-2 text-xs text-gray-400 hidden loading-dots">Recherche</div>
+                    </div>
+                    <input type="hidden" id="step-lat"><input type="hidden" id="step-lng">
+                </div>
+                <textarea rows="2" placeholder="Message..." class="w-full border p-2 rounded-lg"></textarea>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="app.closeModal('step')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Annuler</button>
+                    <button type="submit" class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-bold">Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DONNÉES PAR DÉFAUT (SI LOCALSTORAGE VIDE) ---
+        const defaultDB = {
+            user: null, 
+            pendingApprovals: [{ id: 101, rockId: 1, rockName: "Pierre Bob", location: "Madrid, Espagne", kmToAdd: 850 }],
+            rocks: [
+                { id: 1, code: "ST-001", name: "Pierre Bob", author: "JeanD", createdAt: "2023-12-01", description: "Un petit caillou peint en bleu.", likes: 854, likedByMe: false, totalKm: 1245, borders: 2, images: ["https://picsum.photos/seed/bob1/600/400", "https://picsum.photos/seed/bob2/600/400"], path: [{lat: 41.9028, lng: 12.4964, name: "Rome, Italie"}, {lat: 45.7640, lng: 4.8357, name: "Lyon, France"}, {lat: 48.8566, lng: 2.3522, name: "Paris, France"}], comments: [{user: "Sophie88", text: "Je l'ai vu à Lyon !", date: "Il y a 2 jours"}] },
+                { id: 2, code: "ST-002", name: "Galet Magique", author: "Sophie88", createdAt: "2024-02-05", description: "Un galet avec des paillettes dorées.", likes: 120, likedByMe: false, totalKm: 540, borders: 1, images: ["https://picsum.photos/seed/magic1/600/400"], path: [{lat: 53.4808, lng: -2.2426, name: "Manchester, UK"}, {lat: 51.5074, lng: -0.1278, name: "Londres, UK"}], comments: [] }
+            ]
+        };
+
+        // Chargement depuis localStorage ou défaut
+        let DB = JSON.parse(localStorage.getItem('stoneTravelerDB')) || defaultDB;
+
+        const app = {
+            currentRockId: null, currentImageIndex: 0, mapInstance: null, polylineInstance: null, markersInstance: [],
+            stepMapInstance: null, stepMarker: null, createMapInstance: null, createMarker: null,
+
+            init: function() { this.renderNav(); this.sortRocksByDate(); this.renderRockList(); },
+            
+            // Sauvegarde dans le navigateur
+            saveDB: function() { localStorage.setItem('stoneTravelerDB', JSON.stringify(DB)); },
+            
+            sortRocksByDate: function() { DB.rocks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); },
+            
+            renderNav: function() {
+                const nav = document.getElementById('nav-buttons');
+                if (DB.user) {
+                    let notifHTML = '';
+                    if(DB.pendingApprovals.length > 0) {
+                        const list = DB.pendingApprovals.map(p => `<div class="flex justify-between items-center border-b border-gray-100 pb-2 mb-2 last:border-0 last:mb-0 last:pb-0"><div class="text-gray-600"><p><b>${p.rockName}</b></p><p class="text-gray-500">Arrivée à ${p.location}</p></div><button onclick="app.handleApprove(${p.id})" class="ml-2 bg-emerald-100 text-emerald-700 px-2 py-1 rounded hover:bg-emerald-200 text-[10px] font-bold uppercase tracking-wide transition">Valider</button></div>`).join('');
+                        notifHTML = `<div class="relative cursor-pointer mr-2 group"><div class="py-2"><i class="fa-solid fa-bell text-gray-500 text-xl group-hover:text-emerald-600 transition"></i><span class="absolute top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 rounded-full animate-pulse">${DB.pendingApprovals.length}</span></div><div class="dropdown-content absolute right-0 top-full w-72 hidden group-hover:block z-50"><div class="bg-white border rounded-lg shadow-xl p-4 text-xs text-left relative"><div class="absolute -top-1 right-2 w-3 h-3 bg-white border-t border-l transform rotate-45"></div><p class="font-bold border-b pb-2 mb-2 text-gray-800 uppercase tracking-wider text-[10px]">Approbations requises</p>${list}</div></div></div>`;
+                    } else { notifHTML = `<div class="relative mr-2 py-2 text-gray-300 cursor-default"><i class="fa-regular fa-bell text-xl"></i></div>`; }
+                    nav.innerHTML = `${notifHTML}<div class="flex items-center gap-2 border-l pl-4 border-gray-200"><div onclick="app.showPage('profile')" class="cursor-pointer flex items-center gap-2 hover:bg-gray-50 p-1 rounded-full pr-3 transition"><img src="${DB.user.avatar}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><span class="text-sm font-medium hidden sm:block text-gray-700">${DB.user.name}</span></div><button onclick="app.logout()" class="text-gray-400 hover:text-red-500 ml-1" title="Déconnexion"><i class="fa-solid fa-sign-out-alt"></i></button></div>`;
+                } else { nav.innerHTML = `<button onclick="app.showPage('auth')" class="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition shadow-sm text-sm font-bold flex items-center"><i class="fa-solid fa-user mr-2"></i> Connexion</button>`; }
+            },
+            
+            handleApprove: function(id) { 
+                const idx = DB.pendingApprovals.findIndex(p => p.id === id); if(idx === -1) return; 
+                const app = DB.pendingApprovals[idx]; const rock = this.getRock(app.rockId); 
+                if(rock) { rock.path.unshift({lat: 40.4168, lng: -3.7038, name: app.location}); rock.totalKm += app.kmToAdd; rock.borders += 1; } 
+                DB.pendingApprovals.splice(idx, 1); this.saveDB(); this.renderNav(); 
+                if(this.currentRockId === rock.id) this.selectRock(rock.id); this.renderRockList(); alert(`Trajet approuvé !`); 
+            },
+
+            showPage: function(pg) { ['page-home', 'page-ranking', 'page-auth', 'page-profile'].forEach(p => document.getElementById(p).classList.add('hidden')); document.getElementById('page-' + pg).classList.remove('hidden'); if(pg === 'home') { document.getElementById('page-home').classList.add('flex'); if(this.currentRockId) setTimeout(() => this.initMap(this.getRock(this.currentRockId)), 100); } else { document.getElementById('page-home').classList.remove('flex'); } if(pg === 'ranking') this.renderRanking('likes'); if(pg === 'profile' && DB.user) { document.getElementById('edit-name').value = DB.user.name; document.getElementById('edit-bio').value = DB.user.bio || ""; document.getElementById('edit-avatar').value = DB.user.avatar; document.getElementById('profile-preview-img').src = DB.user.avatar; } },
+            toggleAuthMode: function(mode) { if(mode === 'signup') { document.getElementById('auth-login').classList.add('hidden'); document.getElementById('auth-signup').classList.remove('hidden'); } else { document.getElementById('auth-signup').classList.add('hidden'); document.getElementById('auth-login').classList.remove('hidden'); } },
+            
+            handleLogin: function(e) { e.preventDefault(); DB.user = { name: "UtilisateurTest", email: "test@test.com", avatar: "https://ui-avatars.com/api/?name=Utilisateur+Test&background=0D9488&color=fff", bio: "Chasseur de pierres." }; this.saveDB(); this.showPage('home'); this.renderNav(); },
+            handleSignup: function(e) { e.preventDefault(); const name = document.getElementById('signup-name').value; DB.user = { name: name, email: document.getElementById('signup-email').value, avatar: `https://ui-avatars.com/api/?name=${name}&background=random`, bio: "Nouveau membre !" }; this.saveDB(); alert(`Bienvenue ${name}.`); this.showPage('home'); this.renderNav(); },
+            handleUpdateProfile: function(e) { e.preventDefault(); if(!DB.user) return; DB.user.name = document.getElementById('edit-name').value; DB.user.bio = document.getElementById('edit-bio').value; const avatar = document.getElementById('edit-avatar').value; if(avatar) DB.user.avatar = avatar; this.saveDB(); alert("Profil mis à jour !"); this.renderNav(); },
+            logout: function() { DB.user = null; this.saveDB(); this.renderNav(); this.showPage('home'); },
+            
+            getRock: function(id) { return DB.rocks.find(r => r.id === id); },
+            renderRockList: function(filter = "") { const list = document.getElementById('rocks-list'); list.innerHTML = ""; const term = filter.toLowerCase(); const filtered = DB.rocks.filter(r => r.name.toLowerCase().includes(term) || r.code.toLowerCase().includes(term) || r.author.toLowerCase().includes(term) || r.path.some(s => s.name.toLowerCase().includes(term))); if(filtered.length === 0) { list.innerHTML = `<div class="text-center text-gray-400 mt-10 italic text-sm">Aucune pierre trouvée.</div>`; return; } filtered.forEach(r => { const active = this.currentRockId === r.id ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500' : 'border-gray-100 bg-white hover:bg-gray-50'; list.innerHTML += `<div onclick="app.selectRock(${r.id})" class="stone-card p-3 rounded-xl shadow-sm border cursor-pointer flex gap-3 transition-all ${active}"><div class="relative w-20 h-20 shrink-0"><img src="${r.images[0]}" class="w-full h-full rounded-lg object-cover bg-gray-200"><div class="absolute bottom-0 right-0 bg-black/50 text-white text-[10px] px-1 rounded-tl-md">${r.images.length} <i class="fa-solid fa-camera"></i></div></div><div class="flex-1 min-w-0 flex flex-col justify-center"><div class="flex justify-between items-start mb-1"><h4 class="font-bold text-gray-800 truncate text-sm">${r.name}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono border border-emerald-200">${r.code}</span></div><div class="text-xs text-gray-500 mb-2 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gray-400"></i> <span class="truncate">${r.path[0] ? r.path[0].name : 'Inconnu'}</span></div><div class="flex items-center justify-between text-xs mt-auto border-t pt-2 border-gray-100"><span class="text-emerald-600 font-semibold"><i class="fa-solid fa-road"></i> ${r.totalKm} km</span><span class="text-gray-400"><i class="fa-solid fa-heart"></i> ${r.likes}</span></div></div></div>`; }); },
+            handleSearch: function() { this.renderRockList(document.getElementById('search-input').value); },
+            selectRock: function(id) { this.currentRockId = id; this.currentImageIndex = 0; const r = this.getRock(id); this.renderRockList(document.getElementById('search-input').value); document.getElementById('empty-state').classList.add('hidden'); document.getElementById('details-content').classList.remove('hidden'); document.getElementById('detail-name').innerText = r.name; document.getElementById('detail-code').innerText = r.code; document.getElementById('detail-author').innerText = r.author; document.getElementById('detail-date').innerText = r.createdAt; document.getElementById('detail-likes').innerText = r.likes; document.getElementById('detail-desc').innerText = r.description; document.getElementById('detail-km').innerText = r.totalKm; document.getElementById('detail-borders').innerText = r.borders; const btn = document.getElementById('like-btn'); btn.className = r.likedByMe ? "text-red-500 transition transform active:scale-125 group" : "text-gray-400 hover:text-red-500 transition transform active:scale-125 group"; this.updateCarouselUI(r); setTimeout(() => this.initMap(r), 100); this.renderComments(r); },
+            renderRanking: function(crit) { const tbody = document.getElementById('ranking-list'); tbody.innerHTML = ""; const sorted = [...DB.rocks].sort((a, b) => crit === 'likes' ? b.likes - a.likes : b.totalKm - a.totalKm); sorted.forEach((r, i) => { let m = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : ""; tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${m} ${i + 1}</td><td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><img class="h-10 w-10 rounded-full object-cover mr-3 border" src="${r.images[0]}"><div><div class="text-sm font-medium text-gray-900">${r.name}</div><div class="text-xs text-gray-500">${r.code}</div></div></div></td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><div class="font-bold ${crit === 'km' ? 'text-emerald-600' : ''}">${r.totalKm} km</div><div class="${crit === 'likes' ? 'text-red-500 font-bold' : ''}">${r.likes} likes</div></td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button onclick="app.showPage('home'); app.selectRock(${r.id})" class="text-emerald-600 hover:text-emerald-900 hover:underline">Voir</button></td></tr>`; }); },
+            updateCarouselUI: function(r) { const img = document.getElementById('carousel-img'); const cnt = document.getElementById('carousel-counter'); img.style.opacity = '0.5'; setTimeout(() => { img.src = r.images[this.currentImageIndex]; img.style.opacity = '1'; }, 100); cnt.innerText = `${this.currentImageIndex + 1} / ${r.images.length}`; },
+            moveCarousel: function(d) { const r = this.getRock(this.currentRockId); if(!r) return; this.currentImageIndex = (this.currentImageIndex + d + r.images.length) % r.images.length; this.updateCarouselUI(r); },
+            initMap: function(r) { if(!r) return; if (!this.mapInstance) { this.mapInstance = L.map('map').setView([46.603354, 1.888334], 5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.mapInstance); } if (this.polylineInstance) this.mapInstance.removeLayer(this.polylineInstance); this.markersInstance.forEach(m => this.mapInstance.removeLayer(m)); this.markersInstance = []; const path = r.path.map(s => [s.lat, s.lng]); r.path.forEach((s, i) => { const m = L.marker([s.lat, s.lng]).addTo(this.mapInstance).bindPopup(`<b>${i === 0 ? 'Départ' : 'Étape ' + i}</b><br>${s.name}`); this.markersInstance.push(m); }); this.polylineInstance = L.polyline(path, {color: '#059669', weight: 4, dashArray: '5, 10'}).addTo(this.mapInstance); setTimeout(() => { this.mapInstance.invalidateSize(); if(path.length > 0) this.mapInstance.fitBounds(this.polylineInstance.getBounds(), {padding: [50, 50]}); }, 200); },
+            renderComments: function(r) { const l = document.getElementById('comments-list'); const f = document.getElementById('comment-form-container'); document.getElementById('comments-count').innerText = r.comments.length; l.innerHTML = ""; if(r.comments.length === 0) l.innerHTML = `<p class="text-sm text-gray-400 italic text-center py-2">Soyez le premier à écrire.</p>`; else r.comments.forEach(c => { const av = c.avatar || `https://ui-avatars.com/api/?name=${c.user}&background=random`; l.innerHTML += `<div class="flex gap-3 group"><img src="${av}" class="w-8 h-8 rounded-full object-cover shadow-sm bg-gray-200"><div class="bg-gray-50 p-3 rounded-2xl rounded-tl-none flex-1 text-sm border border-gray-100 group-hover:border-gray-200 transition"><div class="flex justify-between mb-1 items-baseline"><span class="font-bold text-gray-700">${c.user}</span><span class="text-[10px] text-gray-400 uppercase">${c.date}</span></div><p class="text-gray-600 leading-relaxed">${c.text}</p></div></div>`; }); if(DB.user) f.innerHTML = `<form onsubmit="app.postComment(event)" class="flex gap-2 mt-4 relative"><input id="comment-input" type="text" placeholder="Écrire un commentaire..." class="flex-1 border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-sm"><button type="submit" class="absolute right-1 top-1 bottom-1 bg-emerald-600 text-white w-8 h-8 rounded-full hover:bg-emerald-700 flex items-center justify-center shadow-md transition transform hover:scale-105"><i class="fa-solid fa-paper-plane text-xs"></i></button></form>`; else f.innerHTML = `<div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-sm text-blue-800 text-center cursor-pointer hover:bg-blue-100 transition" onclick="app.showPage('auth')"><i class="fa-solid fa-lock mr-2"></i>Connectez-vous pour commenter.</div>`; },
+            postComment: function(e) { e.preventDefault(); const i = document.getElementById('comment-input'); if(!i.value.trim()) return; this.getRock(this.currentRockId).comments.push({ user: DB.user.name, avatar: DB.user.avatar, text: i.value.trim(), date: "À l'instant" }); i.value = ""; this.saveDB(); this.renderComments(this.getRock(this.currentRockId)); },
+            toggleLike: function() { const r = this.getRock(this.currentRockId); if(!r) return; if(r.likedByMe) { r.likes--; r.likedByMe = false; } else { r.likes++; r.likedByMe = true; } document.getElementById('detail-likes').innerText = r.likes; const btn = document.getElementById('like-btn'); btn.className = r.likedByMe ? "text-red-500 transition transform active:scale-125 group" : "text-gray-400 hover:text-red-500 transition transform active:scale-125 group"; this.saveDB(); this.renderRockList(document.getElementById('search-input').value); },
+            
+            openModal: function(id) {
+                if(!DB.user && (id === 'create' || id === 'step')) { if(confirm("Vous devez être connecté.")) this.showPage('auth'); return; }
+                document.getElementById('modal-' + id).classList.remove('hidden'); document.getElementById('modal-' + id).classList.add('flex');
+                if(id === 'step') { this.initStepMap(); if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker); this.stepMarker = null; document.getElementById('step-location-name').value = ""; }
+                if(id === 'create') { this.initCreateMap(); if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker); this.createMarker = null; document.getElementById('create-location-name').value = ""; }
+            },
+            closeModal: function(id) { document.getElementById('modal-' + id).classList.add('hidden'); document.getElementById('modal-' + id).classList.remove('flex'); },
+            
+            handleCreateStone: function(e) {
+                e.preventDefault();
+                const lat = document.getElementById('create-lat').value;
+                const name = document.getElementById('create-name-input').value;
+                const desc = document.getElementById('create-desc-input').value;
+                const imgUrl = document.getElementById('create-img-input').value || "https://picsum.photos/seed/" + name + "/600/400";
+                const location = document.getElementById('create-location-name').value;
+
+                if(!lat) { alert("Placez un point sur la carte !"); return; }
+
+                const newRock = {
+                    id: Date.now(),
+                    code: "ST-" + Math.floor(Math.random() * 1000),
+                    name: name,
+                    author: DB.user.name,
+                    createdAt: new Date().toISOString().split('T')[0],
+                    description: desc,
+                    likes: 0, likedByMe: false, totalKm: 0, borders: 0,
+                    images: [imgUrl],
+                    path: [{ lat: parseFloat(lat), lng: parseFloat(document.getElementById('create-lng').value), name: location }],
+                    comments: []
+                };
+
+                DB.rocks.unshift(newRock);
+                this.saveDB();
+                alert("Pierre créée : " + newRock.code);
+                this.closeModal('create');
+                this.renderRockList();
+            },
+
+            handleStep: function(e) {
+                e.preventDefault();
+                const lat = document.getElementById('step-lat').value;
+                if(!lat) { alert("Cliquez sur la carte !"); return; }
+                alert("Étape envoyée !");
+                this.closeModal('step');
+            },
+
+            // Fonctions Cartes
+            initStepMap: function() {
+                if(!this.stepMapInstance) { this.stepMapInstance = L.map('map-step').setView([46.603354, 1.888334], 5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.stepMapInstance); this.stepMapInstance.on('click', (e) => this.setStepLocation(e.latlng.lat, e.latlng.lng)); }
+                setTimeout(() => this.stepMapInstance.invalidateSize(), 200);
+            },
+            setStepLocation: function(lat, lng) {
+                if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker); this.stepMarker = L.marker([lat, lng]).addTo(this.stepMapInstance); document.getElementById('step-lat').value = lat; document.getElementById('step-lng').value = lng; this.reverseGeocode(lat, lng, 'step-location-name', 'geo-loading');
+            },
+            initCreateMap: function() {
+                if(!this.createMapInstance) { this.createMapInstance = L.map('map-create').setView([46.603354, 1.888334], 5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.createMapInstance); this.createMapInstance.on('click', (e) => this.setCreateLocation(e.latlng.lat, e.latlng.lng)); }
+                setTimeout(() => this.createMapInstance.invalidateSize(), 200);
+            },
+            setCreateLocation: function(lat, lng) {
+                if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker); this.createMarker = L.marker([lat, lng]).addTo(this.createMapInstance); document.getElementById('create-lat').value = lat; document.getElementById('create-lng').value = lng; this.reverseGeocode(lat, lng, 'create-location-name', 'geo-loading-create');
+            },
+            reverseGeocode: function(lat, lng, inputId, loaderId) {
+                const input = document.getElementById(inputId); input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}...`; document.getElementById(loaderId).classList.remove('hidden');
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`).then(res => res.json()).then(data => { const city = data.address.city || data.address.town || data.address.village || "Lieu"; const country = data.address.country || ""; input.value = `${city}, ${country}`; }).catch(() => input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`).finally(() => document.getElementById(loaderId).classList.add('hidden'));
+            },
+            locateUser: function(type) {
+                if(!navigator.geolocation) { alert("Non supporté"); return; }
+                const loader = type === 'create' ? 'geo-loading-create' : 'geo-loading';
+                document.getElementById(loader).classList.remove('hidden');
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const { latitude, longitude } = pos.coords;
+                    if(type === 'create') { this.createMapInstance.setView([latitude, longitude], 13); this.setCreateLocation(latitude, longitude); }
+                }, () => { alert("Erreur GPS"); document.getElementById(loader).classList.add('hidden'); });
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>
