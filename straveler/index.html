@@ -257,7 +257,6 @@
     const db = firebase.firestore();
 
     /***** DATA STRUCTURES *****/
-    // No default stones import (you asked to cancel defaults)
     let DB = { user: null, pendingApprovals: [] , rocks: [] };
 
     /***** APP OBJECT (conserve interface et noms de fonctions) *****/
@@ -349,15 +348,17 @@
             e.preventDefault();
             if (!DB.user || !DB.user.uid) return alert("Aucun utilisateur connecté.");
             try {
-                DB.user.name = document.getElementById('edit-name').value;
-                DB.user.bio = document.getElementById('edit-bio').value;
+                const updatedData = {
+                    name: document.getElementById('edit-name').value,
+                    bio: document.getElementById('edit-bio').value
+                };
                 const avatar = document.getElementById('edit-avatar').value;
-                if (avatar) DB.user.avatar = avatar;
-                await db.collection('users').doc(DB.user.uid).update({
-                    name: DB.user.name,
-                    bio: DB.user.bio,
-                    avatar: DB.user.avatar
-                });
+                if (avatar) updatedData.avatar = avatar;
+                
+                await db.collection('users').doc(DB.user.uid).update(updatedData);
+                
+                // Mettre à jour l'utilisateur local
+                DB.user = { ...DB.user, ...updatedData };
                 alert("Profil mis à jour !");
                 this.renderNav();
             } catch (e) {
@@ -478,6 +479,38 @@
                 document.getElementById('auth-signup').classList.add('hidden');
                 document.getElementById('auth-login').classList.remove('hidden');
             }
+        },
+
+        /* ---------------------------
+           MODAL FUNCTIONS
+           --------------------------- */
+        openModal: function(type) {
+            if (!DB.user) {
+                alert("Veuillez vous connecter pour accéder à cette fonctionnalité.");
+                this.showPage('auth');
+                return;
+            }
+            
+            const modal = document.getElementById('modal-' + type);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Initialiser les cartes si nécessaire
+            if (type === 'create') {
+                setTimeout(() => this.initCreateMap(), 100);
+            } else if (type === 'step') {
+                setTimeout(() => this.initStepMap(), 100);
+            }
+        },
+
+        closeModal: function(type) {
+            const modal = document.getElementById('modal-' + type);
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            
+            // Réinitialiser les formulaires
+            const form = modal.querySelector('form');
+            if (form) form.reset();
         },
 
         /* ---------------------------
