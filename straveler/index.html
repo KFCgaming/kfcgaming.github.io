@@ -917,13 +917,15 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
-            if (type === 'create') {
-                setTimeout(() => this.initCreateMap(), 100);
-                // Réinitialiser l'upload d'image
-                this.removeImage();
-            } else if (type === 'step') {
-                setTimeout(() => this.initStepMap(), 100);
-            }
+            // Attendre que le modal soit visible avant d'initialiser la carte
+            setTimeout(() => {
+                if (type === 'create') {
+                    this.initCreateMap();
+                    this.removeImage();
+                } else if (type === 'step') {
+                    this.initStepMap();
+                }
+            }, 100);
         },
 
         closeModal: function(type) {
@@ -1038,35 +1040,88 @@
             this.updateCarouselUI(r);
         },
 
-        initMap: function(r) {
+      initMap: function(r) {
             if(!r) return;
-            if (!this.mapInstance) {
-                this.mapInstance = L.map('map').setView([46.603354, 1.888334], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.mapInstance);
+            
+            // Réinitialiser complètement la carte si elle existe
+            if (this.mapInstance) {
+                this.mapInstance.remove();
+                this.mapInstance = null;
+                this.polylineInstance = null;
+                this.markersInstance = [];
             }
-            if (this.polylineInstance) this.mapInstance.removeLayer(this.polylineInstance);
-            this.markersInstance.forEach(m => this.mapInstance.removeLayer(m));
-            this.markersInstance = [];
-            const path = (r.path||[]).map(s => [s.lat, s.lng]);
-            (r.path || []).forEach((s, i) => {
-                const m = L.marker([s.lat, s.lng]).addTo(this.mapInstance).bindPopup(`<b>${i === 0 ? 'Départ' : 'Étape ' + i}</b><br>${s.name}`);
-                this.markersInstance.push(m);
+            
+            // Créer une nouvelle carte
+            this.mapInstance = L.map('map', {
+                worldCopyJump: false,
+                maxBounds: [[-90, -180], [90, 180]],
+                maxBoundsViscosity: 1.0
             });
-            if (path.length > 0) {
-                this.polylineInstance = L.polyline(path, {color: '#059669', weight: 4, dashArray: '5, 10'}).addTo(this.mapInstance);
-                setTimeout(() => { this.mapInstance.invalidateSize(); if(path.length > 0) this.mapInstance.fitBounds(this.polylineInstance.getBounds(), {padding: [50, 50]}); }, 200);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                attribution: '© OpenStreetMap',
+                noWrap: true
+            }).addTo(this.mapInstance);
+            
+            // Normaliser le chemin
+            const normalizedPath = MapUtils.normalizePath(r.path || []);
+            
+            // Centrer la carte sur le premier point
+            if (normalizedPath.length > 0) {
+                const firstPoint = normalizedPath[0];
+                this.mapInstance.setView([firstPoint.lat, firstPoint.lng], 5);
+                
+                // Ajouter les marqueurs
+                normalizedPath.forEach((s, i) => {
+                    const m = L.marker([s.lat, s.lng])
+                        .addTo(this.mapInstance)
+                        .bindPopup(`<b>${i === 0 ? 'Départ' : 'Étape ' + i}</b><br>${s.name || 'Lieu sans nom'}`);
+                    this.markersInstance.push(m);
+                });
+                
+                // Créer la polyligne si assez de points
+                if (normalizedPath.length > 1) {
+                    const latLngs = normalizedPath.map(s => [s.lat, s.lng]);
+                    this.polylineInstance = L.polyline(latLngs, {
+                        color: '#059669', 
+                        weight: 4, 
+                        dashArray: '5, 10'
+                    }).addTo(this.mapInstance);
+                    
+                    // Ajuster la vue pour voir tout le trajet
+                    this.mapInstance.fitBounds(this.polylineInstance.getBounds(), {padding: [20, 20]});
+                }
             } else {
-                setTimeout(() => this.mapInstance.invalidateSize(), 200);
+                // Vue par défaut si pas de chemin
+                this.mapInstance.setView([46.603354, 1.888334], 5);
             }
+            
+            // Forcer le redimensionnement
+            setTimeout(() => {
+                this.mapInstance.invalidateSize();
+            }, 300);
         },
 
         initStepMap: function() {
-            if(!this.stepMapInstance) {
-                this.stepMapInstance = L.map('map-step').setView([46.603354, 1.888334], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.stepMapInstance);
-                this.stepMapInstance.on('click', (e) => this.setStepLocation(e.latlng.lat, e.latlng.lng));
+            if(this.stepMapInstance) {
+                this.stepMapInstance.remove();
+                this.stepMapInstance = null;
             }
-            setTimeout(() => this.stepMapInstance.invalidateSize(), 200);
+            
+            this.stepMapInstance = L.map('map-step', {
+                worldCopyJump: false,
+                maxBounds: [[-90, -180], [90, 180]],
+                maxBoundsViscosity: 1.0
+            }).setView([46.603354, 1.888334], 5);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                attribution: '© OpenStreetMap',
+                noWrap: true
+            }).addTo(this.stepMapInstance);
+            
+            this.stepMapInstance.on('click', (e) => this.setStepLocation(e.latlng.lat, e.latlng.lng));
+            
+            setTimeout(() => this.stepMapInstance.invalidateSize(), 300);
         },
 
         setStepLocation: function(lat, lng) {
@@ -1077,12 +1132,25 @@
         },
 
         initCreateMap: function() {
-            if(!this.createMapInstance) {
-                this.createMapInstance = L.map('map-create').setView([46.603354, 1.888334], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.createMapInstance);
-                this.createMapInstance.on('click', (e) => this.setCreateLocation(e.latlng.lat, e.latlng.lng));
+            if(this.createMapInstance) {
+                this.createMapInstance.remove();
+                this.createMapInstance = null;
             }
-            setTimeout(() => this.createMapInstance.invalidateSize(), 200);
+            
+            this.createMapInstance = L.map('map-create', {
+                worldCopyJump: false,
+                maxBounds: [[-90, -180], [90, 180]],
+                maxBoundsViscosity: 1.0
+            }).setView([46.603354, 1.888334], 5);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                attribution: '© OpenStreetMap',
+                noWrap: true
+            }).addTo(this.createMapInstance);
+            
+            this.createMapInstance.on('click', (e) => this.setCreateLocation(e.latlng.lat, e.latlng.lng));
+            
+            setTimeout(() => this.createMapInstance.invalidateSize(), 300);
         },
 
         setCreateLocation: function(lat, lng) {
@@ -1121,14 +1189,22 @@
         handleCreateStone: function(e) {
             e.preventDefault();
             const lat = document.getElementById('create-lat').value;
+            const lng = document.getElementById('create-lng').value;
             const name = document.getElementById('create-name-input').value;
             const desc = document.getElementById('create-desc-input').value;
-            const imgUrl = document.getElementById('create-img-input').value || "https://picsum.photos/seed/" + encodeURIComponent(name) + "/600/400";
+            
+            // CORRECTION ICI : Utiliser l'URL uploadée ou une image par défaut simple
+            let imgUrl = this.uploadedImageUrl;
+            if (!imgUrl) {
+                // Image par défaut plus simple
+                imgUrl = "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80";
+            }
+            
             const location = document.getElementById('create-location-name').value;
-
-            if(!lat) { alert("Placez un point sur la carte !"); return; }
+        
+            if(!lat || !lng) { alert("Placez un point sur la carte !"); return; }
             if(!DB.user || !DB.user.uid) { alert("Connectez-vous pour créer une pierre."); return; }
-
+        
             const newRock = {
                 code: "ST-" + Math.floor(Math.random() * 100000),
                 name: name,
@@ -1140,14 +1216,20 @@
                 likedBy: [],
                 totalKm: 0,
                 borders: 0,
-                images: [imgUrl],
-                path: [{ lat: parseFloat(lat), lng: parseFloat(document.getElementById('create-lng').value), name: location }],
+                images: [imgUrl], // Utilise l'URL uploadée
+                path: [{ 
+                    lat: parseFloat(lat), 
+                    lng: parseFloat(lng), 
+                    name: location 
+                }],
                 comments: []
             };
-
+        
             db.collection('rocks').add(newRock).then(ref => {
                 this.closeModal('create');
                 alert("Pierre créée : " + newRock.code);
+                // Réinitialiser l'image uploadée
+                this.uploadedImageUrl = null;
             }).catch(err => alert("Erreur création pierre : " + err.message));
         },
 
