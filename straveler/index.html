@@ -27,34 +27,113 @@
         .loading-dots:after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
         @keyframes dots { 0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 40% { color: #333; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 60% { text-shadow: .25em 0 0 #333, .5em 0 0 rgba(0,0,0,0);} 80%, 100% { text-shadow: .25em 0 0 #333, .5em 0 0 #333;} }
         
-        /* Styles responsive pour mobile */
+        /* Styles responsive pour mobile - CORRIGÉ */
         @media (max-width: 768px) {
+            #page-home {
+                height: auto !important;
+                overflow-y: auto !important;
+                padding-bottom: 2rem !important;
+            }
+            
             #page-home .grid {
                 grid-template-columns: 1fr !important;
                 height: auto !important;
+                gap: 1rem !important;
             }
-            #rock-details-panel {
-                height: 60vh !important;
-                margin-top: 1rem;
-            }
+            
             #rocks-list {
                 max-height: 40vh !important;
+                min-height: 200px !important;
                 overflow-y: auto;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+                background: white;
             }
+            
+            #rock-details-panel {
+                height: auto !important;
+                min-height: 60vh !important;
+                margin-top: 0 !important;
+            }
+            
             .mobile-hidden {
                 display: none !important;
             }
+            
             .mobile-full {
                 width: 100% !important;
             }
+            
             .mobile-stack {
                 flex-direction: column !important;
             }
+            
             .mobile-text-sm {
                 font-size: 0.875rem !important;
             }
+            
             .mobile-p-2 {
                 padding: 0.5rem !important;
+            }
+            
+            .mobile-mb-2 {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Amélioration de l'affichage des cartes sur mobile */
+            #map, #map-step, #map-create {
+                height: 250px !important;
+            }
+            
+            /* Meilleur espacement pour le header des détails */
+            #details-content .p-6 {
+                padding: 1rem !important;
+            }
+            
+            /* Réduction de la hauteur du carousel sur mobile */
+            #details-content .h-72 {
+                height: 200px !important;
+            }
+            
+            /* Boutons plus accessibles sur mobile */
+            button, .stone-card {
+                min-height: 44px !important; /* Taille tactile minimum */
+            }
+
+            /* Navigation mobile entre liste et détails */
+            .mobile-only {
+                display: block !important;
+            }
+            
+            .desktop-only {
+                display: none !important;
+            }
+        }
+
+        /* Pour desktop */
+        @media (min-width: 769px) {
+            .mobile-only {
+                display: none !important;
+            }
+            
+            .desktop-only {
+                display: block !important;
+            }
+        }
+
+        /* Pour les très petits écrans */
+        @media (max-width: 480px) {
+            #rocks-list {
+                max-height: 35vh !important;
+            }
+            
+            #rock-details-panel {
+                min-height: 65vh !important;
+            }
+            
+            .mobile-text-xs {
+                font-size: 0.75rem !important;
             }
         }
     </style>
@@ -80,8 +159,9 @@
     <!-- 2. CONTENU PRINCIPAL -->
     <div class="flex-1 overflow-hidden relative">
         
-        <!-- PAGE: ACCUEIL -->
+        <!-- PAGE: ACCUEIL - STRUCTURE CORRIGÉE POUR MOBILE -->
         <div id="page-home" class="h-full flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 fade-in">
+            <!-- Barre de recherche et boutons -->
             <div class="bg-white p-4 rounded-lg shadow-sm mb-4 flex flex-col sm:flex-row gap-3 shrink-0 items-center mobile-stack mobile-p-2">
                 <div class="relative flex-1 w-full">
                     <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
@@ -93,49 +173,119 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-hidden pb-4">
-                <div class="lg:col-span-4 h-full flex flex-col">
-                    <div class="flex justify-between items-end mb-2 px-1"><h3 class="font-bold text-gray-700 mobile-text-sm">Dernières Publications</h3></div>
+            <!-- Contenu principal - GRID CORRIGÉ POUR MOBILE -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full overflow-hidden pb-4">
+                <!-- Liste des pierres - COLONNE GAUCHE -->
+                <div class="lg:col-span-4 h-full flex flex-col" id="rocks-list-container">
+                    <div class="flex justify-between items-end mb-2 px-1">
+                        <h3 class="font-bold text-gray-700 mobile-text-sm">Dernières Publications</h3>
+                    </div>
                     <div class="overflow-y-auto pr-2 space-y-3 h-full" id="rocks-list"></div>
                 </div>
 
-                <div class="lg:col-span-8 bg-white rounded-lg shadow-lg border border-gray-200 h-full overflow-hidden flex flex-col" id="rock-details-panel">
+                <!-- Détails de la pierre - COLONNE DROITE -->
+                <div class="lg:col-span-8 bg-white rounded-lg shadow-lg border border-gray-200 h-full overflow-hidden flex flex-col mobile-full" id="rock-details-panel">
+                    <!-- État vide -->
                     <div id="empty-state" class="h-full flex flex-col items-center justify-center text-gray-400 p-8 text-center">
-                        <div class="bg-emerald-50 p-6 rounded-full mb-4"><i class="fa-solid fa-map-location-dot text-6xl text-emerald-200 mobile-text-sm"></i></div>
+                        <div class="bg-emerald-50 p-6 rounded-full mb-4">
+                            <i class="fa-solid fa-map-location-dot text-6xl text-emerald-200 mobile-text-sm"></i>
+                        </div>
                         <h3 class="text-xl font-bold text-gray-600 mobile-text-sm">Explorez le monde des pierres</h3>
+                        <p class="text-sm mt-2 text-gray-500 mobile-text-sm">Sélectionnez une pierre pour voir ses détails</p>
                     </div>
+                    
+                    <!-- Contenu des détails -->
                     <div id="details-content" class="hidden h-full flex flex-col overflow-y-auto">
+                        <!-- Header avec bouton retour mobile -->
                         <div class="p-6 border-b sticky top-0 bg-white z-10 shadow-sm mobile-p-2">
                             <div class="flex justify-between items-start mobile-stack">
                                 <div class="mobile-full">
-                                    <div class="flex items-center gap-2 mb-1 mobile-stack"><h2 class="text-2xl font-bold text-gray-800 mobile-text-sm" id="detail-name">Nom</h2><span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded border font-mono mobile-text-sm" id="detail-code">CODE</span></div>
+                                    <div class="mobile-only flex items-center gap-2 mb-3">
+                                        <button onclick="app.showRockList()" class="text-emerald-600 hover:text-emerald-800 flex items-center gap-2 mobile-text-sm">
+                                            <i class="fa-solid fa-arrow-left"></i>
+                                            Retour à la liste
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center gap-2 mb-1 mobile-stack">
+                                        <h2 class="text-2xl font-bold text-gray-800 mobile-text-sm" id="detail-name">Nom</h2>
+                                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded border font-mono mobile-text-sm" id="detail-code">CODE</span>
+                                    </div>
                                     <p class="text-sm text-gray-500 mobile-text-sm">Par <span id="detail-author" class="font-medium text-emerald-600">Auteur</span> • <span id="detail-date">Date</span></p>
                                 </div>
-                                <div class="flex flex-col items-end mobile-hidden">
-                                    <button onclick="app.toggleLike()" class="text-gray-400 hover:text-red-500 transition transform active:scale-125 group" id="like-btn"><i class="fa-solid fa-heart text-2xl group-hover:scale-110 transition"></i></button>
+                                <div class="flex flex-col items-end desktop-only">
+                                    <button onclick="app.toggleLike()" class="text-gray-400 hover:text-red-500 transition transform active:scale-125 group" id="like-btn">
+                                        <i class="fa-solid fa-heart text-2xl group-hover:scale-110 transition"></i>
+                                    </button>
                                     <span class="text-sm font-bold text-gray-600" id="detail-likes">0</span>
                                 </div>
                             </div>
                             <div class="flex gap-4 mt-4 text-sm mobile-stack mobile-text-sm">
-                                <div class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 mobile-full mobile-text-sm"><i class="fa-solid fa-road"></i> <span id="detail-km" class="font-bold">0</span> km</div>
-                                <div class="bg-purple-50 text-purple-700 px-3 py-1 rounded-full flex items-center gap-2 mobile-full mobile-text-sm"><i class="fa-solid fa-flag"></i> <span id="detail-borders" class="font-bold">0</span> frontières</div>
+                                <div class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 mobile-full mobile-text-sm">
+                                    <i class="fa-solid fa-road"></i> <span id="detail-km" class="font-bold">0</span> km
+                                </div>
+                                <div class="bg-purple-50 text-purple-700 px-3 py-1 rounded-full flex items-center gap-2 mobile-full mobile-text-sm">
+                                    <i class="fa-solid fa-flag"></i> <span id="detail-borders" class="font-bold">0</span> frontières
+                                </div>
+                                <div id="edit-rock-buttons" class="hidden gap-2 mobile-stack">
+                                    <button onclick="app.editRock()" class="bg-blue-500 text-white px-3 py-1 rounded-full hover:bg-blue-600 text-xs font-medium mobile-full mobile-text-sm">
+                                        <i class="fa-solid fa-pen mr-1"></i>Modifier
+                                    </button>
+                                    <button onclick="app.deleteRock()" class="bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 text-xs font-medium mobile-full mobile-text-sm">
+                                        <i class="fa-solid fa-trash mr-1"></i>Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Bouton like pour mobile -->
+                            <div class="mobile-only flex justify-center mt-4">
+                                <button onclick="app.toggleLike()" class="flex items-center gap-2 text-gray-400 hover:text-red-500 transition" id="like-btn-mobile">
+                                    <i class="fa-solid fa-heart text-xl"></i>
+                                    <span class="text-sm font-bold text-gray-600" id="detail-likes-mobile">0</span>
+                                </button>
                             </div>
                         </div>
-                        <div class="p-6 space-y-6 mobile-p-2">
-                            <div class="relative w-full h-72 bg-gray-100 rounded-xl overflow-hidden group shadow-inner">
-                                <img id="carousel-img" src="" class="w-full h-full object-cover transition-opacity duration-300">
-                                <div class="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                    <button onclick="app.moveCarousel(-1)" class="pointer-events-auto bg-black/50 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/70 transition"><i class="fa-solid fa-chevron-left"></i></button>
-                                    <button onclick="app.moveCarousel(1)" class="pointer-events-auto bg-black/50 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/70 transition"><i class="fa-solid fa-chevron-right"></i></button>
+                        
+                        <!-- Contenu défilable -->
+                        <div class="flex-1 overflow-y-auto">
+                            <div class="p-6 space-y-6 mobile-p-2">
+                                <!-- Carousel d'images -->
+                                <div class="relative w-full h-72 bg-gray-100 rounded-xl overflow-hidden group shadow-inner">
+                                    <img id="carousel-img" src="" class="w-full h-full object-cover transition-opacity duration-300">
+                                    <div class="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                        <button onclick="app.moveCarousel(-1)" class="pointer-events-auto bg-black/50 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/70 transition">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+                                        <button onclick="app.moveCarousel(1)" class="pointer-events-auto bg-black/50 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/70 transition">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <div class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm">
+                                        <span id="carousel-counter">1/1</span>
+                                    </div>
                                 </div>
-                                <div class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm"><span id="carousel-counter">1/1</span></div>
+                                
+                                <!-- Description -->
+                                <div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100 mobile-p-2">
+                                    <h3 class="font-bold text-emerald-800 mb-2 text-sm uppercase tracking-wide">L'Histoire</h3>
+                                    <p class="text-gray-700 text-sm leading-relaxed italic mobile-text-sm" id="detail-desc">Description...</p>
+                                </div>
+                                
+                                <!-- Carte -->
+                                <div>
+                                    <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2 mobile-text-sm">
+                                        <i class="fa-solid fa-map-marked-alt text-emerald-600"></i> Le Voyage
+                                    </h3>
+                                    <div id="map" class="shadow-md border border-gray-200"></div>
+                                </div>
+                                
+                                <!-- Commentaires -->
+                                <div class="border-t pt-6 mobile-p-2">
+                                    <h3 class="font-bold text-gray-800 mb-4 mobile-text-sm">
+                                        Commentaires (<span id="comments-count">0</span>)
+                                    </h3>
+                                    <div id="comments-list" class="space-y-4 mb-6"></div>
+                                    <div id="comment-form-container"></div>
+                                </div>
                             </div>
-                            <div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100 mobile-p-2">
-                                <h3 class="font-bold text-emerald-800 mb-2 text-sm uppercase tracking-wide">L'Histoire</h3>
-                                <p class="text-gray-700 text-sm leading-relaxed italic mobile-text-sm" id="detail-desc">Description...</p>
-                            </div>
-                            <div><h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2 mobile-text-sm"><i class="fa-solid fa-map-marked-alt text-emerald-600"></i> Le Voyage</h3><div id="map" class="shadow-md border border-gray-200"></div></div>
-                            <div class="border-t pt-6 mobile-p-2"><h3 class="font-bold text-gray-800 mb-4 mobile-text-sm">Commentaires (<span id="comments-count">0</span>)</h3><div id="comments-list" class="space-y-4 mb-6"></div><div id="comment-form-container"></div></div>
                         </div>
                     </div>
                 </div>
@@ -241,6 +391,23 @@
         </div>
     </div>
 
+    <!-- MODAL: EDIT ROCK -->
+    <div id="modal-edit-rock" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[60] backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative mobile-p-2">
+            <button onclick="app.closeModal('edit-rock')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-bold mb-1 text-blue-800 mobile-text-sm">Modifier la Pierre</h2>
+            <form onsubmit="app.handleEditRock(event)" class="space-y-4 mt-4">
+                <input id="edit-rock-name-input" type="text" required placeholder="Nom de la pierre" class="w-full border p-2 rounded-lg mobile-text-sm">
+                <textarea id="edit-rock-desc-input" rows="3" required placeholder="Histoire..." class="w-full border p-2 rounded-lg mobile-text-sm"></textarea>
+                <div class="grid grid-cols-1 gap-4"><input id="edit-rock-img-input" type="text" placeholder="Photo URL" class="w-full border p-2 rounded-lg mobile-text-sm"></div>
+                <div class="pt-4 flex justify-end gap-3 mobile-stack">
+                    <button type="button" onclick="app.closeModal('edit-rock')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg mobile-full mobile-text-sm">Annuler</button>
+                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold mobile-full mobile-text-sm">Modifier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: STEP -->
     <div id="modal-step" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[60] backdrop-blur-sm">
         <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative mobile-p-2">
@@ -290,16 +457,56 @@
     /***** DATA STRUCTURES *****/
     let DB = { user: null, pendingApprovals: [] , rocks: [] };
 
-    /***** APP OBJECT (conserve interface et noms de fonctions) *****/
+    /***** APP OBJECT AVEC FONCTIONNALITÉS MOBILE AMÉLIORÉES *****/
     const app = {
-        currentRockId: null, currentImageIndex: 0,
-        mapInstance: null, polylineInstance: null, markersInstance: [],
-        stepMapInstance: null, stepMarker: null, createMapInstance: null, createMarker: null,
+        currentRockId: null, 
+        currentImageIndex: 0,
+        mapInstance: null, 
+        polylineInstance: null, 
+        markersInstance: [],
+        stepMapInstance: null, 
+        stepMarker: null, 
+        createMapInstance: null, 
+        createMarker: null,
+        mobileView: false,
 
         init: function() {
+            this.detectMobile();
             this.renderNav();
             this.attachAuthListener();
             this.setupFirestoreListeners();
+            this.setupMobileBehavior();
+        },
+
+        /* ---------------------------
+           DÉTECTION ET COMPORTEMENT MOBILE
+           --------------------------- */
+        detectMobile: function() {
+            this.mobileView = window.innerWidth <= 768;
+            window.addEventListener('resize', () => {
+                this.mobileView = window.innerWidth <= 768;
+            });
+        },
+
+        setupMobileBehavior: function() {
+            // Au chargement, sur mobile on montre la liste
+            if (this.mobileView) {
+                this.showRockList();
+            }
+        },
+
+        showRockList: function() {
+            if (this.mobileView) {
+                document.getElementById('rocks-list-container').classList.remove('hidden');
+                document.getElementById('rock-details-panel').classList.add('hidden');
+            }
+        },
+
+        showRockDetails: function() {
+            if (this.mobileView) {
+                document.getElementById('rocks-list-container').classList.add('hidden');
+                document.getElementById('rock-details-panel').classList.remove('hidden');
+            }
         },
 
         /* ---------------------------
@@ -308,13 +515,11 @@
         attachAuthListener: function() {
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
-                    // try load profile
                     try {
                         const udoc = await db.collection('users').doc(user.uid).get();
                         if (udoc.exists) {
                             DB.user = { uid: user.uid, ...udoc.data() };
                         } else {
-                            // create minimal profile
                             const profile = {
                                 name: user.displayName || (user.email ? user.email.split('@')[0] : "Anonyme"),
                                 email: user.email || null,
@@ -359,7 +564,6 @@
                         bio: "Nouveau membre !"
                     };
                     await db.collection('users').doc(uid).set(profile);
-                    // update local DB.user will be set by onAuthStateChanged listener
                     this.showPage('home');
                     alert(`Bienvenue ${name}.`);
                 })
@@ -388,7 +592,6 @@
                 
                 await db.collection('users').doc(DB.user.uid).update(updatedData);
                 
-                // Mettre à jour l'utilisateur local
                 DB.user = { ...DB.user, ...updatedData };
                 alert("Profil mis à jour !");
                 this.renderNav();
@@ -409,12 +612,11 @@
            FIRESTORE LISTENERS
            --------------------------- */
         setupFirestoreListeners: function() {
-            // rocks real-time
             db.collection('rocks').onSnapshot(snapshot => {
                 DB.rocks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                // normalize
                 DB.rocks.forEach(r => {
                     r.likes = r.likes || 0;
+                    r.likedBy = r.likedBy || [];
                     r.totalKm = r.totalKm || 0;
                     r.borders = r.borders || 0;
                     r.images = r.images && r.images.length ? r.images : ["https://picsum.photos/seed/" + encodeURIComponent(r.name || 'stone') + "/600/400"];
@@ -429,21 +631,16 @@
                 }
             }, err => {
                 console.error("Firestore rocks listener error", err);
-                // keep DB.rocks empty if offline
                 DB.rocks = [];
                 this.renderRockList();
             });
 
-            // pending approvals meta doc
             db.collection('meta').doc('pendingApprovals').onSnapshot(doc => {
                 if (doc.exists) DB.pendingApprovals = doc.data().items || []; else DB.pendingApprovals = [];
                 this.renderNav();
             }, () => { DB.pendingApprovals = []; this.renderNav(); });
         },
 
-        /* ---------------------------
-           NAV / UI
-           --------------------------- */
         renderNav: function() {
             const nav = document.getElementById('nav-buttons');
             if (DB.user) {
@@ -459,21 +656,15 @@
         },
 
         handleApprove: function(id) {
-            // find pending, update rock doc path & stats then remove pending entry from meta doc
             const pend = DB.pendingApprovals.find(p => p.id === id || p.id === (''+id));
             if (!pend) return alert("Approbation introuvable.");
-            // find rock by id or code
             const rock = DB.rocks.find(r => r.id === pend.rockId || r.code === pend.rockCode);
             if (!rock) return alert("Pierre introuvable.");
             
-            // Calculer la distance entre la dernière étape et la nouvelle
             let kmToAdd = 0;
             if (rock.path && rock.path.length > 0) {
                 const lastStep = rock.path[rock.path.length - 1];
-                kmToAdd = this.calculateDistance(
-                    lastStep.lat, lastStep.lng,
-                    pend.lat, pend.lng
-                );
+                kmToAdd = this.calculateDistance(lastStep.lat, lastStep.lng, pend.lat, pend.lng);
             }
             
             const newStep = { lat: pend.lat || 0, lng: pend.lng || 0, name: pend.location };
@@ -483,7 +674,6 @@
                 totalKm: firebase.firestore.FieldValue.increment(kmToAdd),
                 borders: firebase.firestore.FieldValue.increment(1)
             }).then(() => {
-                // remove item from meta.pendingApprovals
                 const metaRef = db.collection('meta').doc('pendingApprovals');
                 metaRef.get().then(d => {
                     if (!d.exists) return;
@@ -495,17 +685,15 @@
             }).catch(err => alert("Erreur approbation : " + err.message));
         },
 
-        // Fonction pour calculer la distance entre deux points (formule Haversine)
         calculateDistance: function(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Rayon de la Terre en km
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                 Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
                 Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c; // Distance en km
+            return R * c;
         },
 
         showPage: function(pg) {
@@ -514,6 +702,10 @@
             if (pg === 'home') {
                 document.getElementById('page-home').classList.add('flex');
                 if (this.currentRockId) setTimeout(() => this.initMap(this.getRock(this.currentRockId)), 100);
+                // Sur mobile, revenir à la liste quand on change de page
+                if (this.mobileView) {
+                    this.showRockList();
+                }
             } else {
                 document.getElementById('page-home').classList.remove('flex');
             }
@@ -536,9 +728,6 @@
             }
         },
 
-        /* ---------------------------
-           MODAL FUNCTIONS
-           --------------------------- */
         openModal: function(type) {
             if (!DB.user) {
                 alert("Veuillez vous connecter pour accéder à cette fonctionnalité.");
@@ -550,7 +739,6 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
-            // Initialiser les cartes si nécessaire
             if (type === 'create') {
                 setTimeout(() => this.initCreateMap(), 100);
             } else if (type === 'step') {
@@ -563,16 +751,11 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             
-            // Réinitialiser les formulaires
             const form = modal.querySelector('form');
             if (form) form.reset();
         },
 
-        /* ---------------------------
-           DATA helpers & UI rendering
-           --------------------------- */
         saveLocal: function() {
-            // keep small local backup (optional)
             try { localStorage.setItem('stoneTravelerDB', JSON.stringify({rocks: DB.rocks})); } catch(e){}
         },
 
@@ -613,17 +796,37 @@
             this.renderRockList(document.getElementById('search-input').value);
             document.getElementById('empty-state').classList.add('hidden');
             document.getElementById('details-content').classList.remove('hidden');
+            
             document.getElementById('detail-name').innerText = r.name;
             document.getElementById('detail-code').innerText = r.code || '';
             document.getElementById('detail-author').innerText = r.author || '';
             document.getElementById('detail-date').innerText = r.createdAt || '';
             document.getElementById('detail-likes').innerText = r.likes || 0;
+            document.getElementById('detail-likes-mobile').innerText = r.likes || 0;
             document.getElementById('detail-desc').innerText = r.description || '';
             document.getElementById('detail-km').innerText = (r.totalKm || 0).toFixed(1);
             document.getElementById('detail-borders').innerText = r.borders || 0;
+            
             const btn = document.getElementById('like-btn');
-            btn.className = r.likedByMe ? "text-red-500 transition transform active:scale-125 group" : "text-gray-400 hover:text-red-500 transition transform active:scale-125 group";
+            const btnMobile = document.getElementById('like-btn-mobile');
+            const hasLiked = r.likedBy && r.likedBy.includes(DB.user ? DB.user.uid : '');
+            const likeClass = hasLiked ? "text-red-500" : "text-gray-400 hover:text-red-500";
+            btn.className = likeClass + " transition transform active:scale-125 group";
+            btnMobile.className = "flex items-center gap-2 " + likeClass + " transition";
+            
+            const editButtons = document.getElementById('edit-rock-buttons');
+            if (DB.user && r.authorId === DB.user.uid) {
+                editButtons.classList.remove('hidden');
+            } else {
+                editButtons.classList.add('hidden');
+            }
+            
             this.updateCarouselUI(r);
+            
+            if (this.mobileView) {
+                this.showRockDetails();
+            }
+            
             setTimeout(() => this.initMap(r), 100);
             this.renderComments(r);
         },
@@ -650,9 +853,6 @@
             this.updateCarouselUI(r);
         },
 
-        /* ---------------------------
-           MAPS
-           --------------------------- */
         initMap: function(r) {
             if(!r) return;
             if (!this.mapInstance) {
@@ -683,6 +883,7 @@
             }
             setTimeout(() => this.stepMapInstance.invalidateSize(), 200);
         },
+
         setStepLocation: function(lat, lng) {
             if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker);
             this.stepMarker = L.marker([lat, lng]).addTo(this.stepMapInstance);
@@ -698,6 +899,7 @@
             }
             setTimeout(() => this.createMapInstance.invalidateSize(), 200);
         },
+
         setCreateLocation: function(lat, lng) {
             if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker);
             this.createMarker = L.marker([lat, lng]).addTo(this.createMapInstance);
@@ -731,9 +933,6 @@
             }, () => { alert("Erreur GPS"); if (l) l.classList.add('hidden'); });
         },
 
-        /* ---------------------------
-           CREATE / STEP / COMMENTS / LIKES (Firestore)
-           --------------------------- */
         handleCreateStone: function(e) {
             e.preventDefault();
             const lat = document.getElementById('create-lat').value;
@@ -749,10 +948,11 @@
                 code: "ST-" + Math.floor(Math.random() * 100000),
                 name: name,
                 author: DB.user.name || DB.user.email || "Anonyme",
+                authorId: DB.user.uid,
                 createdAt: new Date().toISOString().split('T')[0],
                 description: desc,
                 likes: 0,
-                likedByMe: false,
+                likedBy: [],
                 totalKm: 0,
                 borders: 0,
                 images: [imgUrl],
@@ -775,11 +975,9 @@
             if (!lat || !lng) return alert("Cliquez sur la carte !");
             if (!code) return alert("Code de la pierre requis.");
 
-            // Find rock by code
             const rock = DB.rocks.find(r => (r.code||'').toLowerCase() === code.toLowerCase());
             if (!rock) return alert("Pierre introuvable avec ce code.");
 
-            // Create pending approval entry in meta.pendingApprovals doc
             const metaRef = db.collection('meta').doc('pendingApprovals');
             metaRef.get().then(d => {
                 let items = [];
@@ -811,7 +1009,14 @@
             if(!i || !i.value.trim()) return;
             const r = this.getRock(this.currentRockId);
             if (!r) return alert("Pierre non trouvée.");
-            const newComment = { user: DB.user ? DB.user.name : "Anonyme", avatar: DB.user ? DB.user.avatar : null, text: i.value.trim(), date: new Date().toLocaleString() };
+            const newComment = { 
+                id: Date.now().toString(),
+                user: DB.user ? DB.user.name : "Anonyme", 
+                userId: DB.user ? DB.user.uid : null,
+                avatar: DB.user ? DB.user.avatar : null, 
+                text: i.value.trim(), 
+                date: new Date().toLocaleString() 
+            };
             db.collection('rocks').doc(r.id).update({
                 comments: firebase.firestore.FieldValue.arrayUnion(newComment)
             }).then(() => { i.value = ""; }).catch(err => alert("Erreur commentaire : " + err.message));
@@ -819,24 +1024,126 @@
 
         toggleLike: function() {
             const r = this.getRock(this.currentRockId);
-            if(!r) return;
+            if(!r || !DB.user) return;
+            
             const docRef = db.collection('rocks').doc(r.id);
-            // use transaction to avoid race
+            const userLiked = r.likedBy && r.likedBy.includes(DB.user.uid);
+            
             db.runTransaction(tx => {
                 return tx.get(docRef).then(doc => {
                     if (!doc.exists) throw "Doc missing";
-                    const likes = (doc.data().likes || 0) + 1;
-                    tx.update(docRef, { likes: likes });
-                    return likes;
+                    const data = doc.data();
+                    let likedBy = data.likedBy || [];
+                    let likes = data.likes || 0;
+                    
+                    if (userLiked) {
+                        likedBy = likedBy.filter(uid => uid !== DB.user.uid);
+                        likes = Math.max(0, likes - 1);
+                    } else {
+                        if (!likedBy.includes(DB.user.uid)) {
+                            likedBy.push(DB.user.uid);
+                            likes += 1;
+                        }
+                    }
+                    
+                    tx.update(docRef, { 
+                        likes: likes,
+                        likedBy: likedBy
+                    });
+                    return { likes, likedBy };
                 });
-            }).then(newLikes => {
-                // optimistic update handled by listener
+            }).then(result => {
             }).catch(err => console.error("like transaction error", err));
         },
 
-        /* ---------------------------
-           COMMENTS UI & rendering
-           --------------------------- */
+        editRock: function() {
+            const r = this.getRock(this.currentRockId);
+            if (!r || !DB.user || r.authorId !== DB.user.uid) {
+                alert("Vous ne pouvez pas modifier cette publication.");
+                return;
+            }
+            
+            document.getElementById('edit-rock-name-input').value = r.name;
+            document.getElementById('edit-rock-desc-input').value = r.description || '';
+            document.getElementById('edit-rock-img-input').value = r.images[0] || '';
+            
+            this.openModal('edit-rock');
+        },
+
+        handleEditRock: function(e) {
+            e.preventDefault();
+            const r = this.getRock(this.currentRockId);
+            if (!r || !DB.user || r.authorId !== DB.user.uid) {
+                alert("Vous ne pouvez pas modifier cette publication.");
+                return;
+            }
+            
+            const name = document.getElementById('edit-rock-name-input').value;
+            const desc = document.getElementById('edit-rock-desc-input').value;
+            const imgUrl = document.getElementById('edit-rock-img-input').value;
+            
+            const updates = {
+                name: name,
+                description: desc
+            };
+            
+            if (imgUrl) {
+                updates.images = [imgUrl];
+            }
+            
+            db.collection('rocks').doc(r.id).update(updates)
+                .then(() => {
+                    this.closeModal('edit-rock');
+                    alert("Pierre modifiée avec succès !");
+                })
+                .catch(err => alert("Erreur modification : " + err.message));
+        },
+
+        deleteRock: function() {
+            const r = this.getRock(this.currentRockId);
+            if (!r || !DB.user || r.authorId !== DB.user.uid) {
+                alert("Vous ne pouvez pas supprimer cette publication.");
+                return;
+            }
+            
+            if (confirm("Êtes-vous sûr de vouloir supprimer cette pierre ? Cette action est irréversible.")) {
+                db.collection('rocks').doc(r.id).delete()
+                    .then(() => {
+                        alert("Pierre supprimée avec succès !");
+                        this.currentRockId = null;
+                        document.getElementById('empty-state').classList.remove('hidden');
+                        document.getElementById('details-content').classList.add('hidden');
+                        if (this.mobileView) {
+                            this.showRockList();
+                        }
+                    })
+                    .catch(err => alert("Erreur suppression : " + err.message));
+            }
+        },
+
+        deleteComment: function(commentId) {
+            const r = this.getRock(this.currentRockId);
+            if (!r || !DB.user) return;
+            
+            const comment = r.comments.find(c => c.id === commentId);
+            if (!comment) return;
+            
+            if (comment.userId !== DB.user.uid) {
+                alert("Vous ne pouvez pas supprimer ce commentaire.");
+                return;
+            }
+            
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce commentaire ?")) {
+                db.collection('rocks').doc(r.id).update({
+                    comments: firebase.firestore.FieldValue.arrayRemove(comment)
+                })
+                .then(() => {
+                    alert("Commentaire supprimé !");
+                })
+                .catch(err => alert("Erreur suppression : " + err.message));
+            }
+        },
+
         renderComments: function(r) {
             const l = document.getElementById('comments-list'); const f = document.getElementById('comment-form-container');
             document.getElementById('comments-count').innerText = (r.comments || []).length;
@@ -845,18 +1152,18 @@
             if(comments.length === 0) l.innerHTML = `<p class="text-sm text-gray-400 italic text-center py-2">Soyez le premier à écrire.</p>`;
             else comments.forEach(c => {
                 const av = c.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user || 'Anon')}&background=random`;
-                l.innerHTML += `<div class="flex gap-3 group"><img src="${av}" class="w-8 h-8 rounded-full object-cover shadow-sm bg-gray-200"><div class="bg-gray-50 p-3 rounded-2xl rounded-tl-none flex-1 text-sm border border-gray-100 group-hover:border-gray-200 transition"><div class="flex justify-between mb-1 items-baseline"><span class="font-bold text-gray-700">${c.user}</span><span class="text-[10px] text-gray-400 uppercase">${c.date}</span></div><p class="text-gray-600 leading-relaxed">${c.text}</p></div></div>`;
+                const canDelete = DB.user && c.userId === DB.user.uid;
+                const deleteBtn = canDelete ? `<button onclick="app.deleteComment('${c.id}')" class="text-red-400 hover:text-red-600 text-xs" title="Supprimer"><i class="fa-solid fa-trash"></i></button>` : '';
+                
+                l.innerHTML += `<div class="flex gap-3 group"><img src="${av}" class="w-8 h-8 rounded-full object-cover shadow-sm bg-gray-200"><div class="bg-gray-50 p-3 rounded-2xl rounded-tl-none flex-1 text-sm border border-gray-100 group-hover:border-gray-200 transition"><div class="flex justify-between mb-1 items-baseline"><span class="font-bold text-gray-700">${c.user}</span><div class="flex items-center gap-2"><span class="text-[10px] text-gray-400 uppercase">${c.date}</span>${deleteBtn}</div></div><p class="text-gray-600 leading-relaxed">${c.text}</p></div></div>`;
             });
             if(DB.user && DB.user.uid) f.innerHTML = `<form onsubmit="app.postComment(event)" class="flex gap-2 mt-4 relative"><input id="comment-input" type="text" placeholder="Écrire un commentaire..." class="flex-1 border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-sm"><button type="submit" class="absolute right-1 top-1 bottom-1 bg-emerald-600 text-white w-8 h-8 rounded-full hover:bg-emerald-700 flex items-center justify-center shadow-md transition transform hover:scale-105"><i class="fa-solid fa-paper-plane text-xs"></i></button></form>`;
             else f.innerHTML = `<div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-sm text-blue-800 text-center cursor-pointer hover:bg-blue-100 transition" onclick="app.showPage('auth')"><i class="fa-solid fa-lock mr-2"></i>Connectez-vous pour commenter.</div>`;
         },
 
-        /* ---------------------------
-           CREATE / LIST helpers
-           --------------------------- */
         handleSearch: function() { this.renderRockList(document.getElementById('search-input').value); },
 
-    }; // end app
+    };
 
     // Expose sign-in helpers to UI
     app.signInWithGoogle = app.signInWithGoogle || function(){ app.signInWithGoogle(); };
@@ -867,7 +1174,6 @@
 
     // Initialize maps when modals open (deferred)
     document.addEventListener('click', function(e){
-        // lazy init create map when modal shown
         if (e.target && e.target.matches && e.target.matches('[onclick*=\"openModal(\'create\')\"]')) {
             setTimeout(()=>app.initCreateMap && app.initCreateMap(), 250);
         }
