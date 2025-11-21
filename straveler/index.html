@@ -29,22 +29,34 @@
         
         /* Styles responsive pour mobile - CORRIGÉ */
         @media (max-width: 768px) {
+            /* SCROLL GLOBAL pour toute la page mobile */
+            body, #page-home {
+                overflow-y: auto !important;
+                height: auto !important;
+            }
+            
             #page-home {
                 height: auto !important;
-                overflow-y: auto !important;
-                padding-bottom: 2rem !important;
+                min-height: 100vh;
+                overflow: visible !important;
             }
             
             #page-home .grid {
                 grid-template-columns: 1fr !important;
                 height: auto !important;
                 gap: 1rem !important;
+                overflow: visible !important;
+            }
+            
+            /* Supprimer tous les overflow-hidden qui bloquent le scroll */
+            .overflow-hidden {
+                overflow: visible !important;
             }
             
             #rocks-list {
-                max-height: 40vh !important;
-                min-height: 200px !important;
-                overflow-y: auto;
+                max-height: none !important;
+                min-height: auto !important;
+                overflow: visible !important;
                 border: 1px solid #e5e7eb;
                 border-radius: 0.5rem;
                 padding: 0.5rem;
@@ -53,8 +65,14 @@
             
             #rock-details-panel {
                 height: auto !important;
-                min-height: 60vh !important;
+                min-height: auto !important;
                 margin-top: 0 !important;
+                overflow: visible !important;
+            }
+            
+            #details-content {
+                overflow: visible !important;
+                height: auto !important;
             }
             
             .mobile-hidden {
@@ -77,10 +95,6 @@
                 padding: 0.5rem !important;
             }
             
-            .mobile-mb-2 {
-                margin-bottom: 0.5rem !important;
-            }
-            
             /* Amélioration de l'affichage des cartes sur mobile */
             #map, #map-step, #map-create {
                 height: 250px !important;
@@ -98,7 +112,7 @@
             
             /* Boutons plus accessibles sur mobile */
             button, .stone-card {
-                min-height: 44px !important; /* Taille tactile minimum */
+                min-height: 44px !important;
             }
 
             /* Navigation mobile entre liste et détails */
@@ -122,23 +136,50 @@
             }
         }
 
-        /* Pour les très petits écrans */
-        @media (max-width: 480px) {
-            #rocks-list {
-                max-height: 35vh !important;
-            }
-            
-            #rock-details-panel {
-                min-height: 65vh !important;
-            }
-            
-            .mobile-text-xs {
-                font-size: 0.75rem !important;
-            }
+        /* Styles pour l'upload de photos */
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+        .upload-area.dragover {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+<body class="bg-slate-50 text-slate-800 font-sans flex flex-col">
 
     <!-- 1. NAVIGATION -->
     <nav class="bg-white shadow-md z-50 shrink-0">
@@ -156,11 +197,11 @@
         </div>
     </nav>
 
-    <!-- 2. CONTENU PRINCIPAL -->
-    <div class="flex-1 overflow-hidden relative">
-        
-        <!-- PAGE: ACCUEIL - STRUCTURE CORRIGÉE POUR MOBILE -->
-        <div id="page-home" class="h-full flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 fade-in">
+    <!-- 2. CONTENU PRINCIPAL - SCROLL GLOBAL SUR MOBILE -->
+    <div class="flex-1">
+
+        <!-- PAGE: ACCUEIL -->
+        <div id="page-home" class="flex flex-col max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 fade-in">
             <!-- Barre de recherche et boutons -->
             <div class="bg-white p-4 rounded-lg shadow-sm mb-4 flex flex-col sm:flex-row gap-3 shrink-0 items-center mobile-stack mobile-p-2">
                 <div class="relative flex-1 w-full">
@@ -173,20 +214,20 @@
                 </div>
             </div>
 
-            <!-- Contenu principal - GRID CORRIGÉ POUR MOBILE -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full overflow-hidden pb-4">
-                <!-- Liste des pierres - COLONNE GAUCHE -->
-                <div class="lg:col-span-4 h-full flex flex-col" id="rocks-list-container">
+            <!-- Contenu principal -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 pb-4">
+                <!-- Liste des pierres -->
+                <div class="lg:col-span-4 flex flex-col">
                     <div class="flex justify-between items-end mb-2 px-1">
                         <h3 class="font-bold text-gray-700 mobile-text-sm">Dernières Publications</h3>
                     </div>
-                    <div class="overflow-y-auto pr-2 space-y-3 h-full" id="rocks-list"></div>
+                    <div class="space-y-3" id="rocks-list"></div>
                 </div>
 
-                <!-- Détails de la pierre - COLONNE DROITE -->
-                <div class="lg:col-span-8 bg-white rounded-lg shadow-lg border border-gray-200 h-full overflow-hidden flex flex-col mobile-full" id="rock-details-panel">
+                <!-- Détails de la pierre -->
+                <div class="lg:col-span-8 bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col mobile-full" id="rock-details-panel">
                     <!-- État vide -->
-                    <div id="empty-state" class="h-full flex flex-col items-center justify-center text-gray-400 p-8 text-center">
+                    <div id="empty-state" class="flex flex-col items-center justify-center text-gray-400 p-8 text-center">
                         <div class="bg-emerald-50 p-6 rounded-full mb-4">
                             <i class="fa-solid fa-map-location-dot text-6xl text-emerald-200 mobile-text-sm"></i>
                         </div>
@@ -195,9 +236,9 @@
                     </div>
                     
                     <!-- Contenu des détails -->
-                    <div id="details-content" class="hidden h-full flex flex-col overflow-y-auto">
+                    <div id="details-content" class="hidden flex-col">
                         <!-- Header avec bouton retour mobile -->
-                        <div class="p-6 border-b sticky top-0 bg-white z-10 shadow-sm mobile-p-2">
+                        <div class="p-6 border-b bg-white z-10 shadow-sm mobile-p-2">
                             <div class="flex justify-between items-start mobile-stack">
                                 <div class="mobile-full">
                                     <div class="mobile-only flex items-center gap-2 mb-3">
@@ -245,7 +286,7 @@
                         </div>
                         
                         <!-- Contenu défilable -->
-                        <div class="flex-1 overflow-y-auto">
+                        <div class="flex-1">
                             <div class="p-6 space-y-6 mobile-p-2">
                                 <!-- Carousel d'images -->
                                 <div class="relative w-full h-72 bg-gray-100 rounded-xl overflow-hidden group shadow-inner">
@@ -293,7 +334,7 @@
         </div>
 
         <!-- PAGE: CLASSEMENT -->
-        <div id="page-ranking" class="hidden h-full max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-10 overflow-y-auto fade-in">
+        <div id="page-ranking" class="hidden max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-10 fade-in">
              <h2 class="text-3xl font-bold mb-6 text-center text-emerald-800 mobile-text-sm">🏆 Tableau des Leaders</h2>
             <div class="flex justify-center gap-4 mb-6 mobile-stack">
                 <button onclick="app.renderRanking('likes')" class="px-4 py-2 rounded-full bg-white border shadow-sm hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500 font-medium text-sm active-filter mobile-full mobile-text-sm"><i class="fa-solid fa-heart text-red-500 mr-1"></i> Likes</button>
@@ -301,14 +342,14 @@
             </div>
             <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Rang</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Pierre</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Stats</th><th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase mobile-text-sm">Action</th></tr></thead>
+                    <thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Rang</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Pierre</th><th class="px-6py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Stats</th><th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase mobile-text-sm">Action</th></tr></thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="ranking-list"></tbody>
                 </table>
             </div>
         </div>
 
         <!-- PAGE: LOGIN / SIGNUP -->
-        <div id="page-auth" class="hidden h-full flex items-center justify-center bg-gray-100 fade-in">
+        <div id="page-auth" class="hidden flex items-center justify-center bg-gray-100 fade-in">
             <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full border-t-4 border-emerald-500 mobile-p-2">
                 <div id="auth-login">
                     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 mobile-text-sm">Connexion</h2>
@@ -340,7 +381,7 @@
         </div>
 
         <!-- PAGE: PROFIL -->
-        <div id="page-profile" class="hidden h-full flex items-center justify-center bg-gray-50 fade-in">
+        <div id="page-profile" class="hidden flex items-center justify-center bg-gray-50 fade-in">
             <div class="bg-white p-8 rounded-xl shadow-lg max-w-lg w-full mobile-p-2">
                 <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-gray-800 mobile-text-sm">Mon Profil</h2><button onclick="app.showPage('home')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times"></i></button></div>
                 <form onsubmit="app.handleUpdateProfile(event)">
@@ -362,9 +403,9 @@
 
     </div>
 
-    <!-- MODAL: CREATE -->
+    <!-- MODAL: CREATE avec UPLOAD DE PHOTOS -->
     <div id="modal-create" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[60] backdrop-blur-sm">
-        <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative mobile-p-2">
+        <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative mobile-p-2 max-h-[90vh] overflow-y-auto">
             <button onclick="app.closeModal('create')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
             <h2 class="text-2xl font-bold mb-1 text-emerald-800 mobile-text-sm">Créer une Pierre</h2>
             <form onsubmit="app.handleCreateStone(event)" class="space-y-4 mt-4">
@@ -382,7 +423,28 @@
                     </div>
                     <input type="hidden" id="create-lat"><input type="hidden" id="create-lng">
                 </div>
-                <div class="grid grid-cols-1 gap-4"><input id="create-img-input" type="text" placeholder="Photo URL (Optionnel)" class="w-full border p-2 rounded-lg mobile-text-sm"></div>
+                
+                <!-- UPLOAD DE PHOTO -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1 mobile-text-sm">Photo</label>
+                    <div class="upload-area" onclick="document.getElementById('file-input').click()" id="upload-area">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600 mobile-text-sm">Cliquez pour sélectionner une image</p>
+                        <p class="text-gray-400 text-xs mt-1">ou glissez-déposez ici</p>
+                        <input type="file" id="file-input" accept="image/*" class="hidden" onchange="app.handleImageUpload(event)">
+                    </div>
+                    <div id="image-preview-container" class="hidden mt-3">
+                        <img id="image-preview" class="image-preview">
+                        <div class="upload-progress hidden" id="upload-progress">
+                            <div class="upload-progress-bar" id="upload-progress-bar"></div>
+                        </div>
+                        <button type="button" onclick="app.removeImage()" class="mt-2 text-red-500 hover:text-red-700 text-sm">
+                            <i class="fa-solid fa-trash mr-1"></i>Supprimer l'image
+                        </button>
+                    </div>
+                    <input type="hidden" id="create-img-input">
+                </div>
+                
                 <div class="pt-4 flex justify-end gap-3 mobile-stack">
                     <button type="button" onclick="app.closeModal('create')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg mobile-full mobile-text-sm">Annuler</button>
                     <button type="submit" class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold mobile-full mobile-text-sm">Créer</button>
@@ -399,7 +461,11 @@
             <form onsubmit="app.handleEditRock(event)" class="space-y-4 mt-4">
                 <input id="edit-rock-name-input" type="text" required placeholder="Nom de la pierre" class="w-full border p-2 rounded-lg mobile-text-sm">
                 <textarea id="edit-rock-desc-input" rows="3" required placeholder="Histoire..." class="w-full border p-2 rounded-lg mobile-text-sm"></textarea>
-                <div class="grid grid-cols-1 gap-4"><input id="edit-rock-img-input" type="text" placeholder="Photo URL" class="w-full border p-2 rounded-lg mobile-text-sm"></div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1 mobile-text-sm">Photo</label>
+                    <input id="edit-rock-img-input" type="text" placeholder="URL de l'image" class="w-full border p-2 rounded-lg mobile-text-sm">
+                    <p class="text-xs text-gray-500 mt-1">Ou utilisez l'upload dans le modal de création</p>
+                </div>
                 <div class="pt-4 flex justify-end gap-3 mobile-stack">
                     <button type="button" onclick="app.closeModal('edit-rock')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg mobile-full mobile-text-sm">Annuler</button>
                     <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold mobile-full mobile-text-sm">Modifier</button>
@@ -438,9 +504,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
     <script>
-    /***** CONFIG FIREBASE (utilise ta config) *****/
+    /***** CONFIG FIREBASE *****/
     const firebaseConfig = {
         apiKey: "AIzaSyDOPfGOHYJ4Li4W_atXc5Jey_OEgz5_mTA",
         authDomain: "straveler-252fc.firebaseapp.com",
@@ -453,11 +520,12 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     /***** DATA STRUCTURES *****/
     let DB = { user: null, pendingApprovals: [] , rocks: [] };
 
-    /***** APP OBJECT AVEC FONCTIONNALITÉS MOBILE AMÉLIORÉES *****/
+    /***** APP OBJECT AVEC UPLOAD DE PHOTOS *****/
     const app = {
         currentRockId: null, 
         currentImageIndex: 0,
@@ -469,6 +537,7 @@
         createMapInstance: null, 
         createMarker: null,
         mobileView: false,
+        uploadedImageUrl: null,
 
         init: function() {
             this.detectMobile();
@@ -476,6 +545,115 @@
             this.attachAuthListener();
             this.setupFirestoreListeners();
             this.setupMobileBehavior();
+            this.setupImageUpload();
+        },
+
+        /* ---------------------------
+           UPLOAD DE PHOTOS
+           --------------------------- */
+        setupImageUpload: function() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    this.handleImageUpload({ target: { files: files } });
+                }
+            });
+        },
+
+        handleImageUpload: function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Vérifier le type de fichier
+            if (!file.type.startsWith('image/')) {
+                alert('Veuillez sélectionner une image valide');
+                return;
+            }
+            
+            // Vérifier la taille (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('L\'image est trop volumineuse (max 5MB)');
+                return;
+            }
+            
+            this.uploadImageToFirebase(file);
+        },
+
+        uploadImageToFirebase: function(file) {
+            if (!DB.user) {
+                alert('Veuillez vous connecter pour uploader une image');
+                return;
+            }
+            
+            const uploadArea = document.getElementById('upload-area');
+            const previewContainer = document.getElementById('image-preview-container');
+            const preview = document.getElementById('image-preview');
+            const progress = document.getElementById('upload-progress');
+            const progressBar = document.getElementById('upload-progress-bar');
+            
+            // Afficher la prévisualisation
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+                uploadArea.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+            
+            // Upload vers Firebase Storage
+            const filename = `images/${Date.now()}_${file.name}`;
+            const uploadTask = storage.ref().child(filename).put(file);
+            
+            // Afficher la progression
+            progress.classList.remove('hidden');
+            
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Progression
+                    const progressValue = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    progressBar.style.width = progressValue + '%';
+                },
+                (error) => {
+                    // Erreur
+                    console.error('Upload error:', error);
+                    alert('Erreur lors de l\'upload: ' + error.message);
+                    progress.classList.add('hidden');
+                    this.removeImage();
+                },
+                () => {
+                    // Succès
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        this.uploadedImageUrl = downloadURL;
+                        document.getElementById('create-img-input').value = downloadURL;
+                        progress.classList.add('hidden');
+                        console.log('Image uploaded:', downloadURL);
+                    });
+                }
+            );
+        },
+
+        removeImage: function() {
+            this.uploadedImageUrl = null;
+            document.getElementById('create-img-input').value = '';
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('upload-area').classList.remove('hidden');
+            document.getElementById('file-input').value = '';
         },
 
         /* ---------------------------
@@ -497,15 +675,15 @@
 
         showRockList: function() {
             if (this.mobileView) {
-                document.getElementById('rocks-list-container').classList.remove('hidden');
-                document.getElementById('rock-details-panel').classList.add('hidden');
+                document.querySelector('.lg\\:col-span-4').classList.remove('hidden');
+                document.querySelector('.lg\\:col-span-8').classList.add('hidden');
             }
         },
 
         showRockDetails: function() {
             if (this.mobileView) {
-                document.getElementById('rocks-list-container').classList.add('hidden');
-                document.getElementById('rock-details-panel').classList.remove('hidden');
+                document.querySelector('.lg\\:col-span-4').classList.add('hidden');
+                document.querySelector('.lg\\:col-span-8').classList.remove('hidden');
             }
         },
 
@@ -741,6 +919,8 @@
             
             if (type === 'create') {
                 setTimeout(() => this.initCreateMap(), 100);
+                // Réinitialiser l'upload d'image
+                this.removeImage();
             } else if (type === 'step') {
                 setTimeout(() => this.initStepMap(), 100);
             }
@@ -753,6 +933,11 @@
             
             const form = modal.querySelector('form');
             if (form) form.reset();
+            
+            // Réinitialiser l'upload d'image pour le modal create
+            if (type === 'create') {
+                this.removeImage();
+            }
         },
 
         saveLocal: function() {
