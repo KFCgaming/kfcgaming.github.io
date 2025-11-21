@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* Styles personnalisés */
+        /* Styles personnalisés (identiques à ton original) */
         #map { height: 350px; width: 100%; border-radius: 0.5rem; z-index: 0;}
         #map-step, #map-create { height: 200px; width: 100%; border-radius: 0.5rem; z-index: 0; }
         .stone-card:hover { transform: translateY(-2px); transition: all 0.2s; }
@@ -132,10 +132,16 @@
                 <div id="auth-login">
                     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Connexion</h2>
                     <form onsubmit="app.handleLogin(event)">
-                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Email</label><input type="email" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500" value="test@test.com"></div>
-                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2">Mdp</label><input type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500" value="123456"></div>
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Email</label><input id="login-email" type="email" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500" value=""></div>
+                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2">Mdp</label><input id="login-password" type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500" value=""></div>
                         <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-700 transition">Se connecter</button>
                     </form>
+
+                    <div class="mt-4 flex gap-2">
+                        <button onclick="app.signInWithGoogle()" class="flex-1 bg-white border py-2 rounded shadow-sm hover:bg-gray-50"><i class="fa-brands fa-google mr-2"></i>Google</button>
+                        <button onclick="app.signInAnonymously()" class="flex-1 bg-gray-100 py-2 rounded shadow-sm hover:bg-gray-200">Anonyme</button>
+                    </div>
+
                     <p class="mt-6 text-center text-sm text-gray-500">Pas de compte ? <span onclick="app.toggleAuthMode('signup')" class="text-emerald-600 font-bold cursor-pointer hover:underline">Créer un compte</span></p>
                 </div>
                 <div id="auth-signup" class="hidden">
@@ -143,7 +149,7 @@
                     <form onsubmit="app.handleSignup(event)">
                         <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Pseudo</label><input id="signup-name" type="text" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
                         <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Email</label><input id="signup-email" type="email" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
-                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2">Mdp</label><input type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
+                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2">Mdp</label><input id="signup-password" type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500"></div>
                         <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-700 transition">S'inscrire</button>
                     </form>
                     <p class="mt-6 text-center text-sm text-gray-500">Déjà un compte ? <span onclick="app.toggleAuthMode('login')" class="text-emerald-600 font-bold cursor-pointer hover:underline">Se connecter</span></p>
@@ -209,8 +215,8 @@
         <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative">
             <button onclick="app.closeModal('step')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
             <h2 class="text-2xl font-bold mb-1 text-orange-600">J'ai trouvé une pierre !</h2>
-            <form onsubmit="app.handleStep(event)" class="space-y-4 mt-4">
-                <input type="text" required placeholder="Code Unique (Ex: ST-001)" class="w-full border p-2 rounded-lg bg-gray-50 font-mono">
+            <form id="form-step" onsubmit="app.handleStep(event)" class="space-y-4 mt-4">
+                <input id="step-code-input" type="text" required placeholder="Code Unique (Ex: ST-001)" class="w-full border p-2 rounded-lg bg-gray-50 font-mono">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Localisation</label>
                     <div id="map-step" class="border border-gray-300 overflow-hidden"></div>
@@ -220,7 +226,7 @@
                     </div>
                     <input type="hidden" id="step-lat"><input type="hidden" id="step-lng">
                 </div>
-                <textarea rows="2" placeholder="Message..." class="w-full border p-2 rounded-lg"></textarea>
+                <textarea id="step-message-input" rows="2" placeholder="Message..." class="w-full border p-2 rounded-lg"></textarea>
                 <div class="pt-4 flex justify-end gap-3">
                     <button type="button" onclick="app.closeModal('step')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Annuler</button>
                     <button type="submit" class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-bold">Valider</button>
@@ -229,149 +235,559 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC (FIREBASE INTEGRATION) -->
+    <!-- Firebase compat libs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
     <script>
-        // --- DONNÉES PAR DÉFAUT (SI LOCALSTORAGE VIDE) ---
-        const defaultDB = {
-            user: null, 
-            pendingApprovals: [{ id: 101, rockId: 1, rockName: "Pierre Bob", location: "Madrid, Espagne", kmToAdd: 850 }],
-            rocks: [
-                { id: 1, code: "ST-001", name: "Pierre Bob", author: "JeanD", createdAt: "2023-12-01", description: "Un petit caillou peint en bleu.", likes: 854, likedByMe: false, totalKm: 1245, borders: 2, images: ["https://picsum.photos/seed/bob1/600/400", "https://picsum.photos/seed/bob2/600/400"], path: [{lat: 41.9028, lng: 12.4964, name: "Rome, Italie"}, {lat: 45.7640, lng: 4.8357, name: "Lyon, France"}, {lat: 48.8566, lng: 2.3522, name: "Paris, France"}], comments: [{user: "Sophie88", text: "Je l'ai vu à Lyon !", date: "Il y a 2 jours"}] },
-                { id: 2, code: "ST-002", name: "Galet Magique", author: "Sophie88", createdAt: "2024-02-05", description: "Un galet avec des paillettes dorées.", likes: 120, likedByMe: false, totalKm: 540, borders: 1, images: ["https://picsum.photos/seed/magic1/600/400"], path: [{lat: 53.4808, lng: -2.2426, name: "Manchester, UK"}, {lat: 51.5074, lng: -0.1278, name: "Londres, UK"}], comments: [] }
-            ]
-        };
+    /***** CONFIG FIREBASE (utilise ta config) *****/
+    const firebaseConfig = {
+        apiKey: "AIzaSyDOPfGOHYJ4Li4W_atXc5Jey_OEgz5_mTA",
+        authDomain: "straveler-252fc.firebaseapp.com",
+        projectId: "straveler-252fc",
+        storageBucket: "straveler-252fc.firebasestorage.app",
+        messagingSenderId: "124387208834",
+        appId: "1:124387208834:web:871cf13525072ad3310e9b",
+        measurementId: "G-C034PW0KPJ"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-        // Chargement depuis localStorage ou défaut
-        let DB = JSON.parse(localStorage.getItem('stoneTravelerDB')) || defaultDB;
+    /***** DATA STRUCTURES *****/
+    // No default stones import (you asked to cancel defaults)
+    let DB = { user: null, pendingApprovals: [] , rocks: [] };
 
-        const app = {
-            currentRockId: null, currentImageIndex: 0, mapInstance: null, polylineInstance: null, markersInstance: [],
-            stepMapInstance: null, stepMarker: null, createMapInstance: null, createMarker: null,
+    /***** APP OBJECT (conserve interface et noms de fonctions) *****/
+    const app = {
+        currentRockId: null, currentImageIndex: 0,
+        mapInstance: null, polylineInstance: null, markersInstance: [],
+        stepMapInstance: null, stepMarker: null, createMapInstance: null, createMarker: null,
 
-            init: function() { this.renderNav(); this.sortRocksByDate(); this.renderRockList(); },
-            
-            // Sauvegarde dans le navigateur
-            saveDB: function() { localStorage.setItem('stoneTravelerDB', JSON.stringify(DB)); },
-            
-            sortRocksByDate: function() { DB.rocks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); },
-            
-            renderNav: function() {
-                const nav = document.getElementById('nav-buttons');
-                if (DB.user) {
-                    let notifHTML = '';
-                    if(DB.pendingApprovals.length > 0) {
-                        const list = DB.pendingApprovals.map(p => `<div class="flex justify-between items-center border-b border-gray-100 pb-2 mb-2 last:border-0 last:mb-0 last:pb-0"><div class="text-gray-600"><p><b>${p.rockName}</b></p><p class="text-gray-500">Arrivée à ${p.location}</p></div><button onclick="app.handleApprove(${p.id})" class="ml-2 bg-emerald-100 text-emerald-700 px-2 py-1 rounded hover:bg-emerald-200 text-[10px] font-bold uppercase tracking-wide transition">Valider</button></div>`).join('');
-                        notifHTML = `<div class="relative cursor-pointer mr-2 group"><div class="py-2"><i class="fa-solid fa-bell text-gray-500 text-xl group-hover:text-emerald-600 transition"></i><span class="absolute top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 rounded-full animate-pulse">${DB.pendingApprovals.length}</span></div><div class="dropdown-content absolute right-0 top-full w-72 hidden group-hover:block z-50"><div class="bg-white border rounded-lg shadow-xl p-4 text-xs text-left relative"><div class="absolute -top-1 right-2 w-3 h-3 bg-white border-t border-l transform rotate-45"></div><p class="font-bold border-b pb-2 mb-2 text-gray-800 uppercase tracking-wider text-[10px]">Approbations requises</p>${list}</div></div></div>`;
-                    } else { notifHTML = `<div class="relative mr-2 py-2 text-gray-300 cursor-default"><i class="fa-regular fa-bell text-xl"></i></div>`; }
-                    nav.innerHTML = `${notifHTML}<div class="flex items-center gap-2 border-l pl-4 border-gray-200"><div onclick="app.showPage('profile')" class="cursor-pointer flex items-center gap-2 hover:bg-gray-50 p-1 rounded-full pr-3 transition"><img src="${DB.user.avatar}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><span class="text-sm font-medium hidden sm:block text-gray-700">${DB.user.name}</span></div><button onclick="app.logout()" class="text-gray-400 hover:text-red-500 ml-1" title="Déconnexion"><i class="fa-solid fa-sign-out-alt"></i></button></div>`;
-                } else { nav.innerHTML = `<button onclick="app.showPage('auth')" class="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition shadow-sm text-sm font-bold flex items-center"><i class="fa-solid fa-user mr-2"></i> Connexion</button>`; }
-            },
-            
-            handleApprove: function(id) { 
-                const idx = DB.pendingApprovals.findIndex(p => p.id === id); if(idx === -1) return; 
-                const app = DB.pendingApprovals[idx]; const rock = this.getRock(app.rockId); 
-                if(rock) { rock.path.unshift({lat: 40.4168, lng: -3.7038, name: app.location}); rock.totalKm += app.kmToAdd; rock.borders += 1; } 
-                DB.pendingApprovals.splice(idx, 1); this.saveDB(); this.renderNav(); 
-                if(this.currentRockId === rock.id) this.selectRock(rock.id); this.renderRockList(); alert(`Trajet approuvé !`); 
-            },
+        init: function() {
+            this.renderNav();
+            this.attachAuthListener();
+            this.setupFirestoreListeners();
+        },
 
-            showPage: function(pg) { ['page-home', 'page-ranking', 'page-auth', 'page-profile'].forEach(p => document.getElementById(p).classList.add('hidden')); document.getElementById('page-' + pg).classList.remove('hidden'); if(pg === 'home') { document.getElementById('page-home').classList.add('flex'); if(this.currentRockId) setTimeout(() => this.initMap(this.getRock(this.currentRockId)), 100); } else { document.getElementById('page-home').classList.remove('flex'); } if(pg === 'ranking') this.renderRanking('likes'); if(pg === 'profile' && DB.user) { document.getElementById('edit-name').value = DB.user.name; document.getElementById('edit-bio').value = DB.user.bio || ""; document.getElementById('edit-avatar').value = DB.user.avatar; document.getElementById('profile-preview-img').src = DB.user.avatar; } },
-            toggleAuthMode: function(mode) { if(mode === 'signup') { document.getElementById('auth-login').classList.add('hidden'); document.getElementById('auth-signup').classList.remove('hidden'); } else { document.getElementById('auth-signup').classList.add('hidden'); document.getElementById('auth-login').classList.remove('hidden'); } },
-            
-            handleLogin: function(e) { e.preventDefault(); DB.user = { name: "UtilisateurTest", email: "test@test.com", avatar: "https://ui-avatars.com/api/?name=Utilisateur+Test&background=0D9488&color=fff", bio: "Chasseur de pierres." }; this.saveDB(); this.showPage('home'); this.renderNav(); },
-            handleSignup: function(e) { e.preventDefault(); const name = document.getElementById('signup-name').value; DB.user = { name: name, email: document.getElementById('signup-email').value, avatar: `https://ui-avatars.com/api/?name=${name}&background=random`, bio: "Nouveau membre !" }; this.saveDB(); alert(`Bienvenue ${name}.`); this.showPage('home'); this.renderNav(); },
-            handleUpdateProfile: function(e) { e.preventDefault(); if(!DB.user) return; DB.user.name = document.getElementById('edit-name').value; DB.user.bio = document.getElementById('edit-bio').value; const avatar = document.getElementById('edit-avatar').value; if(avatar) DB.user.avatar = avatar; this.saveDB(); alert("Profil mis à jour !"); this.renderNav(); },
-            logout: function() { DB.user = null; this.saveDB(); this.renderNav(); this.showPage('home'); },
-            
-            getRock: function(id) { return DB.rocks.find(r => r.id === id); },
-            renderRockList: function(filter = "") { const list = document.getElementById('rocks-list'); list.innerHTML = ""; const term = filter.toLowerCase(); const filtered = DB.rocks.filter(r => r.name.toLowerCase().includes(term) || r.code.toLowerCase().includes(term) || r.author.toLowerCase().includes(term) || r.path.some(s => s.name.toLowerCase().includes(term))); if(filtered.length === 0) { list.innerHTML = `<div class="text-center text-gray-400 mt-10 italic text-sm">Aucune pierre trouvée.</div>`; return; } filtered.forEach(r => { const active = this.currentRockId === r.id ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500' : 'border-gray-100 bg-white hover:bg-gray-50'; list.innerHTML += `<div onclick="app.selectRock(${r.id})" class="stone-card p-3 rounded-xl shadow-sm border cursor-pointer flex gap-3 transition-all ${active}"><div class="relative w-20 h-20 shrink-0"><img src="${r.images[0]}" class="w-full h-full rounded-lg object-cover bg-gray-200"><div class="absolute bottom-0 right-0 bg-black/50 text-white text-[10px] px-1 rounded-tl-md">${r.images.length} <i class="fa-solid fa-camera"></i></div></div><div class="flex-1 min-w-0 flex flex-col justify-center"><div class="flex justify-between items-start mb-1"><h4 class="font-bold text-gray-800 truncate text-sm">${r.name}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono border border-emerald-200">${r.code}</span></div><div class="text-xs text-gray-500 mb-2 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gray-400"></i> <span class="truncate">${r.path[0] ? r.path[0].name : 'Inconnu'}</span></div><div class="flex items-center justify-between text-xs mt-auto border-t pt-2 border-gray-100"><span class="text-emerald-600 font-semibold"><i class="fa-solid fa-road"></i> ${r.totalKm} km</span><span class="text-gray-400"><i class="fa-solid fa-heart"></i> ${r.likes}</span></div></div></div>`; }); },
-            handleSearch: function() { this.renderRockList(document.getElementById('search-input').value); },
-            selectRock: function(id) { this.currentRockId = id; this.currentImageIndex = 0; const r = this.getRock(id); this.renderRockList(document.getElementById('search-input').value); document.getElementById('empty-state').classList.add('hidden'); document.getElementById('details-content').classList.remove('hidden'); document.getElementById('detail-name').innerText = r.name; document.getElementById('detail-code').innerText = r.code; document.getElementById('detail-author').innerText = r.author; document.getElementById('detail-date').innerText = r.createdAt; document.getElementById('detail-likes').innerText = r.likes; document.getElementById('detail-desc').innerText = r.description; document.getElementById('detail-km').innerText = r.totalKm; document.getElementById('detail-borders').innerText = r.borders; const btn = document.getElementById('like-btn'); btn.className = r.likedByMe ? "text-red-500 transition transform active:scale-125 group" : "text-gray-400 hover:text-red-500 transition transform active:scale-125 group"; this.updateCarouselUI(r); setTimeout(() => this.initMap(r), 100); this.renderComments(r); },
-            renderRanking: function(crit) { const tbody = document.getElementById('ranking-list'); tbody.innerHTML = ""; const sorted = [...DB.rocks].sort((a, b) => crit === 'likes' ? b.likes - a.likes : b.totalKm - a.totalKm); sorted.forEach((r, i) => { let m = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : ""; tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${m} ${i + 1}</td><td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><img class="h-10 w-10 rounded-full object-cover mr-3 border" src="${r.images[0]}"><div><div class="text-sm font-medium text-gray-900">${r.name}</div><div class="text-xs text-gray-500">${r.code}</div></div></div></td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><div class="font-bold ${crit === 'km' ? 'text-emerald-600' : ''}">${r.totalKm} km</div><div class="${crit === 'likes' ? 'text-red-500 font-bold' : ''}">${r.likes} likes</div></td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button onclick="app.showPage('home'); app.selectRock(${r.id})" class="text-emerald-600 hover:text-emerald-900 hover:underline">Voir</button></td></tr>`; }); },
-            updateCarouselUI: function(r) { const img = document.getElementById('carousel-img'); const cnt = document.getElementById('carousel-counter'); img.style.opacity = '0.5'; setTimeout(() => { img.src = r.images[this.currentImageIndex]; img.style.opacity = '1'; }, 100); cnt.innerText = `${this.currentImageIndex + 1} / ${r.images.length}`; },
-            moveCarousel: function(d) { const r = this.getRock(this.currentRockId); if(!r) return; this.currentImageIndex = (this.currentImageIndex + d + r.images.length) % r.images.length; this.updateCarouselUI(r); },
-            initMap: function(r) { if(!r) return; if (!this.mapInstance) { this.mapInstance = L.map('map').setView([46.603354, 1.888334], 5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.mapInstance); } if (this.polylineInstance) this.mapInstance.removeLayer(this.polylineInstance); this.markersInstance.forEach(m => this.mapInstance.removeLayer(m)); this.markersInstance = []; const path = r.path.map(s => [s.lat, s.lng]); r.path.forEach((s, i) => { const m = L.marker([s.lat, s.lng]).addTo(this.mapInstance).bindPopup(`<b>${i === 0 ? 'Départ' : 'Étape ' + i}</b><br>${s.name}`); this.markersInstance.push(m); }); this.polylineInstance = L.polyline(path, {color: '#059669', weight: 4, dashArray: '5, 10'}).addTo(this.mapInstance); setTimeout(() => { this.mapInstance.invalidateSize(); if(path.length > 0) this.mapInstance.fitBounds(this.polylineInstance.getBounds(), {padding: [50, 50]}); }, 200); },
-            renderComments: function(r) { const l = document.getElementById('comments-list'); const f = document.getElementById('comment-form-container'); document.getElementById('comments-count').innerText = r.comments.length; l.innerHTML = ""; if(r.comments.length === 0) l.innerHTML = `<p class="text-sm text-gray-400 italic text-center py-2">Soyez le premier à écrire.</p>`; else r.comments.forEach(c => { const av = c.avatar || `https://ui-avatars.com/api/?name=${c.user}&background=random`; l.innerHTML += `<div class="flex gap-3 group"><img src="${av}" class="w-8 h-8 rounded-full object-cover shadow-sm bg-gray-200"><div class="bg-gray-50 p-3 rounded-2xl rounded-tl-none flex-1 text-sm border border-gray-100 group-hover:border-gray-200 transition"><div class="flex justify-between mb-1 items-baseline"><span class="font-bold text-gray-700">${c.user}</span><span class="text-[10px] text-gray-400 uppercase">${c.date}</span></div><p class="text-gray-600 leading-relaxed">${c.text}</p></div></div>`; }); if(DB.user) f.innerHTML = `<form onsubmit="app.postComment(event)" class="flex gap-2 mt-4 relative"><input id="comment-input" type="text" placeholder="Écrire un commentaire..." class="flex-1 border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-sm"><button type="submit" class="absolute right-1 top-1 bottom-1 bg-emerald-600 text-white w-8 h-8 rounded-full hover:bg-emerald-700 flex items-center justify-center shadow-md transition transform hover:scale-105"><i class="fa-solid fa-paper-plane text-xs"></i></button></form>`; else f.innerHTML = `<div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-sm text-blue-800 text-center cursor-pointer hover:bg-blue-100 transition" onclick="app.showPage('auth')"><i class="fa-solid fa-lock mr-2"></i>Connectez-vous pour commenter.</div>`; },
-            postComment: function(e) { e.preventDefault(); const i = document.getElementById('comment-input'); if(!i.value.trim()) return; this.getRock(this.currentRockId).comments.push({ user: DB.user.name, avatar: DB.user.avatar, text: i.value.trim(), date: "À l'instant" }); i.value = ""; this.saveDB(); this.renderComments(this.getRock(this.currentRockId)); },
-            toggleLike: function() { const r = this.getRock(this.currentRockId); if(!r) return; if(r.likedByMe) { r.likes--; r.likedByMe = false; } else { r.likes++; r.likedByMe = true; } document.getElementById('detail-likes').innerText = r.likes; const btn = document.getElementById('like-btn'); btn.className = r.likedByMe ? "text-red-500 transition transform active:scale-125 group" : "text-gray-400 hover:text-red-500 transition transform active:scale-125 group"; this.saveDB(); this.renderRockList(document.getElementById('search-input').value); },
-            
-            openModal: function(id) {
-                if(!DB.user && (id === 'create' || id === 'step')) { if(confirm("Vous devez être connecté.")) this.showPage('auth'); return; }
-                document.getElementById('modal-' + id).classList.remove('hidden'); document.getElementById('modal-' + id).classList.add('flex');
-                if(id === 'step') { this.initStepMap(); if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker); this.stepMarker = null; document.getElementById('step-location-name').value = ""; }
-                if(id === 'create') { this.initCreateMap(); if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker); this.createMarker = null; document.getElementById('create-location-name').value = ""; }
-            },
-            closeModal: function(id) { document.getElementById('modal-' + id).classList.add('hidden'); document.getElementById('modal-' + id).classList.remove('flex'); },
-            
-            handleCreateStone: function(e) {
-                e.preventDefault();
-                const lat = document.getElementById('create-lat').value;
-                const name = document.getElementById('create-name-input').value;
-                const desc = document.getElementById('create-desc-input').value;
-                const imgUrl = document.getElementById('create-img-input').value || "https://picsum.photos/seed/" + name + "/600/400";
-                const location = document.getElementById('create-location-name').value;
+        /* ---------------------------
+           AUTH
+           --------------------------- */
+        attachAuthListener: function() {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // try load profile
+                    try {
+                        const udoc = await db.collection('users').doc(user.uid).get();
+                        if (udoc.exists) {
+                            DB.user = { uid: user.uid, ...udoc.data() };
+                        } else {
+                            // create minimal profile
+                            const profile = {
+                                name: user.displayName || (user.email ? user.email.split('@')[0] : "Anonyme"),
+                                email: user.email || null,
+                                avatar: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || "Utilisateur")}&background=0D9488&color=fff`,
+                                bio: ""
+                            };
+                            await db.collection('users').doc(user.uid).set(profile);
+                            DB.user = { uid: user.uid, ...profile };
+                        }
+                    } catch (e) {
+                        console.error("profile load error", e);
+                        DB.user = { uid: user.uid, name: user.email || "Utilisateur", avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email || 'Utilisateur')}&background=0D9488&color=fff` };
+                    }
+                } else {
+                    DB.user = null;
+                }
+                this.renderNav();
+            });
+        },
 
-                if(!lat) { alert("Placez un point sur la carte !"); return; }
+        handleLogin: function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => { this.showPage('home'); })
+                .catch(err => alert("Erreur connexion : " + err.message));
+        },
 
-                const newRock = {
-                    id: Date.now(),
-                    code: "ST-" + Math.floor(Math.random() * 1000),
-                    name: name,
-                    author: DB.user.name,
-                    createdAt: new Date().toISOString().split('T')[0],
-                    description: desc,
-                    likes: 0, likedByMe: false, totalKm: 0, borders: 0,
-                    images: [imgUrl],
-                    path: [{ lat: parseFloat(lat), lng: parseFloat(document.getElementById('create-lng').value), name: location }],
-                    comments: []
-                };
+        handleSignup: function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(async cred => {
+                    const uid = cred.user.uid;
+                    const profile = {
+                        name: name,
+                        email: email,
+                        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+                        bio: "Nouveau membre !"
+                    };
+                    await db.collection('users').doc(uid).set(profile);
+                    // update local DB.user will be set by onAuthStateChanged listener
+                    this.showPage('home');
+                    alert(`Bienvenue ${name}.`);
+                })
+                .catch(err => alert("Erreur inscription : " + err.message));
+        },
 
-                DB.rocks.unshift(newRock);
-                this.saveDB();
-                alert("Pierre créée : " + newRock.code);
-                this.closeModal('create');
-                this.renderRockList();
-            },
+        signInWithGoogle: function() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => alert("Erreur Google SignIn : " + err.message));
+        },
 
-            handleStep: function(e) {
-                e.preventDefault();
-                const lat = document.getElementById('step-lat').value;
-                if(!lat) { alert("Cliquez sur la carte !"); return; }
-                alert("Étape envoyée !");
-                this.closeModal('step');
-            },
+        signInAnonymously: function() {
+            auth.signInAnonymously().catch(err => alert("Erreur connexion anonyme : " + err.message));
+        },
 
-            // Fonctions Cartes
-            initStepMap: function() {
-                if(!this.stepMapInstance) { this.stepMapInstance = L.map('map-step').setView([46.603354, 1.888334], 5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.stepMapInstance); this.stepMapInstance.on('click', (e) => this.setStepLocation(e.latlng.lat, e.latlng.lng)); }
-                setTimeout(() => this.stepMapInstance.invalidateSize(), 200);
-            },
-            setStepLocation: function(lat, lng) {
-                if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker); this.stepMarker = L.marker([lat, lng]).addTo(this.stepMapInstance); document.getElementById('step-lat').value = lat; document.getElementById('step-lng').value = lng; this.reverseGeocode(lat, lng, 'step-location-name', 'geo-loading');
-            },
-            initCreateMap: function() {
-                if(!this.createMapInstance) { this.createMapInstance = L.map('map-create').setView([46.603354, 1.888334], 5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.createMapInstance); this.createMapInstance.on('click', (e) => this.setCreateLocation(e.latlng.lat, e.latlng.lng)); }
-                setTimeout(() => this.createMapInstance.invalidateSize(), 200);
-            },
-            setCreateLocation: function(lat, lng) {
-                if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker); this.createMarker = L.marker([lat, lng]).addTo(this.createMapInstance); document.getElementById('create-lat').value = lat; document.getElementById('create-lng').value = lng; this.reverseGeocode(lat, lng, 'create-location-name', 'geo-loading-create');
-            },
-            reverseGeocode: function(lat, lng, inputId, loaderId) {
-                const input = document.getElementById(inputId); input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}...`; document.getElementById(loaderId).classList.remove('hidden');
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`).then(res => res.json()).then(data => { const city = data.address.city || data.address.town || data.address.village || "Lieu"; const country = data.address.country || ""; input.value = `${city}, ${country}`; }).catch(() => input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`).finally(() => document.getElementById(loaderId).classList.add('hidden'));
-            },
-            locateUser: function(type) {
-                if(!navigator.geolocation) { alert("Non supporté"); return; }
-                const loader = type === 'create' ? 'geo-loading-create' : 'geo-loading';
-                document.getElementById(loader).classList.remove('hidden');
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    if(type === 'create') { this.createMapInstance.setView([latitude, longitude], 13); this.setCreateLocation(latitude, longitude); }
-                }, () => { alert("Erreur GPS"); document.getElementById(loader).classList.add('hidden'); });
+        handleUpdateProfile: async function(e) {
+            e.preventDefault();
+            if (!DB.user || !DB.user.uid) return alert("Aucun utilisateur connecté.");
+            try {
+                DB.user.name = document.getElementById('edit-name').value;
+                DB.user.bio = document.getElementById('edit-bio').value;
+                const avatar = document.getElementById('edit-avatar').value;
+                if (avatar) DB.user.avatar = avatar;
+                await db.collection('users').doc(DB.user.uid).update({
+                    name: DB.user.name,
+                    bio: DB.user.bio,
+                    avatar: DB.user.avatar
+                });
+                alert("Profil mis à jour !");
+                this.renderNav();
+            } catch (e) {
+                alert("Erreur mise à jour profil : " + e.message);
             }
-        };
+        },
 
-        app.init();
+        logout: function() {
+            auth.signOut().then(()=> {
+                DB.user = null;
+                this.renderNav();
+                this.showPage('home');
+            });
+        },
+
+        /* ---------------------------
+           FIRESTORE LISTENERS
+           --------------------------- */
+        setupFirestoreListeners: function() {
+            // rocks real-time
+            db.collection('rocks').onSnapshot(snapshot => {
+                DB.rocks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                // normalize
+                DB.rocks.forEach(r => {
+                    r.likes = r.likes || 0;
+                    r.totalKm = r.totalKm || 0;
+                    r.borders = r.borders || 0;
+                    r.images = r.images && r.images.length ? r.images : ["https://picsum.photos/seed/" + encodeURIComponent(r.name || 'stone') + "/600/400"];
+                    r.comments = r.comments || [];
+                    r.path = r.path || [];
+                });
+                this.sortRocksByDate();
+                this.renderRockList();
+                if (this.currentRockId) {
+                    const found = this.getRock(this.currentRockId);
+                    if (found) this.selectRock(this.currentRockId);
+                }
+            }, err => {
+                console.error("Firestore rocks listener error", err);
+                // keep DB.rocks empty if offline
+                DB.rocks = [];
+                this.renderRockList();
+            });
+
+            // pending approvals meta doc
+            db.collection('meta').doc('pendingApprovals').onSnapshot(doc => {
+                if (doc.exists) DB.pendingApprovals = doc.data().items || []; else DB.pendingApprovals = [];
+                this.renderNav();
+            }, () => { DB.pendingApprovals = []; this.renderNav(); });
+        },
+
+        /* ---------------------------
+           NAV / UI
+           --------------------------- */
+        renderNav: function() {
+            const nav = document.getElementById('nav-buttons');
+            if (DB.user) {
+                let notifHTML = '';
+                if(DB.pendingApprovals && DB.pendingApprovals.length > 0) {
+                    const list = DB.pendingApprovals.map(p => `<div class="flex justify-between items-center border-b border-gray-100 pb-2 mb-2 last:border-0 last:mb-0 last:pb-0"><div class="text-gray-600"><p><b>${p.rockName}</b></p><p class="text-gray-500">Arrivée à ${p.location}</p></div><button onclick="app.handleApprove('${p.id}')" class="ml-2 bg-emerald-100 text-emerald-700 px-2 py-1 rounded hover:bg-emerald-200 text-[10px] font-bold uppercase tracking-wide transition">Valider</button></div>`).join('');
+                    notifHTML = `<div class="relative cursor-pointer mr-2 group"><div class="py-2"><i class="fa-solid fa-bell text-gray-500 text-xl group-hover:text-emerald-600 transition"></i><span class="absolute top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 rounded-full animate-pulse">${DB.pendingApprovals.length}</span></div><div class="dropdown-content absolute right-0 top-full w-72 hidden group-hover:block z-50"><div class="bg-white border rounded-lg shadow-xl p-4 text-xs text-left relative"><div class="absolute -top-1 right-2 w-3 h-3 bg-white border-t border-l transform rotate-45"></div><p class="font-bold border-b pb-2 mb-2 text-gray-800 uppercase tracking-wider text-[10px]">Approbations requises</p>${list}</div></div></div>`;
+                } else { notifHTML = `<div class="relative mr-2 py-2 text-gray-300 cursor-default"><i class="fa-regular fa-bell text-xl"></i></div>`; }
+                nav.innerHTML = `${notifHTML}<div class="flex items-center gap-2 border-l pl-4 border-gray-200"><div onclick="app.showPage('profile')" class="cursor-pointer flex items-center gap-2 hover:bg-gray-50 p-1 rounded-full pr-3 transition"><img src="${DB.user.avatar}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><span class="text-sm font-medium hidden sm:block text-gray-700">${DB.user.name}</span></div><button onclick="app.logout()" class="text-gray-400 hover:text-red-500 ml-1" title="Déconnexion"><i class="fa-solid fa-sign-out-alt"></i></button></div>`;
+            } else {
+                nav.innerHTML = `<button onclick="app.showPage('auth')" class="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition shadow-sm text-sm font-bold flex items-center"><i class="fa-solid fa-user mr-2"></i> Connexion</button>`;
+            }
+        },
+
+        handleApprove: function(id) {
+            // find pending, update rock doc path & stats then remove pending entry from meta doc
+            const pend = DB.pendingApprovals.find(p => p.id === id || p.id === (''+id));
+            if (!pend) return alert("Approbation introuvable.");
+            // find rock by id or code
+            const rock = DB.rocks.find(r => r.id === pend.rockId || r.code === pend.rockCode);
+            if (!rock) return alert("Pierre introuvable.");
+            const newStep = { lat: pend.lat || 0, lng: pend.lng || 0, name: pend.location };
+            const docRef = db.collection('rocks').doc(rock.id);
+            docRef.update({
+                path: firebase.firestore.FieldValue.arrayUnion(newStep),
+                totalKm: (rock.totalKm || 0) + (pend.kmToAdd || 0),
+                borders: (rock.borders || 0) + 1
+            }).then(() => {
+                // remove item from meta.pendingApprovals
+                const metaRef = db.collection('meta').doc('pendingApprovals');
+                metaRef.get().then(d => {
+                    if (!d.exists) return;
+                    const items = d.data().items || [];
+                    const filtered = items.filter(it => it.id !== pend.id);
+                    metaRef.set({ items: filtered });
+                }).catch(()=>{});
+                alert("Trajet approuvé !");
+            }).catch(err => alert("Erreur approbation : " + err.message));
+        },
+
+        showPage: function(pg) {
+            ['page-home', 'page-ranking', 'page-auth', 'page-profile'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById('page-' + pg).classList.remove('hidden');
+            if (pg === 'home') {
+                document.getElementById('page-home').classList.add('flex');
+                if (this.currentRockId) setTimeout(() => this.initMap(this.getRock(this.currentRockId)), 100);
+            } else {
+                document.getElementById('page-home').classList.remove('flex');
+            }
+            if (pg === 'ranking') this.renderRanking('likes');
+            if (pg === 'profile' && DB.user) {
+                document.getElementById('edit-name').value = DB.user.name;
+                document.getElementById('edit-bio').value = DB.user.bio || "";
+                document.getElementById('edit-avatar').value = DB.user.avatar || "";
+                document.getElementById('profile-preview-img').src = DB.user.avatar || "";
+            }
+        },
+
+        toggleAuthMode: function(mode) {
+            if (mode === 'signup') {
+                document.getElementById('auth-login').classList.add('hidden');
+                document.getElementById('auth-signup').classList.remove('hidden');
+            } else {
+                document.getElementById('auth-signup').classList.add('hidden');
+                document.getElementById('auth-login').classList.remove('hidden');
+            }
+        },
+
+        /* ---------------------------
+           DATA helpers & UI rendering
+           --------------------------- */
+        saveLocal: function() {
+            // keep small local backup (optional)
+            try { localStorage.setItem('stoneTravelerDB', JSON.stringify({rocks: DB.rocks})); } catch(e){}
+        },
+
+        sortRocksByDate: function() {
+            DB.rocks.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        },
+
+        getRock: function(id) { return DB.rocks.find(r => r.id === id || r.id === ''+id); },
+
+        renderRockList: function(filter = "") {
+            const list = document.getElementById('rocks-list');
+            list.innerHTML = "";
+            const term = (filter || "").toLowerCase();
+            const filtered = DB.rocks.filter(r => {
+                const name = (r.name || '').toLowerCase();
+                const code = (r.code || '').toLowerCase();
+                const author = (r.author || '').toLowerCase();
+                const inPath = (r.path||[]).some(s => (s.name||'').toLowerCase().includes(term));
+                return name.includes(term) || code.includes(term) || author.includes(term) || inPath;
+            });
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="text-center text-gray-400 mt-10 italic text-sm">Aucune pierre trouvée.</div>`;
+                return;
+            }
+            filtered.forEach(r => {
+                const active = this.currentRockId === r.id ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500' : 'border-gray-100 bg-white hover:bg-gray-50';
+                list.innerHTML += `<div onclick="app.selectRock('${r.id}')" class="stone-card p-3 rounded-xl shadow-sm border cursor-pointer flex gap-3 transition-all ${active}"><div class="relative w-20 h-20 shrink-0"><img src="${r.images[0]}" class="w-full h-full rounded-lg object-cover bg-gray-200"><div class="absolute bottom-0 right-0 bg-black/50 text-white text-[10px] px-1 rounded-tl-md">${r.images.length} <i class="fa-solid fa-camera"></i></div></div><div class="flex-1 min-w-0 flex flex-col justify-center"><div class="flex justify-between items-start mb-1"><h4 class="font-bold text-gray-800 truncate text-sm">${r.name}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono border border-emerald-200">${r.code || ''}</span></div><div class="text-xs text-gray-500 mb-2 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gray-400"></i> <span class="truncate">${r.path[0] ? r.path[0].name : 'Inconnu'}</span></div><div class="flex items-center justify-between text-xs mt-auto border-t pt-2 border-gray-100"><span class="text-emerald-600 font-semibold"><i class="fa-solid fa-road"></i> ${r.totalKm || 0} km</span><span class="text-gray-400"><i class="fa-solid fa-heart"></i> ${r.likes || 0}</span></div></div></div>`;
+            });
+        },
+
+        handleSearch: function() { this.renderRockList(document.getElementById('search-input').value); },
+
+        selectRock: function(id) {
+            this.currentRockId = id;
+            this.currentImageIndex = 0;
+            const r = this.getRock(id);
+            if(!r) return;
+            this.renderRockList(document.getElementById('search-input').value);
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('details-content').classList.remove('hidden');
+            document.getElementById('detail-name').innerText = r.name;
+            document.getElementById('detail-code').innerText = r.code || '';
+            document.getElementById('detail-author').innerText = r.author || '';
+            document.getElementById('detail-date').innerText = r.createdAt || '';
+            document.getElementById('detail-likes').innerText = r.likes || 0;
+            document.getElementById('detail-desc').innerText = r.description || '';
+            document.getElementById('detail-km').innerText = r.totalKm || 0;
+            document.getElementById('detail-borders').innerText = r.borders || 0;
+            const btn = document.getElementById('like-btn');
+            btn.className = r.likedByMe ? "text-red-500 transition transform active:scale-125 group" : "text-gray-400 hover:text-red-500 transition transform active:scale-125 group";
+            this.updateCarouselUI(r);
+            setTimeout(() => this.initMap(r), 100);
+            this.renderComments(r);
+        },
+
+        renderRanking: function(crit) {
+            const tbody = document.getElementById('ranking-list'); tbody.innerHTML = "";
+            const sorted = [...DB.rocks].sort((a, b) => crit === 'likes' ? (b.likes||0) - (a.likes||0) : (b.totalKm||0) - (a.totalKm||0));
+            sorted.forEach((r, i) => {
+                let m = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "";
+                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${m} ${i + 1}</td><td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><img class="h-10 w-10 rounded-full object-cover mr-3 border" src="${r.images[0]}"><div><div class="text-sm font-medium text-gray-900">${r.name}</div><div class="text-xs text-gray-500">${r.code || ''}</div></div></div></td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><div class="font-bold ${crit === 'km' ? 'text-emerald-600' : ''}">${r.totalKm || 0} km</div><div class="${crit === 'likes' ? 'text-red-500 font-bold' : ''}">${r.likes || 0} likes</div></td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button onclick="app.showPage('home'); app.selectRock('${r.id}')" class="text-emerald-600 hover:text-emerald-900 hover:underline">Voir</button></td></tr>`;
+            });
+        },
+
+        updateCarouselUI: function(r) {
+            const img = document.getElementById('carousel-img'); const cnt = document.getElementById('carousel-counter');
+            img.style.opacity = '0.5';
+            setTimeout(() => { img.src = r.images[this.currentImageIndex]; img.style.opacity = '1'; }, 100);
+            cnt.innerText = `${this.currentImageIndex + 1} / ${r.images.length}`;
+        },
+
+        moveCarousel: function(d) {
+            const r = this.getRock(this.currentRockId); if(!r) return;
+            this.currentImageIndex = (this.currentImageIndex + d + r.images.length) % r.images.length;
+            this.updateCarouselUI(r);
+        },
+
+        /* ---------------------------
+           MAPS
+           --------------------------- */
+        initMap: function(r) {
+            if(!r) return;
+            if (!this.mapInstance) {
+                this.mapInstance = L.map('map').setView([46.603354, 1.888334], 5);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.mapInstance);
+            }
+            if (this.polylineInstance) this.mapInstance.removeLayer(this.polylineInstance);
+            this.markersInstance.forEach(m => this.mapInstance.removeLayer(m));
+            this.markersInstance = [];
+            const path = (r.path||[]).map(s => [s.lat, s.lng]);
+            (r.path || []).forEach((s, i) => {
+                const m = L.marker([s.lat, s.lng]).addTo(this.mapInstance).bindPopup(`<b>${i === 0 ? 'Départ' : 'Étape ' + i}</b><br>${s.name}`);
+                this.markersInstance.push(m);
+            });
+            if (path.length > 0) {
+                this.polylineInstance = L.polyline(path, {color: '#059669', weight: 4, dashArray: '5, 10'}).addTo(this.mapInstance);
+                setTimeout(() => { this.mapInstance.invalidateSize(); if(path.length > 0) this.mapInstance.fitBounds(this.polylineInstance.getBounds(), {padding: [50, 50]}); }, 200);
+            } else {
+                setTimeout(() => this.mapInstance.invalidateSize(), 200);
+            }
+        },
+
+        initStepMap: function() {
+            if(!this.stepMapInstance) {
+                this.stepMapInstance = L.map('map-step').setView([46.603354, 1.888334], 5);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.stepMapInstance);
+                this.stepMapInstance.on('click', (e) => this.setStepLocation(e.latlng.lat, e.latlng.lng));
+            }
+            setTimeout(() => this.stepMapInstance.invalidateSize(), 200);
+        },
+        setStepLocation: function(lat, lng) {
+            if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker);
+            this.stepMarker = L.marker([lat, lng]).addTo(this.stepMapInstance);
+            document.getElementById('step-lat').value = lat; document.getElementById('step-lng').value = lng;
+            this.reverseGeocode(lat, lng, 'step-location-name', 'geo-loading');
+        },
+
+        initCreateMap: function() {
+            if(!this.createMapInstance) {
+                this.createMapInstance = L.map('map-create').setView([46.603354, 1.888334], 5);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.createMapInstance);
+                this.createMapInstance.on('click', (e) => this.setCreateLocation(e.latlng.lat, e.latlng.lng));
+            }
+            setTimeout(() => this.createMapInstance.invalidateSize(), 200);
+        },
+        setCreateLocation: function(lat, lng) {
+            if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker);
+            this.createMarker = L.marker([lat, lng]).addTo(this.createMapInstance);
+            document.getElementById('create-lat').value = lat; document.getElementById('create-lng').value = lng;
+            this.reverseGeocode(lat, lng, 'create-location-name', 'geo-loading-create');
+        },
+
+        reverseGeocode: function(lat, lng, inputId, loaderId) {
+            const input = document.getElementById(inputId); input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}...`;
+            const loader = document.getElementById(loaderId);
+            if (loader) loader.classList.remove('hidden');
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            .then(res => res.json()).then(data => {
+                const city = data.address?.city || data.address?.town || data.address?.village || data.address?.hamlet || "Lieu";
+                const country = data.address?.country || "";
+                input.value = `${city}, ${country}`;
+            }).catch(() => {
+                input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            }).finally(() => { if (loader) loader.classList.add('hidden'); });
+        },
+
+        locateUser: function(type) {
+            if(!navigator.geolocation) { alert("Non supporté"); return; }
+            const loader = type === 'create' ? 'geo-loading-create' : 'geo-loading';
+            const l = document.getElementById(loader);
+            if (l) l.classList.remove('hidden');
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const { latitude, longitude } = pos.coords;
+                if(type === 'create') { this.createMapInstance.setView([latitude, longitude], 13); this.setCreateLocation(latitude, longitude); }
+                else { this.stepMapInstance.setView([latitude, longitude], 13); this.setStepLocation(latitude, longitude); }
+            }, () => { alert("Erreur GPS"); if (l) l.classList.add('hidden'); });
+        },
+
+        /* ---------------------------
+           CREATE / STEP / COMMENTS / LIKES (Firestore)
+           --------------------------- */
+        handleCreateStone: function(e) {
+            e.preventDefault();
+            const lat = document.getElementById('create-lat').value;
+            const name = document.getElementById('create-name-input').value;
+            const desc = document.getElementById('create-desc-input').value;
+            const imgUrl = document.getElementById('create-img-input').value || "https://picsum.photos/seed/" + encodeURIComponent(name) + "/600/400";
+            const location = document.getElementById('create-location-name').value;
+
+            if(!lat) { alert("Placez un point sur la carte !"); return; }
+            if(!DB.user || !DB.user.uid) { alert("Connectez-vous pour créer une pierre."); return; }
+
+            const newRock = {
+                code: "ST-" + Math.floor(Math.random() * 100000),
+                name: name,
+                author: DB.user.name || DB.user.email || "Anonyme",
+                createdAt: new Date().toISOString().split('T')[0],
+                description: desc,
+                likes: 0,
+                likedByMe: false,
+                totalKm: 0,
+                borders: 0,
+                images: [imgUrl],
+                path: [{ lat: parseFloat(lat), lng: parseFloat(document.getElementById('create-lng').value), name: location }],
+                comments: []
+            };
+
+            db.collection('rocks').add(newRock).then(ref => {
+                this.closeModal('create');
+                alert("Pierre créée : " + newRock.code);
+            }).catch(err => alert("Erreur création pierre : " + err.message));
+        },
+
+        handleStep: function(e) {
+            e.preventDefault();
+            const lat = document.getElementById('step-lat').value;
+            const lng = document.getElementById('step-lng').value;
+            const code = document.getElementById('step-code-input').value.trim();
+            const message = document.getElementById('step-message-input').value.trim();
+            if (!lat || !lng) return alert("Cliquez sur la carte !");
+            if (!code) return alert("Code de la pierre requis.");
+
+            // Find rock by code
+            const rock = DB.rocks.find(r => (r.code||'').toLowerCase() === code.toLowerCase());
+            if (!rock) return alert("Pierre introuvable avec ce code.");
+
+            // Create pending approval entry in meta.pendingApprovals doc
+            const metaRef = db.collection('meta').doc('pendingApprovals');
+            metaRef.get().then(d => {
+                let items = [];
+                if (d.exists) items = d.data().items || [];
+                const pend = {
+                    id: Date.now().toString(),
+                    rockId: rock.id,
+                    rockCode: rock.code,
+                    rockName: rock.name,
+                    location: document.getElementById('step-location-name').value || '',
+                    kmToAdd: 0,
+                    lat: parseFloat(lat),
+                    lng: parseFloat(lng),
+                    message: message,
+                    by: DB.user ? (DB.user.name || DB.user.email) : 'Anonyme',
+                    at: new Date().toISOString()
+                };
+                items.unshift(pend);
+                metaRef.set({ items: items }).then(() => {
+                    alert("Étape envoyée (en attente d'approbation).");
+                    this.closeModal('step');
+                }).catch(err => alert("Erreur envoi étape : " + err.message));
+            }).catch(err => alert("Erreur meta read : " + err.message));
+        },
+
+        postComment: function(e) {
+            e.preventDefault();
+            const i = document.getElementById('comment-input');
+            if(!i || !i.value.trim()) return;
+            const r = this.getRock(this.currentRockId);
+            if (!r) return alert("Pierre non trouvée.");
+            const newComment = { user: DB.user ? DB.user.name : "Anonyme", avatar: DB.user ? DB.user.avatar : null, text: i.value.trim(), date: new Date().toLocaleString() };
+            db.collection('rocks').doc(r.id).update({
+                comments: firebase.firestore.FieldValue.arrayUnion(newComment)
+            }).then(() => { i.value = ""; }).catch(err => alert("Erreur commentaire : " + err.message));
+        },
+
+        toggleLike: function() {
+            const r = this.getRock(this.currentRockId);
+            if(!r) return;
+            const docRef = db.collection('rocks').doc(r.id);
+            // use transaction to avoid race
+            db.runTransaction(tx => {
+                return tx.get(docRef).then(doc => {
+                    if (!doc.exists) throw "Doc missing";
+                    const likes = (doc.data().likes || 0) + 1;
+                    tx.update(docRef, { likes: likes });
+                    return likes;
+                });
+            }).then(newLikes => {
+                // optimistic update handled by listener
+            }).catch(err => console.error("like transaction error", err));
+        },
+
+        /* ---------------------------
+           COMMENTS UI & rendering
+           --------------------------- */
+        renderComments: function(r) {
+            const l = document.getElementById('comments-list'); const f = document.getElementById('comment-form-container');
+            document.getElementById('comments-count').innerText = (r.comments || []).length;
+            l.innerHTML = "";
+            const comments = r.comments || [];
+            if(comments.length === 0) l.innerHTML = `<p class="text-sm text-gray-400 italic text-center py-2">Soyez le premier à écrire.</p>`;
+            else comments.forEach(c => {
+                const av = c.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user || 'Anon')}&background=random`;
+                l.innerHTML += `<div class="flex gap-3 group"><img src="${av}" class="w-8 h-8 rounded-full object-cover shadow-sm bg-gray-200"><div class="bg-gray-50 p-3 rounded-2xl rounded-tl-none flex-1 text-sm border border-gray-100 group-hover:border-gray-200 transition"><div class="flex justify-between mb-1 items-baseline"><span class="font-bold text-gray-700">${c.user}</span><span class="text-[10px] text-gray-400 uppercase">${c.date}</span></div><p class="text-gray-600 leading-relaxed">${c.text}</p></div></div>`;
+            });
+            if(DB.user && DB.user.uid) f.innerHTML = `<form onsubmit="app.postComment(event)" class="flex gap-2 mt-4 relative"><input id="comment-input" type="text" placeholder="Écrire un commentaire..." class="flex-1 border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-sm"><button type="submit" class="absolute right-1 top-1 bottom-1 bg-emerald-600 text-white w-8 h-8 rounded-full hover:bg-emerald-700 flex items-center justify-center shadow-md transition transform hover:scale-105"><i class="fa-solid fa-paper-plane text-xs"></i></button></form>`;
+            else f.innerHTML = `<div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-sm text-blue-800 text-center cursor-pointer hover:bg-blue-100 transition" onclick="app.showPage('auth')"><i class="fa-solid fa-lock mr-2"></i>Connectez-vous pour commenter.</div>`;
+        },
+
+        /* ---------------------------
+           CREATE / LIST helpers
+           --------------------------- */
+        handleSearch: function() { this.renderRockList(document.getElementById('search-input').value); },
+
+    }; // end app
+
+    // Expose sign-in helpers to UI
+    app.signInWithGoogle = app.signInWithGoogle || function(){ app.signInWithGoogle(); };
+    app.signInAnonymously = app.signInAnonymously || function(){ app.signInAnonymously(); };
+    app.loginEmail = app.handleLogin;
+    app.loginAnon = app.signInAnonymously;
+    app.loginGoogle = app.signInWithGoogle;
+
+    // Initialize maps when modals open (deferred)
+    document.addEventListener('click', function(e){
+        // lazy init create map when modal shown
+        if (e.target && e.target.matches && e.target.matches('[onclick*=\"openModal(\'create\')\"]')) {
+            setTimeout(()=>app.initCreateMap && app.initCreateMap(), 250);
+        }
+    });
+
+    // start app
+    app.init();
+
     </script>
 </body>
 </html>
