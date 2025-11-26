@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* Styles personnalisés (identiques à ton original) */
+        /* Styles personnalisés */
         #map { height: 350px; width: 100%; border-radius: 0.5rem; z-index: 0;}
         #map-step, #map-create { height: 200px; width: 100%; border-radius: 0.5rem; z-index: 0; }
         .stone-card:hover { transform: translateY(-2px); transition: all 0.2s; }
@@ -23,13 +23,9 @@
         ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .dropdown-content { padding-top: 10px; margin-top: -5px; }
-        .loading-dots:after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
-        @keyframes dots { 0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 40% { color: #333; text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);} 60% { text-shadow: .25em 0 0 #333, .5em 0 0 rgba(0,0,0,0);} 80%, 100% { text-shadow: .25em 0 0 #333, .5em 0 0 #333;} }
         
-        /* Styles responsive pour mobile - CORRIGÉ */
+        /* Styles responsive pour mobile */
         @media (max-width: 768px) {
-            /* SCROLL GLOBAL pour toute la page mobile */
             body, #page-home {
                 overflow-y: auto !important;
                 height: auto !important;
@@ -48,7 +44,6 @@
                 overflow: visible !important;
             }
             
-            /* Supprimer tous les overflow-hidden qui bloquent le scroll */
             .overflow-hidden {
                 overflow: visible !important;
             }
@@ -57,22 +52,6 @@
                 max-height: none !important;
                 min-height: auto !important;
                 overflow: visible !important;
-                border: 1px solid #e5e7eb;
-                border-radius: 0.5rem;
-                padding: 0.5rem;
-                background: white;
-            }
-            
-            #rock-details-panel {
-                height: auto !important;
-                min-height: auto !important;
-                margin-top: 0 !important;
-                overflow: visible !important;
-            }
-            
-            #details-content {
-                overflow: visible !important;
-                height: auto !important;
             }
             
             .mobile-hidden {
@@ -95,27 +74,10 @@
                 padding: 0.5rem !important;
             }
             
-            /* Amélioration de l'affichage des cartes sur mobile */
             #map, #map-step, #map-create {
                 height: 250px !important;
             }
             
-            /* Meilleur espacement pour le header des détails */
-            #details-content .p-6 {
-                padding: 1rem !important;
-            }
-            
-            /* Réduction de la hauteur du carousel sur mobile */
-            #details-content .h-72 {
-                height: 200px !important;
-            }
-            
-            /* Boutons plus accessibles sur mobile */
-            button, .stone-card {
-                min-height: 44px !important;
-            }
-
-            /* Navigation mobile entre liste et détails */
             .mobile-only {
                 display: block !important;
             }
@@ -125,7 +87,6 @@
             }
         }
 
-        /* Pour desktop */
         @media (min-width: 769px) {
             .mobile-only {
                 display: none !important;
@@ -197,7 +158,7 @@
         </div>
     </nav>
 
-    <!-- 2. CONTENU PRINCIPAL - SCROLL GLOBAL SUR MOBILE -->
+    <!-- 2. CONTENU PRINCIPAL -->
     <div class="flex-1">
 
         <!-- PAGE: ACCUEIL -->
@@ -342,7 +303,7 @@
             </div>
             <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Rang</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Pierre</th><th class="px-6py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Stats</th><th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase mobile-text-sm">Action</th></tr></thead>
+                    <thead class="bg-gray-50"><tr><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Rang</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Pierre</th><th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase mobile-text-sm">Stats</th><th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase mobile-text-sm">Action</th></tr></thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="ranking-list"></tbody>
                 </table>
             </div>
@@ -354,8 +315,8 @@
                 <div id="auth-login">
                     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 mobile-text-sm">Connexion</h2>
                     <form onsubmit="app.handleLogin(event)">
-                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2 mobile-text-sm">Email</label><input id="login-email" type="email" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mobile-text-sm" value=""></div>
-                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2 mobile-text-sm">Mdp</label><input id="login-password" type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mobile-text-sm" value=""></div>
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2 mobile-text-sm">Email</label><input id="login-email" type="email" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mobile-text-sm"></div>
+                        <div class="mb-6"><label class="block text-gray-700 text-sm font-bold mb-2 mobile-text-sm">Mdp</label><input id="login-password" type="password" required class="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 mobile-text-sm"></div>
                         <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-700 transition mobile-text-sm">Se connecter</button>
                     </form>
 
@@ -403,7 +364,7 @@
 
     </div>
 
-    <!-- MODAL: CREATE avec UPLOAD DE PHOTOS -->
+    <!-- MODAL: CREATE -->
     <div id="modal-create" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[60] backdrop-blur-sm">
         <div class="bg-white rounded-xl p-6 max-w-lg w-full m-4 shadow-2xl animate-fade-in relative mobile-p-2 max-h-[90vh] overflow-y-auto">
             <button onclick="app.closeModal('create')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-times text-xl"></i></button>
@@ -464,7 +425,6 @@
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1 mobile-text-sm">Photo</label>
                     <input id="edit-rock-img-input" type="text" placeholder="URL de l'image" class="w-full border p-2 rounded-lg mobile-text-sm">
-                    <p class="text-xs text-gray-500 mt-1">Ou utilisez l'upload dans le modal de création</p>
                 </div>
                 <div class="pt-4 flex justify-end gap-3 mobile-stack">
                     <button type="button" onclick="app.closeModal('edit-rock')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg mobile-full mobile-text-sm">Annuler</button>
@@ -483,12 +443,13 @@
                 <input id="step-code-input" type="text" required placeholder="Code Unique (Ex: ST-001)" class="w-full border p-2 rounded-lg bg-gray-50 font-mono mobile-text-sm">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1 mobile-text-sm">Localisation</label>
-                    <div id="map-step" class="border border-gray-300 overflow-hidden"></div>
+                    <div id="map-step" class="border border-gray-300 overflow-hidden h-48 rounded-lg"></div>
                     <div class="relative mt-2">
                         <input type="text" id="step-location-name" readonly required placeholder="Cliquez sur la carte" class="w-full border p-2 rounded-lg bg-gray-50 text-sm text-gray-600 mobile-text-sm">
                         <div id="geo-loading" class="absolute right-3 top-2 text-xs text-gray-400 hidden loading-dots">Recherche</div>
                     </div>
                     <input type="hidden" id="step-lat"><input type="hidden" id="step-lng">
+                    <input type="hidden" id="step-country">
                 </div>
                 <textarea id="step-message-input" rows="2" placeholder="Message..." class="w-full border p-2 rounded-lg mobile-text-sm"></textarea>
                 <div class="pt-4 flex justify-end gap-3 mobile-stack">
@@ -499,15 +460,14 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC (FIREBASE INTEGRATION) -->
-    <!-- Firebase compat libs -->
+    <!-- JAVASCRIPT -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
     <script>
-    /***** CONFIG FIREBASE *****/
+    // Configuration Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDOPfGOHYJ4Li4W_atXc5Jey_OEgz5_mTA",
         authDomain: "straveler-252fc.firebaseapp.com",
@@ -517,83 +477,34 @@
         appId: "1:124387208834:web:871cf13525072ad3310e9b",
         measurementId: "G-C034PW0KPJ"
     };
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-/* ---------------------------
-   MapUtils: distance, normalizePath, country detection
-   --------------------------- */
-const MapUtils = {
-    computeDistance: function(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    },
-    getCountryForPoint: async function(lat, lng) {
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=3`);
-            const data = await res.json();
-            const cc = data.address && (data.address.country_code || data.address.country);
-            return cc ? (cc.toString().toUpperCase()) : null;
-        } catch(e) {
-            return null;
-        }
-    },
-    normalizePath: function(path) {
-        if (!Array.isArray(path)) return [];
-        return path.map(p => ({lat: parseFloat(p.lat), lng: parseFloat(p.lng), name: p.name || p.location || '', country: p.country || null, at: p.at || p.date || null}))
-                   .filter(p => !isNaN(p.lat) && !isNaN(p.lng));
-    }
-};
+    // Données globales
+    let DB = { user: null, pendingApprovals: [], rocks: [] };
 
+    // Image par défaut grise (SVG)
+    const DEFAULT_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23f3f4f6'/%3E%3Cpath d='M80,70 C80,65.58 83.58,62 88,62 L112,62 C116.42,62 120,65.58 120,70 L120,90 C120,94.42 116.42,98 112,98 L88,98 C83.58,98 80,94.42 80,90 L80,70 Z M70,110 C70,105.58 73.58,102 78,102 L122,102 C126.42,102 130,105.58 130,110 L130,130 C130,134.42 126.42,138 122,138 L78,138 C73.58,138 70,134.42 70,130 L70,110 Z' fill='%239ca3af'/%3E%3C/svg%3E";
 
-/* ---------------------------
-   Image resize helper (ensure < 1MB)
-   --------------------------- */
-async function resizeImageFile(file, maxBytes = 1000000) {
-    // create ImageBitmap for better performance
-    const img = await createImageBitmap(file);
-    const canvas = document.createElement('canvas');
-    const maxDim = 1600;
-    const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-    canvas.width = Math.round(img.width * scale);
-    canvas.height = Math.round(img.height * scale);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    let quality = 0.85;
-    let blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
-    while (blob.size > maxBytes && quality > 0.2) {
-        quality -= 0.07;
-        blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
-    }
-    return blob;
-}
-
-    /***** DATA STRUCTURES *****/
-    let DB = { user: null, pendingApprovals: [] , rocks: [] };
-
-    /***** APP OBJECT AVEC UPLOAD DE PHOTOS *****/
+    // Application principale
     const app = {
-        currentRockId: null, 
+        currentRockId: null,
         currentImageIndex: 0,
-        mapInstance: null, 
-        polylineInstance: null, 
+        mapInstance: null,
+        polylineInstance: null,
         markersInstance: [],
-        stepMapInstance: null, 
-        stepMarker: null, 
-        createMapInstance: null, 
+        stepMapInstance: null,
+        stepMarker: null,
+        createMapInstance: null,
         createMarker: null,
         mobileView: false,
         uploadedImageUrl: null,
 
         init: function() {
+            console.log("Initialisation de l'application...");
             this.detectMobile();
             this.renderNav();
             this.attachAuthListener();
@@ -602,47 +513,22 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             this.setupImageUpload();
         },
 
-        /* ---------------------------
-           UPLOAD DE PHOTOS
-           --------------------------- */
+        // Upload d'images
         setupImageUpload: function() {
             const uploadArea = document.getElementById('upload-area');
-            const fileInput = document.getElementById('file-input');
-            
-            // Drag and drop
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-            
-            uploadArea.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    this.handleImageUpload({ target: { files: files } });
-                }
-            });
+            if (uploadArea) {
+                uploadArea.addEventListener('click', () => {
+                    document.getElementById('file-input').click();
+                });
+            }
         },
 
         handleImageUpload: function(event) {
             const file = event.target.files[0];
             if (!file) return;
             
-            // Vérifier le type de fichier
             if (!file.type.startsWith('image/')) {
                 alert('Veuillez sélectionner une image valide');
-                return;
-            }
-            
-            // Vérifier la taille (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('L\'image est trop volumineuse (max 5MB)');
                 return;
             }
             
@@ -674,29 +560,24 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             const filename = `images/${Date.now()}_${file.name}`;
             const uploadTask = storage.ref().child(filename).put(file);
             
-            // Afficher la progression
             progress.classList.remove('hidden');
             
             uploadTask.on('state_changed',
                 (snapshot) => {
-                    // Progression
                     const progressValue = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     progressBar.style.width = progressValue + '%';
                 },
                 (error) => {
-                    // Erreur
                     console.error('Upload error:', error);
                     alert('Erreur lors de l\'upload: ' + error.message);
                     progress.classList.add('hidden');
                     this.removeImage();
                 },
                 () => {
-                    // Succès
                     uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                         this.uploadedImageUrl = downloadURL;
                         document.getElementById('create-img-input').value = downloadURL;
                         progress.classList.add('hidden');
-                        console.log('Image uploaded:', downloadURL);
                     });
                 }
             );
@@ -710,40 +591,7 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             document.getElementById('file-input').value = '';
         },
 
-        /* ---------------------------
-           DÉTECTION ET COMPORTEMENT MOBILE
-           --------------------------- */
-        detectMobile: function() {
-            this.mobileView = window.innerWidth <= 768;
-            window.addEventListener('resize', () => {
-                this.mobileView = window.innerWidth <= 768;
-            });
-        },
-
-        setupMobileBehavior: function() {
-            // Au chargement, sur mobile on montre la liste
-            if (this.mobileView) {
-                this.showRockList();
-            }
-        },
-
-        showRockList: function() {
-            if (this.mobileView) {
-                document.querySelector('.lg\\:col-span-4').classList.remove('hidden');
-                document.querySelector('.lg\\:col-span-8').classList.add('hidden');
-            }
-        },
-
-        showRockDetails: function() {
-            if (this.mobileView) {
-                document.querySelector('.lg\\:col-span-4').classList.add('hidden');
-                document.querySelector('.lg\\:col-span-8').classList.remove('hidden');
-            }
-        },
-
-        /* ---------------------------
-           AUTH
-           --------------------------- */
+        // Authentification
         attachAuthListener: function() {
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
@@ -811,27 +659,6 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             auth.signInAnonymously().catch(err => alert("Erreur connexion anonyme : " + err.message));
         },
 
-        handleUpdateProfile: async function(e) {
-            e.preventDefault();
-            if (!DB.user || !DB.user.uid) return alert("Aucun utilisateur connecté.");
-            try {
-                const updatedData = {
-                    name: document.getElementById('edit-name').value,
-                    bio: document.getElementById('edit-bio').value
-                };
-                const avatar = document.getElementById('edit-avatar').value;
-                if (avatar) updatedData.avatar = avatar;
-                
-                await db.collection('users').doc(DB.user.uid).update(updatedData);
-                
-                DB.user = { ...DB.user, ...updatedData };
-                alert("Profil mis à jour !");
-                this.renderNav();
-            } catch (e) {
-                alert("Erreur mise à jour profil : " + e.message);
-            }
-        },
-
         logout: function() {
             auth.signOut().then(()=> {
                 DB.user = null;
@@ -840,118 +667,36 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             });
         },
 
-        /* ---------------------------
-           FIRESTORE LISTENERS
-           --------------------------- */
-        setupFirestoreListeners: function() {
-            db.collection('rocks').onSnapshot(snapshot => {
-                DB.rocks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                DB.rocks.forEach(r => {
-                    r.likes = r.likes || 0;
-                    r.likedBy = r.likedBy || [];
-                    r.totalKm = r.totalKm || 0;
-                    r.borders = r.borders || 0;
-                    if (!r.images || !r.images.length) { r.images = []; }
-                    r.comments = r.comments || [];
-                    r.path = r.path || [];
-                });
-                this.sortRocksByDate();
-                this.renderRockList();
-                if (this.currentRockId) {
-                    const found = this.getRock(this.currentRockId);
-                    if (found) this.selectRock(this.currentRockId);
-                }
-            }, err => {
-                console.error("Firestore rocks listener error", err);
-                DB.rocks = [];
-                this.renderRockList();
-            });
-
-            db.collection('meta').doc('pendingApprovals').onSnapshot(doc => {
-                if (doc.exists) DB.pendingApprovals = doc.data().items || []; else DB.pendingApprovals = [];
-                this.renderNav();
-            }, () => { DB.pendingApprovals = []; this.renderNav(); });
-        },
-
+        // Navigation
         renderNav: function() {
             const nav = document.getElementById('nav-buttons');
             if (DB.user) {
                 let notifHTML = '';
                 if(DB.pendingApprovals && DB.pendingApprovals.length > 0) {
-                    const list = DB.pendingApprovals.map(p => `<div class="flex justify-between items-center border-b border-gray-100 pb-2 mb-2 last:border-0 last:mb-0 last:pb-0"><div class="text-gray-600"><p><b>${p.rockName}</b></p><p class="text-gray-500">Arrivée à ${p.location}</p></div><button onclick="app.handleApprove('${p.id}')" class="ml-2 bg-emerald-100 text-emerald-700 px-2 py-1 rounded hover:bg-emerald-200 text-[10px] font-bold uppercase tracking-wide transition">Valider</button></div>`).join('');
-                    notifHTML = `<div class="relative cursor-pointer mr-2 group"><div class="py-2"><i class="fa-solid fa-bell text-gray-500 text-xl group-hover:text-emerald-600 transition"></i><span class="absolute top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 rounded-full animate-pulse">${DB.pendingApprovals.length}</span></div><div class="dropdown-content absolute right-0 top-full w-72 hidden group-hover:block z-50"><div class="bg-white border rounded-lg shadow-xl p-4 text-xs text-left relative"><div class="absolute -top-1 right-2 w-3 h-3 bg-white border-t border-l transform rotate-45"></div><p class="font-bold border-b pb-2 mb-2 text-gray-800 uppercase tracking-wider text-[10px]">Approbations requises</p>${list}</div></div></div>`;
-                } else { notifHTML = `<div class="relative mr-2 py-2 text-gray-300 cursor-default"><i class="fa-regular fa-bell text-xl"></i></div>`; }
+                    notifHTML = `<div class="relative cursor-pointer mr-2 group"><div class="py-2"><i class="fa-solid fa-bell text-gray-500 text-xl group-hover:text-emerald-600 transition"></i><span class="absolute top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1 rounded-full animate-pulse">${DB.pendingApprovals.length}</span></div></div>`;
+                } else { 
+                    notifHTML = `<div class="relative mr-2 py-2 text-gray-300 cursor-default"><i class="fa-regular fa-bell text-xl"></i></div>`; 
+                }
                 nav.innerHTML = `${notifHTML}<div class="flex items-center gap-2 border-l pl-4 border-gray-200"><div onclick="app.showPage('profile')" class="cursor-pointer flex items-center gap-2 hover:bg-gray-50 p-1 rounded-full pr-3 transition"><img src="${DB.user.avatar}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><span class="text-sm font-medium hidden sm:block text-gray-700">${DB.user.name}</span></div><button onclick="app.logout()" class="text-gray-400 hover:text-red-500 ml-1" title="Déconnexion"><i class="fa-solid fa-sign-out-alt"></i></button></div>`;
             } else {
                 nav.innerHTML = `<button onclick="app.showPage('auth')" class="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition shadow-sm text-sm font-bold flex items-center"><i class="fa-solid fa-user mr-2"></i> Connexion</button>`;
             }
         },
 
-        handleApprove: async function(id) {
-            const metaRef = db.collection('meta').doc('pendingApprovals');
-            const d = await metaRef.get();
-            if (!d.exists) return alert('Aucune approbation.');
-            const items = d.data().items || [];
-            const pend = items.find(p => p.id === id || p.id === (''+id));
-            if (!pend) return alert('Approbation introuvable.');
-            const rockRef = db.collection('rocks').doc(pend.rockId);
-            const rockDoc = await rockRef.get();
-            if (!rockDoc.exists) return alert('Pierre introuvable.');
-            const rock = rockDoc.data();
-
-            // compute km and borders
-            let kmToAdd = 0;
-            let borderInc = 0;
-            if (rock.path && rock.path.length > 0) {
-                const lastStep = rock.path[rock.path.length - 1];
-                kmToAdd = MapUtils.computeDistance(lastStep.lat, lastStep.lng, pend.lat, pend.lng);
-                const lastCountry = lastStep.country || await MapUtils.getCountryForPoint(lastStep.lat, lastStep.lng);
-                const newCountry = pend.country || await MapUtils.getCountryForPoint(pend.lat, pend.lng);
-                if (lastCountry && newCountry && lastCountry !== newCountry) borderInc = 1;
-            }
-
-            const stepObj = { lat: pend.lat || 0, lng: pend.lng || 0, name: pend.location || '', country: pend.country || await MapUtils.getCountryForPoint(pend.lat, pend.lng), at: pend.at || new Date().toISOString() };
-            const comment = { id: Date.now().toString(), user: pend.by || 'Anonyme', userId: null, avatar: null, text: pend.message || '', date: new Date().toLocaleString(), image: pend.image || null };
-            try {
-                await rockRef.update({
-                    path: firebase.firestore.FieldValue.arrayUnion(stepObj),
-                    totalKm: firebase.firestore.FieldValue.increment(Math.round(kmToAdd*10)/10),
-                    borders: firebase.firestore.FieldValue.increment(borderInc),
-                    comments: firebase.firestore.FieldValue.arrayUnion(comment)
-                });
-                // remove pend
-                const newItems = items.filter(it => it.id !== pend.id);
-                await metaRef.set({ items: newItems });
-                alert('Trajet approuvé ! +' + kmToAdd.toFixed(2) + ' km');
-            } catch(err) {
-                alert('Erreur approbation : ' + (err.message||err));
-            }
-        }
-
-        calculateDistance: function(lat1, lon1, lat2, lon2) {
-            const R = 6371;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        },
-
+        // Pages
         showPage: function(pg) {
-            ['page-home', 'page-ranking', 'page-auth', 'page-profile'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            ['page-home', 'page-ranking', 'page-auth', 'page-profile'].forEach(p => {
+                document.getElementById(p).classList.add('hidden');
+            });
             document.getElementById('page-' + pg).classList.remove('hidden');
+            
             if (pg === 'home') {
                 document.getElementById('page-home').classList.add('flex');
-                if (this.currentRockId) setTimeout(() => this.initMap(this.getRock(this.currentRockId)), 100);
-                // Sur mobile, revenir à la liste quand on change de page
                 if (this.mobileView) {
                     this.showRockList();
                 }
-            } else {
-                document.getElementById('page-home').classList.remove('flex');
             }
+            
             if (pg === 'ranking') this.renderRanking('likes');
             if (pg === 'profile' && DB.user) {
                 document.getElementById('edit-name').value = DB.user.name;
@@ -971,6 +716,7 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             }
         },
 
+        // Modals
         openModal: function(type) {
             if (!DB.user) {
                 alert("Veuillez vous connecter pour accéder à cette fonctionnalité.");
@@ -980,13 +726,9 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             
             const modal = document.getElementById('modal-' + type);
             modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            // Attendre que le modal soit visible avant d'initialiser la carte
             setTimeout(() => {
                 if (type === 'create') {
                     this.initCreateMap();
-                    this.removeImage();
                 } else if (type === 'step') {
                     this.initStepMap();
                 }
@@ -996,27 +738,39 @@ async function resizeImageFile(file, maxBytes = 1000000) {
         closeModal: function(type) {
             const modal = document.getElementById('modal-' + type);
             modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            
             const form = modal.querySelector('form');
             if (form) form.reset();
-            
-            // Réinitialiser l'upload d'image pour le modal create
             if (type === 'create') {
                 this.removeImage();
             }
         },
 
-        saveLocal: function() {
-            try { localStorage.setItem('stoneTravelerDB', JSON.stringify({rocks: DB.rocks})); } catch(e){}
+        // Firestore
+        setupFirestoreListeners: function() {
+            // Écoute des pierres
+            db.collection('rocks').onSnapshot(snapshot => {
+                DB.rocks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                DB.rocks.forEach(r => {
+                    r.likes = r.likes || 0;
+                    r.likedBy = r.likedBy || [];
+                    r.totalKm = r.totalKm || 0;
+                    r.borders = r.borders || 0;
+                    r.images = r.images && r.images.length ? r.images : [DEFAULT_IMAGE];
+                    r.comments = r.comments || [];
+                    r.path = r.path || [];
+                });
+                this.renderRockList();
+            });
+
+            // Écoute des approbations en attente
+            db.collection('meta').doc('pendingApprovals').onSnapshot(doc => {
+                if (doc.exists) DB.pendingApprovals = doc.data().items || []; 
+                else DB.pendingApprovals = [];
+                this.renderNav();
+            });
         },
 
-        sortRocksByDate: function() {
-            DB.rocks.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        },
-
-        getRock: function(id) { return DB.rocks.find(r => r.id === id || r.id === ''+id); },
-
+        // Pierres
         renderRockList: function(filter = "") {
             const list = document.getElementById('rocks-list');
             list.innerHTML = "";
@@ -1024,31 +778,55 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             const filtered = DB.rocks.filter(r => {
                 const name = (r.name || '').toLowerCase();
                 const code = (r.code || '').toLowerCase();
-                const author = (r.author || '').toLowerCase();
-                const inPath = (r.path||[]).some(s => (s.name||'').toLowerCase().includes(term));
-                return name.includes(term) || code.includes(term) || author.includes(term) || inPath;
+                return name.includes(term) || code.includes(term);
             });
+            
             if (filtered.length === 0) {
                 list.innerHTML = `<div class="text-center text-gray-400 mt-10 italic text-sm">Aucune pierre trouvée.</div>`;
                 return;
             }
+            
             filtered.forEach(r => {
                 const active = this.currentRockId === r.id ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500' : 'border-gray-100 bg-white hover:bg-gray-50';
-                list.innerHTML += `<div onclick="app.selectRock('${r.id}')" class="stone-card p-3 rounded-xl shadow-sm border cursor-pointer flex gap-3 transition-all ${active}"><div class="relative w-20 h-20 shrink-0"><img src="${r.images[0]}" class="w-full h-full rounded-lg object-cover bg-gray-200"><div class="absolute bottom-0 right-0 bg-black/50 text-white text-[10px] px-1 rounded-tl-md">${r.images.length} <i class="fa-solid fa-camera"></i></div></div><div class="flex-1 min-w-0 flex flex-col justify-center"><div class="flex justify-between items-start mb-1"><h4 class="font-bold text-gray-800 truncate text-sm">${r.name}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono border border-emerald-200">${r.code || ''}</span></div><div class="text-xs text-gray-500 mb-2 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gray-400"></i> <span class="truncate">${r.path[0] ? r.path[0].name : 'Inconnu'}</span></div><div class="flex items-center justify-between text-xs mt-auto border-t pt-2 border-gray-100"><span class="text-emerald-600 font-semibold"><i class="fa-solid fa-road"></i> ${(r.totalKm || 0).toFixed(1)} km</span><span class="text-gray-400"><i class="fa-solid fa-heart"></i> ${r.likes || 0}</span></div></div></div>`;
+                const imageUrl = r.images && r.images.length > 0 ? r.images[0] : DEFAULT_IMAGE;
+                
+                list.innerHTML += `
+                    <div onclick="app.selectRock('${r.id}')" class="stone-card p-3 rounded-xl shadow-sm border cursor-pointer flex gap-3 transition-all ${active}">
+                        <div class="relative w-20 h-20 shrink-0">
+                            <img src="${imageUrl}" class="w-full h-full rounded-lg object-cover bg-gray-200">
+                            <div class="absolute bottom-0 right-0 bg-black/50 text-white text-[10px] px-1 rounded-tl-md">${r.images ? r.images.length : 0} <i class="fa-solid fa-camera"></i></div>
+                        </div>
+                        <div class="flex-1 min-w-0 flex flex-col justify-center">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-bold text-gray-800 truncate text-sm">${r.name}</h4>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono border border-emerald-200">${r.code || ''}</span>
+                            </div>
+                            <div class="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                                <i class="fa-solid fa-location-dot text-gray-400"></i> 
+                                <span class="truncate">${r.path[0] ? r.path[0].name : 'Inconnu'}</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs mt-auto border-t pt-2 border-gray-100">
+                                <span class="text-emerald-600 font-semibold"><i class="fa-solid fa-road"></i> ${(r.totalKm || 0).toFixed(1)} km</span>
+                                <span class="text-gray-400"><i class="fa-solid fa-heart"></i> ${r.likes || 0}</span>
+                            </div>
+                        </div>
+                    </div>`;
             });
         },
 
-        handleSearch: function() { this.renderRockList(document.getElementById('search-input').value); },
+        handleSearch: function() { 
+            this.renderRockList(document.getElementById('search-input').value); 
+        },
 
         selectRock: function(id) {
             this.currentRockId = id;
-            this.currentImageIndex = 0;
             const r = this.getRock(id);
             if(!r) return;
-            this.renderRockList(document.getElementById('search-input').value);
+            
             document.getElementById('empty-state').classList.add('hidden');
             document.getElementById('details-content').classList.remove('hidden');
             
+            // Mettre à jour les détails
             document.getElementById('detail-name').innerText = r.name;
             document.getElementById('detail-code').innerText = r.code || '';
             document.getElementById('detail-author').innerText = r.author || '';
@@ -1059,316 +837,116 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             document.getElementById('detail-km').innerText = (r.totalKm || 0).toFixed(1);
             document.getElementById('detail-borders').innerText = r.borders || 0;
             
-            const btn = document.getElementById('like-btn');
-            const btnMobile = document.getElementById('like-btn-mobile');
-            const hasLiked = r.likedBy && r.likedBy.includes(DB.user ? DB.user.uid : '');
-            const likeClass = hasLiked ? "text-red-500" : "text-gray-400 hover:text-red-500";
-            btn.className = likeClass + " transition transform active:scale-125 group";
-            btnMobile.className = "flex items-center gap-2 " + likeClass + " transition";
-            
-            const editButtons = document.getElementById('edit-rock-buttons');
-            if (DB.user && r.authorId === DB.user.uid) {
-                editButtons.classList.remove('hidden');
-            } else {
-                editButtons.classList.add('hidden');
-            }
-            
+            // Mettre à jour le carousel
+            this.currentImageIndex = 0;
             this.updateCarouselUI(r);
             
             if (this.mobileView) {
                 this.showRockDetails();
             }
             
-            setTimeout(() => this.initMap(r), 100);
             this.renderComments(r);
         },
 
-        renderRanking: function(crit) {
-            const tbody = document.getElementById('ranking-list'); tbody.innerHTML = "";
-            const sorted = [...DB.rocks].sort((a, b) => crit === 'likes' ? (b.likes||0) - (a.likes||0) : (b.totalKm||0) - (a.totalKm||0));
-            sorted.forEach((r, i) => {
-                let m = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "";
-                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${m} ${i + 1}</td><td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><img class="h-10 w-10 rounded-full object-cover mr-3 border" src="${r.images[0]}"><div><div class="text-sm font-medium text-gray-900">${r.name}</div><div class="text-xs text-gray-500">${r.code || ''}</div></div></div></td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><div class="font-bold ${crit === 'km' ? 'text-emerald-600' : ''}">${(r.totalKm || 0).toFixed(1)} km</div><div class="${crit === 'likes' ? 'text-red-500 font-bold' : ''}">${r.likes || 0} likes</div></td><td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button onclick="app.showPage('home'); app.selectRock('${r.id}')" class="text-emerald-600 hover:text-emerald-900 hover:underline">Voir</button></td></tr>`;
-            });
+        getRock: function(id) { 
+            return DB.rocks.find(r => r.id === id); 
         },
 
+        // Carousel
         updateCarouselUI: function(r) {
-            const img = document.getElementById('carousel-img'); const cnt = document.getElementById('carousel-counter');
+            const img = document.getElementById('carousel-img');
+            const cnt = document.getElementById('carousel-counter');
+            const imageUrl = r.images && r.images.length > 0 ? r.images[this.currentImageIndex] : DEFAULT_IMAGE;
+            
             img.style.opacity = '0.5';
-            setTimeout(() => { img.src = r.images[this.currentImageIndex]; img.style.opacity = '1'; }, 100);
+            setTimeout(() => { 
+                img.src = imageUrl; 
+                img.style.opacity = '1'; 
+            }, 100);
             cnt.innerText = `${this.currentImageIndex + 1} / ${r.images.length}`;
         },
 
         moveCarousel: function(d) {
-            const r = this.getRock(this.currentRockId); if(!r) return;
+            const r = this.getRock(this.currentRockId); 
+            if(!r) return;
             this.currentImageIndex = (this.currentImageIndex + d + r.images.length) % r.images.length;
             this.updateCarouselUI(r);
         },
 
-      initMap: function(r) {
-            if(!r) return;
-            
-            // Réinitialiser complètement la carte si elle existe
-            if (this.mapInstance) {
-                this.mapInstance.remove();
-                this.mapInstance = null;
-                this.polylineInstance = null;
-                this.markersInstance = [];
-            }
-            
-            // Créer une nouvelle carte
-            this.mapInstance = L.map('map', {
-                worldCopyJump: false,
-                maxBounds: [[-90, -180], [90, 180]],
-                maxBoundsViscosity: 1.0
+        // Classement
+        renderRanking: function(crit) {
+            const tbody = document.getElementById('ranking-list'); 
+            tbody.innerHTML = "";
+            const sorted = [...DB.rocks].sort((a, b) => crit === 'likes' ? (b.likes||0) - (a.likes||0) : (b.totalKm||0) - (a.totalKm||0));
+            sorted.forEach((r, i) => {
+                let m = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "";
+                const imageUrl = r.images && r.images.length > 0 ? r.images[0] : DEFAULT_IMAGE;
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${m} ${i + 1}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <img class="h-10 w-10 rounded-full object-cover mr-3 border" src="${imageUrl}">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">${r.name}</div>
+                                    <div class="text-xs text-gray-500">${r.code || ''}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="font-bold ${crit === 'km' ? 'text-emerald-600' : ''}">${(r.totalKm || 0).toFixed(1)} km</div>
+                            <div class="${crit === 'likes' ? 'text-red-500 font-bold' : ''}">${r.likes || 0} likes</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="app.showPage('home'); app.selectRock('${r.id}')" class="text-emerald-600 hover:text-emerald-900 hover:underline">Voir</button>
+                        </td>
+                    </tr>`;
             });
+        },
+
+        // Commentaires
+        renderComments: function(r) {
+            const l = document.getElementById('comments-list'); 
+            const f = document.getElementById('comment-form-container');
+            document.getElementById('comments-count').innerText = (r.comments || []).length;
+            l.innerHTML = "";
+            const comments = r.comments || [];
             
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                attribution: '© OpenStreetMap',
-                noWrap: true
-            }).addTo(this.mapInstance);
-            
-            // Normaliser le chemin
-            const normalizedPath = MapUtils.normalizePath(r.path || []);
-            
-            // Centrer la carte sur le premier point
-            if (normalizedPath.length > 0) {
-                const firstPoint = normalizedPath[0];
-                this.mapInstance.setView([firstPoint.lat, firstPoint.lng], 5);
-                
-                // Ajouter les marqueurs
-                normalizedPath.forEach((s, i) => {
-                    const m = L.marker([s.lat, s.lng])
-                        .addTo(this.mapInstance)
-                        .bindPopup(`<b>${i === 0 ? 'Départ' : 'Étape ' + i}</b><br>${s.name || 'Lieu sans nom'}`);
-                    this.markersInstance.push(m);
-                });
-                
-                // Créer la polyligne si assez de points
-                if (normalizedPath.length > 1) {
-                    const latLngs = normalizedPath.map(s => [s.lat, s.lng]);
-                    this.polylineInstance = L.polyline(latLngs, {
-                        color: '#059669', 
-                        weight: 4, 
-                        dashArray: '5, 10'
-                    }).addTo(this.mapInstance);
-                    
-                    // Ajuster la vue pour voir tout le trajet
-                    this.mapInstance.fitBounds(this.polylineInstance.getBounds(), {padding: [20, 20]});
-                }
+            if(comments.length === 0) {
+                l.innerHTML = `<p class="text-sm text-gray-400 italic text-center py-2">Soyez le premier à écrire.</p>`;
             } else {
-                // Vue par défaut si pas de chemin
-                this.mapInstance.setView([46.603354, 1.888334], 5);
+                comments.forEach(c => {
+                    const av = c.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user || 'Anon')}&background=random`;
+                    l.innerHTML += `
+                        <div class="flex gap-3 group">
+                            <img src="${av}" class="w-8 h-8 rounded-full object-cover shadow-sm bg-gray-200">
+                            <div class="bg-gray-50 p-3 rounded-2xl rounded-tl-none flex-1 text-sm border border-gray-100 group-hover:border-gray-200 transition">
+                                <div class="flex justify-between mb-1 items-baseline">
+                                    <span class="font-bold text-gray-700">${c.user}</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">${c.date}</span>
+                                </div>
+                                <p class="text-gray-600 leading-relaxed">${c.text}</p>
+                            </div>
+                        </div>`;
+                });
             }
             
-            // Forcer le redimensionnement
-            setTimeout(() => {
-                this.mapInstance.invalidateSize();
-            }, 300);
-        },
-
-        initStepMap: function() {
-            if(this.stepMapInstance) {
-                this.stepMapInstance.remove();
-                this.stepMapInstance = null;
+            if(DB.user && DB.user.uid) {
+                f.innerHTML = `
+                    <form onsubmit="app.postComment(event)" class="flex gap-2 mt-4 relative">
+                        <input id="comment-input" type="text" placeholder="Écrire un commentaire..." class="flex-1 border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-sm">
+                        <button type="submit" class="absolute right-1 top-1 bottom-1 bg-emerald-600 text-white w-8 h-8 rounded-full hover:bg-emerald-700 flex items-center justify-center shadow-md transition transform hover:scale-105">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </form>`;
+            } else {
+                f.innerHTML = `
+                    <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-sm text-blue-800 text-center cursor-pointer hover:bg-blue-100 transition" onclick="app.showPage('auth')">
+                        <i class="fa-solid fa-lock mr-2"></i>Connectez-vous pour commenter.
+                    </div>`;
             }
-            
-            this.stepMapInstance = L.map('map-step', {
-                worldCopyJump: false,
-                maxBounds: [[-90, -180], [90, 180]],
-                maxBoundsViscosity: 1.0
-            }).setView([46.603354, 1.888334], 5);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                attribution: '© OpenStreetMap',
-                noWrap: true
-            }).addTo(this.stepMapInstance);
-            
-            this.stepMapInstance.on('click', (e) => this.setStepLocation(e.latlng.lat, e.latlng.lng));
-            
-            setTimeout(() => this.stepMapInstance.invalidateSize(), 300);
         },
-
-        setStepLocation: function(lat, lng) {
-            if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker);
-            this.stepMarker = L.marker([lat, lng]).addTo(this.stepMapInstance);
-            document.getElementById('step-lat').value = lat; document.getElementById('step-lng').value = lng;
-            this.reverseGeocode(lat, lng, 'step-location-name', 'geo-loading');
-        },
-
-        initCreateMap: function() {
-            if(this.createMapInstance) {
-                this.createMapInstance.remove();
-                this.createMapInstance = null;
-            }
-            
-            this.createMapInstance = L.map('map-create', {
-                worldCopyJump: false,
-                maxBounds: [[-90, -180], [90, 180]],
-                maxBoundsViscosity: 1.0
-            }).setView([46.603354, 1.888334], 5);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                attribution: '© OpenStreetMap',
-                noWrap: true
-            }).addTo(this.createMapInstance);
-            
-            this.createMapInstance.on('click', (e) => this.setCreateLocation(e.latlng.lat, e.latlng.lng));
-            
-            setTimeout(() => this.createMapInstance.invalidateSize(), 300);
-        },
-
-        setCreateLocation: function(lat, lng) {
-            if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker);
-            this.createMarker = L.marker([lat, lng]).addTo(this.createMapInstance);
-            document.getElementById('create-lat').value = lat; document.getElementById('create-lng').value = lng;
-            this.reverseGeocode(lat, lng, 'create-location-name', 'geo-loading-create');
-        },
-
-        reverseGeocode: function(lat, lng, inputId, loaderId) {
-            const input = document.getElementById(inputId); input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}...`;
-            const loader = document.getElementById(loaderId);
-            if (loader) loader.classList.remove('hidden');
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-            .then(res => res.json()).then(data => {
-                const city = data.address?.city || data.address?.town || data.address?.village || data.address?.hamlet || "Lieu";
-                const country = data.address?.country || "";
-                input.value = `${city}, ${country}`;
-            }).catch(() => {
-                input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-            }).finally(() => { if (loader) loader.classList.add('hidden'); });
-        },
-
-        locateUser: function(type) {
-            if(!navigator.geolocation) { alert("Non supporté"); return; }
-            const loader = type === 'create' ? 'geo-loading-create' : 'geo-loading';
-            const l = document.getElementById(loader);
-            if (l) l.classList.remove('hidden');
-            navigator.geolocation.getCurrentPosition((pos) => {
-                const { latitude, longitude } = pos.coords;
-                if(type === 'create') { this.createMapInstance.setView([latitude, longitude], 13); this.setCreateLocation(latitude, longitude); }
-                else { this.stepMapInstance.setView([latitude, longitude], 13); this.setStepLocation(latitude, longitude); }
-            }, () => { alert("Erreur GPS"); if (l) l.classList.add('hidden'); });
-        },
-
-        handleCreateStone: async function(e) {
-            e.preventDefault();
-            const lat = document.getElementById('create-lat').value;
-            const lng = document.getElementById('create-lng').value;
-            const name = document.getElementById('create-name-input').value;
-            const desc = document.getElementById('create-desc-input').value;
-            if(!lat || !lng) { alert('Placez un point sur la carte !'); return; }
-            if(!DB.user || !DB.user.uid) { alert('Connectez-vous pour créer une pierre.'); return; }
-
-            // image file from file-input
-            const fileInput = document.getElementById('file-input');
-            let imageUrl = null;
-            try {
-                const file = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0] : null;
-                if (file) {
-                    const blob = await resizeImageFile(file, 1000000);
-                    const filename = `stones/${Date.now()}_${file.name.replace(/\\s+/g,'_')}`;
-                    const uploadTask = storage.ref().child(filename).put(blob);
-                    await new Promise((resolve, reject) => {
-                        uploadTask.on('state_changed', ()=>{}, reject, () => resolve());
-                    });
-                    imageUrl = await uploadTask.snapshot.ref.getDownloadURL();
-                } else if (this.uploadedImageUrl) {
-                    imageUrl = this.uploadedImageUrl;
-                }
-            } catch(err) {
-                console.error('Image upload error', err);
-                alert('Erreur upload image: ' + (err.message||err));
-                return;
-            }
-
-            const location = document.getElementById('create-location-name').value || '';
-            const countryCode = await MapUtils.getCountryForPoint(parseFloat(lat), parseFloat(lng));
-
-            const newRock = {
-                code: "ST-" + Math.floor(Math.random() * 100000),
-                name: name,
-                author: DB.user.name || DB.user.email || "Anonyme",
-                authorId: DB.user.uid,
-                createdAt: new Date().toISOString(),
-                description: desc,
-                likes: 0,
-                likedBy: [],
-                totalKm: 0,
-                borders: 0,
-                images: imageUrl ? [imageUrl] : [],
-                path: [{ 
-                    lat: parseFloat(lat), 
-                    lng: parseFloat(lng), 
-                    name: location,
-                    country: countryCode
-                }],
-                comments: []
-            };
-
-            try {
-                await db.collection('rocks').add(newRock);
-                this.closeModal('create');
-            } catch(err) {
-                alert('Erreur création pierre : ' + (err.message||err));
-            }
-        }
-
-        handleStep: async function(e) {
-            e.preventDefault();
-            const lat = document.getElementById('step-lat').value;
-            const lng = document.getElementById('step-lng').value;
-            const code = document.getElementById('step-code-input').value.trim();
-            const message = document.getElementById('step-message-input').value.trim();
-            if (!lat || !lng) return alert('Cliquez sur la carte !');
-            if (!code) return alert('Code de la pierre requis.');
-            const rock = DB.rocks.find(r => (r.code||'').toLowerCase() === code.toLowerCase());
-            if (!rock) return alert('Pierre introuvable avec ce code.');
-
-            const fileInput = document.getElementById('step-file-input') || document.getElementById('file-input-step');
-            let imageUrl = null;
-            try {
-                const file = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0] : null;
-                if (file) {
-                    const blob = await resizeImageFile(file, 1000000);
-                    const filename = `steps/${Date.now()}_${file.name.replace(/\\s+/g,'_')}`;
-                    const uploadTask = storage.ref().child(filename).put(blob);
-                    await new Promise((resolve,reject)=>{ uploadTask.on('state_changed', ()=>{}, reject, ()=>resolve()); });
-                    imageUrl = await uploadTask.snapshot.ref.getDownloadURL();
-                }
-            } catch(err) {
-                console.error('Step image upload error', err);
-                alert('Erreur upload image: ' + (err.message||err));
-                return;
-            }
-
-            // build pending approval entry with image & message
-            const pend = {
-                id: Date.now().toString(),
-                rockId: rock.id,
-                rockCode: rock.code,
-                rockName: rock.name,
-                location: document.getElementById('step-location-name').value || '',
-                kmToAdd: 0,
-                lat: parseFloat(lat),
-                lng: parseFloat(lng),
-                message: message,
-                image: imageUrl,
-                by: DB.user ? (DB.user.name || DB.user.email) : 'Anonyme',
-                at: new Date().toISOString()
-            };
-            try {
-                const metaRef = db.collection('meta').doc('pendingApprovals');
-                const d = await metaRef.get();
-                let items = d.exists ? (d.data().items||[]) : [];
-                items.unshift(pend);
-                await metaRef.set({items});
-                this.closeModal('step');
-                alert('Étape envoyée (en attente d\\'approbation).');
-            } catch(err) {
-                alert('Erreur envoi étape : ' + (err.message||err));
-            }
-        }
 
         postComment: function(e) {
             e.preventDefault();
@@ -1389,165 +967,252 @@ async function resizeImageFile(file, maxBytes = 1000000) {
             }).then(() => { i.value = ""; }).catch(err => alert("Erreur commentaire : " + err.message));
         },
 
+        // Mobile
+        detectMobile: function() {
+            this.mobileView = window.innerWidth <= 768;
+        },
+
+        setupMobileBehavior: function() {
+            if (this.mobileView) {
+                this.showRockList();
+            }
+        },
+
+        showRockList: function() {
+            if (this.mobileView) {
+                document.querySelector('.lg\\:col-span-4').classList.remove('hidden');
+                document.querySelector('.lg\\:col-span-8').classList.add('hidden');
+            }
+        },
+
+        showRockDetails: function() {
+            if (this.mobileView) {
+                document.querySelector('.lg\\:col-span-4').classList.add('hidden');
+                document.querySelector('.lg\\:col-span-8').classList.remove('hidden');
+            }
+        },
+
+        // Cartes (simplifié pour éviter les erreurs)
+        initMap: function(r) {
+            if(!r || !r.path || r.path.length === 0) return;
+            
+            if (this.mapInstance) {
+                this.mapInstance.remove();
+            }
+            
+            this.mapInstance = L.map('map').setView([r.path[0].lat, r.path[0].lng], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.mapInstance);
+            
+            // Ajouter les marqueurs
+            r.path.forEach((point, i) => {
+                L.marker([point.lat, point.lng])
+                    .addTo(this.mapInstance)
+                    .bindPopup(`<b>${i === 0 ? 'Départ' : 'Étape ' + i}</b><br>${point.name}`);
+            });
+        },
+
+        initCreateMap: function() {
+            if (this.createMapInstance) {
+                this.createMapInstance.remove();
+            }
+            
+            this.createMapInstance = L.map('map-create').setView([46.603354, 1.888334], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.createMapInstance);
+            
+            this.createMapInstance.on('click', (e) => {
+                this.setCreateLocation(e.latlng.lat, e.latlng.lng);
+            });
+        },
+
+        initStepMap: function() {
+            if (this.stepMapInstance) {
+                this.stepMapInstance.remove();
+            }
+            
+            this.stepMapInstance = L.map('map-step').setView([46.603354, 1.888334], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.stepMapInstance);
+            
+            this.stepMapInstance.on('click', (e) => {
+                this.setStepLocation(e.latlng.lat, e.latlng.lng);
+            });
+        },
+
+        setCreateLocation: function(lat, lng) {
+            if(this.createMarker) this.createMapInstance.removeLayer(this.createMarker);
+            this.createMarker = L.marker([lat, lng]).addTo(this.createMapInstance);
+            document.getElementById('create-lat').value = lat; 
+            document.getElementById('create-lng').value = lng;
+            this.reverseGeocode(lat, lng, 'create-location-name', 'geo-loading-create');
+        },
+
+        setStepLocation: function(lat, lng) {
+            if(this.stepMarker) this.stepMapInstance.removeLayer(this.stepMarker);
+            this.stepMarker = L.marker([lat, lng]).addTo(this.stepMapInstance);
+            document.getElementById('step-lat').value = lat; 
+            document.getElementById('step-lng').value = lng;
+            this.reverseGeocode(lat, lng, 'step-location-name', 'geo-loading');
+        },
+
+        reverseGeocode: function(lat, lng, inputId, loaderId) {
+            const input = document.getElementById(inputId); 
+            input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}...`;
+            const loader = document.getElementById(loaderId);
+            if (loader) loader.classList.remove('hidden');
+            
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                const city = data.address?.city || data.address?.town || data.address?.village || data.address?.hamlet || "Lieu";
+                const country = data.address?.country || "";
+                input.value = `${city}, ${country}`;
+            })
+            .catch(() => {
+                input.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            })
+            .finally(() => { 
+                if (loader) loader.classList.add('hidden'); 
+            });
+        },
+
+        locateUser: function(type) {
+            if(!navigator.geolocation) { alert("Non supporté"); return; }
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const { latitude, longitude } = pos.coords;
+                if(type === 'create') { 
+                    this.createMapInstance.setView([latitude, longitude], 13); 
+                    this.setCreateLocation(latitude, longitude); 
+                }
+                else { 
+                    this.stepMapInstance.setView([latitude, longitude], 13); 
+                    this.setStepLocation(latitude, longitude); 
+                }
+            }, () => { alert("Erreur GPS"); });
+        },
+
+        // Création de pierre
+        handleCreateStone: function(e) {
+            e.preventDefault();
+            const lat = document.getElementById('create-lat').value;
+            const lng = document.getElementById('create-lng').value;
+            const name = document.getElementById('create-name-input').value;
+            const desc = document.getElementById('create-desc-input').value;
+            
+            let imgUrl = this.uploadedImageUrl || DEFAULT_IMAGE;
+            
+            const location = document.getElementById('create-location-name').value;
+        
+            if(!lat || !lng) { alert("Placez un point sur la carte !"); return; }
+            if(!DB.user || !DB.user.uid) { alert("Connectez-vous pour créer une pierre."); return; }
+        
+            const newRock = {
+                code: "ST-" + Math.floor(Math.random() * 100000),
+                name: name,
+                author: DB.user.name || DB.user.email || "Anonyme",
+                authorId: DB.user.uid,
+                createdAt: new Date().toISOString().split('T')[0],
+                description: desc,
+                likes: 0,
+                likedBy: [],
+                totalKm: 0,
+                borders: 0,
+                images: [imgUrl],
+                path: [{ 
+                    lat: parseFloat(lat), 
+                    lng: parseFloat(lng), 
+                    name: location 
+                }],
+                comments: []
+            };
+        
+            db.collection('rocks').add(newRock).then(ref => {
+                this.closeModal('create');
+                alert("Pierre créée : " + newRock.code);
+                this.uploadedImageUrl = null;
+            }).catch(err => alert("Erreur création pierre : " + err.message));
+        },
+
+        // Gestion des étapes
+        handleStep: function(e) {
+            e.preventDefault();
+            const lat = document.getElementById('step-lat').value;
+            const lng = document.getElementById('step-lng').value;
+            const code = document.getElementById('step-code-input').value.trim();
+            const message = document.getElementById('step-message-input').value.trim();
+            
+            if (!lat || !lng) return alert("Cliquez sur la carte !");
+            if (!code) return alert("Code de la pierre requis.");
+
+            const rock = DB.rocks.find(r => (r.code||'').toLowerCase() === code.toLowerCase());
+            if (!rock) return alert("Pierre introuvable avec ce code.");
+
+            const metaRef = db.collection('meta').doc('pendingApprovals');
+            metaRef.get().then(d => {
+                let items = [];
+                if (d.exists) items = d.data().items || [];
+                const pend = {
+                    id: Date.now().toString(),
+                    rockId: rock.id,
+                    rockCode: rock.code,
+                    rockName: rock.name,
+                    location: document.getElementById('step-location-name').value || '',
+                    kmToAdd: 0,
+                    lat: parseFloat(lat),
+                    lng: parseFloat(lng),
+                    message: message,
+                    by: DB.user ? (DB.user.name || DB.user.email) : 'Anonyme',
+                    at: new Date().toISOString()
+                };
+                items.unshift(pend);
+                metaRef.set({ items: items }).then(() => {
+                    alert("Étape envoyée (en attente d'approbation).");
+                    this.closeModal('step');
+                }).catch(err => alert("Erreur envoi étape : " + err.message));
+            }).catch(err => alert("Erreur meta read : " + err.message));
+        },
+
+        // Likes
         toggleLike: function() {
             const r = this.getRock(this.currentRockId);
             if(!r || !DB.user) return;
             
-            const docRef = db.collection('rocks').doc(r.id);
             const userLiked = r.likedBy && r.likedBy.includes(DB.user.uid);
+            const newLikes = userLiked ? (r.likes - 1) : (r.likes + 1);
+            const newLikedBy = userLiked ? 
+                (r.likedBy || []).filter(uid => uid !== DB.user.uid) : 
+                [...(r.likedBy || []), DB.user.uid];
             
-            db.runTransaction(tx => {
-                return tx.get(docRef).then(doc => {
-                    if (!doc.exists) throw "Doc missing";
-                    const data = doc.data();
-                    let likedBy = data.likedBy || [];
-                    let likes = data.likes || 0;
-                    
-                    if (userLiked) {
-                        likedBy = likedBy.filter(uid => uid !== DB.user.uid);
-                        likes = Math.max(0, likes - 1);
-                    } else {
-                        if (!likedBy.includes(DB.user.uid)) {
-                            likedBy.push(DB.user.uid);
-                            likes += 1;
-                        }
-                    }
-                    
-                    tx.update(docRef, { 
-                        likes: likes,
-                        likedBy: likedBy
-                    });
-                    return { likes, likedBy };
-                });
-            }).then(result => {
-            }).catch(err => console.error("like transaction error", err));
+            db.collection('rocks').doc(r.id).update({
+                likes: newLikes,
+                likedBy: newLikedBy
+            }).catch(err => console.error("Like error:", err));
         },
 
-        editRock: function() {
-            const r = this.getRock(this.currentRockId);
-            if (!r || !DB.user || r.authorId !== DB.user.uid) {
-                alert("Vous ne pouvez pas modifier cette publication.");
-                return;
-            }
-            
-            document.getElementById('edit-rock-name-input').value = r.name;
-            document.getElementById('edit-rock-desc-input').value = r.description || '';
-            document.getElementById('edit-rock-img-input').value = r.images[0] || '';
-            
-            this.openModal('edit-rock');
-        },
-
-        handleEditRock: function(e) {
+        // Gestion du profil
+        handleUpdateProfile: async function(e) {
             e.preventDefault();
-            const r = this.getRock(this.currentRockId);
-            if (!r || !DB.user || r.authorId !== DB.user.uid) {
-                alert("Vous ne pouvez pas modifier cette publication.");
-                return;
-            }
-            
-            const name = document.getElementById('edit-rock-name-input').value;
-            const desc = document.getElementById('edit-rock-desc-input').value;
-            const imgUrl = document.getElementById('edit-rock-img-input').value;
-            
-            const updates = {
-                name: name,
-                description: desc
-            };
-            
-            if (imgUrl) {
-                updates.images = [imgUrl];
-            }
-            
-            db.collection('rocks').doc(r.id).update(updates)
-                .then(() => {
-                    this.closeModal('edit-rock');
-                    alert("Pierre modifiée avec succès !");
-                })
-                .catch(err => alert("Erreur modification : " + err.message));
-        },
-
-        deleteRock: function() {
-            const r = this.getRock(this.currentRockId);
-            if (!r || !DB.user || r.authorId !== DB.user.uid) {
-                alert("Vous ne pouvez pas supprimer cette publication.");
-                return;
-            }
-            
-            if (confirm("Êtes-vous sûr de vouloir supprimer cette pierre ? Cette action est irréversible.")) {
-                db.collection('rocks').doc(r.id).delete()
-                    .then(() => {
-                        alert("Pierre supprimée avec succès !");
-                        this.currentRockId = null;
-                        document.getElementById('empty-state').classList.remove('hidden');
-                        document.getElementById('details-content').classList.add('hidden');
-                        if (this.mobileView) {
-                            this.showRockList();
-                        }
-                    })
-                    .catch(err => alert("Erreur suppression : " + err.message));
-            }
-        },
-
-        deleteComment: function(commentId) {
-            const r = this.getRock(this.currentRockId);
-            if (!r || !DB.user) return;
-            
-            const comment = r.comments.find(c => c.id === commentId);
-            if (!comment) return;
-            
-            if (comment.userId !== DB.user.uid) {
-                alert("Vous ne pouvez pas supprimer ce commentaire.");
-                return;
-            }
-            
-            if (confirm("Êtes-vous sûr de vouloir supprimer ce commentaire ?")) {
-                db.collection('rocks').doc(r.id).update({
-                    comments: firebase.firestore.FieldValue.arrayRemove(comment)
-                })
-                .then(() => {
-                    alert("Commentaire supprimé !");
-                })
-                .catch(err => alert("Erreur suppression : " + err.message));
-            }
-        },
-
-        renderComments: function(r) {
-            const l = document.getElementById('comments-list'); const f = document.getElementById('comment-form-container');
-            document.getElementById('comments-count').innerText = (r.comments || []).length;
-            l.innerHTML = "";
-            const comments = r.comments || [];
-            if(comments.length === 0) l.innerHTML = `<p class="text-sm text-gray-400 italic text-center py-2">Soyez le premier à écrire.</p>`;
-            else comments.forEach(c => {
-                const av = c.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user || 'Anon')}&background=random`;
-                const canDelete = DB.user && c.userId === DB.user.uid;
-                const deleteBtn = canDelete ? `<button onclick="app.deleteComment('${c.id}')" class="text-red-400 hover:text-red-600 text-xs" title="Supprimer"><i class="fa-solid fa-trash"></i></button>` : '';
+            if (!DB.user || !DB.user.uid) return alert("Aucun utilisateur connecté.");
+            try {
+                const updatedData = {
+                    name: document.getElementById('edit-name').value,
+                    bio: document.getElementById('edit-bio').value
+                };
+                const avatar = document.getElementById('edit-avatar').value;
+                if (avatar) updatedData.avatar = avatar;
                 
-                l.innerHTML += `<div class="flex gap-3 group"><img src="${av}" class="w-8 h-8 rounded-full object-cover shadow-sm bg-gray-200"><div class="bg-gray-50 p-3 rounded-2xl rounded-tl-none flex-1 text-sm border border-gray-100 group-hover:border-gray-200 transition"><div class="flex justify-between mb-1 items-baseline"><span class="font-bold text-gray-700">${c.user}</span><div class="flex items-center gap-2"><span class="text-[10px] text-gray-400 uppercase">${c.date}</span>${deleteBtn}</div></div><p class="text-gray-600 leading-relaxed">${c.text}</p></div></div>`;
-            });
-            if(DB.user && DB.user.uid) f.innerHTML = `<form onsubmit="app.postComment(event)" class="flex gap-2 mt-4 relative"><input id="comment-input" type="text" placeholder="Écrire un commentaire..." class="flex-1 border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-sm"><button type="submit" class="absolute right-1 top-1 bottom-1 bg-emerald-600 text-white w-8 h-8 rounded-full hover:bg-emerald-700 flex items-center justify-center shadow-md transition transform hover:scale-105"><i class="fa-solid fa-paper-plane text-xs"></i></button></form>`;
-            else f.innerHTML = `<div class="bg-blue-50 border border-blue-100 p-3 rounded-lg text-sm text-blue-800 text-center cursor-pointer hover:bg-blue-100 transition" onclick="app.showPage('auth')"><i class="fa-solid fa-lock mr-2"></i>Connectez-vous pour commenter.</div>`;
-        },
-
-        handleSearch: function() { this.renderRockList(document.getElementById('search-input').value); },
-
+                await db.collection('users').doc(DB.user.uid).update(updatedData);
+                DB.user = { ...DB.user, ...updatedData };
+                alert("Profil mis à jour !");
+                this.renderNav();
+            } catch (e) {
+                alert("Erreur mise à jour profil : " + e.message);
+            }
+        }
     };
 
-    // Expose sign-in helpers to UI
-    app.signInWithGoogle = app.signInWithGoogle || function(){ app.signInWithGoogle(); };
-    app.signInAnonymously = app.signInAnonymously || function(){ app.signInAnonymously(); };
-    app.loginEmail = app.handleLogin;
-    app.loginAnon = app.signInAnonymously;
-    app.loginGoogle = app.signInWithGoogle;
-
-    // Initialize maps when modals open (deferred)
-    document.addEventListener('click', function(e){
-        if (e.target && e.target.matches && e.target.matches('[onclick*=\"openModal(\'create\')\"]')) {
-            setTimeout(()=>app.initCreateMap && app.initCreateMap(), 250);
-        }
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+        app.init();
     });
-
-    // start app
-    app.init();
 
     </script>
 </body>
