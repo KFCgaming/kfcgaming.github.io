@@ -522,6 +522,60 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
+/* ---------------------------
+   MapUtils: distance, normalizePath, country detection
+   --------------------------- */
+const MapUtils = {
+    computeDistance: function(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    },
+    getCountryForPoint: async function(lat, lng) {
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=3`);
+            const data = await res.json();
+            const cc = data.address && (data.address.country_code || data.address.country);
+            return cc ? (cc.toString().toUpperCase()) : null;
+        } catch(e) {
+            return null;
+        }
+    },
+    normalizePath: function(path) {
+        if (!Array.isArray(path)) return [];
+        return path.map(p => ({lat: parseFloat(p.lat), lng: parseFloat(p.lng), name: p.name || p.location || '', country: p.country || null, at: p.at || p.date || null}))
+                   .filter(p => !isNaN(p.lat) && !isNaN(p.lng));
+    }
+};
+
+
+/* ---------------------------
+   Image resize helper (ensure < 1MB)
+   --------------------------- */
+async function resizeImageFile(file, maxBytes = 1000000) {
+    // create ImageBitmap for better performance
+    const img = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    const maxDim = 1600;
+    const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+    canvas.width = Math.round(img.width * scale);
+    canvas.height = Math.round(img.height * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    let quality = 0.85;
+    let blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+    while (blob.size > maxBytes && quality > 0.2) {
+        quality -= 0.07;
+        blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+    }
+    return blob;
+}
+
     /***** DATA STRUCTURES *****/
     let DB = { user: null, pendingApprovals: [] , rocks: [] };
 
@@ -797,7 +851,7 @@
                     r.likedBy = r.likedBy || [];
                     r.totalKm = r.totalKm || 0;
                     r.borders = r.borders || 0;
-                    r.images = r.images && r.images.length ? r.images : ["https://picsum.photos/seed/" + encodeURIComponent(r.name || 'stone') + "/600/400"];
+                    if (!r.images || !r.images.length) { r.images = []; }
                     r.comments = r.comments || [];
                     r.path = r.path || [];
                 });
@@ -833,35 +887,46 @@
             }
         },
 
-        handleApprove: function(id) {
-            const pend = DB.pendingApprovals.find(p => p.id === id || p.id === (''+id));
-            if (!pend) return alert("Approbation introuvable.");
-            const rock = DB.rocks.find(r => r.id === pend.rockId || r.code === pend.rockCode);
-            if (!rock) return alert("Pierre introuvable.");
-            
+        handleApprove: async function(id) {
+            const metaRef = db.collection('meta').doc('pendingApprovals');
+            const d = await metaRef.get();
+            if (!d.exists) return alert('Aucune approbation.');
+            const items = d.data().items || [];
+            const pend = items.find(p => p.id === id || p.id === (''+id));
+            if (!pend) return alert('Approbation introuvable.');
+            const rockRef = db.collection('rocks').doc(pend.rockId);
+            const rockDoc = await rockRef.get();
+            if (!rockDoc.exists) return alert('Pierre introuvable.');
+            const rock = rockDoc.data();
+
+            // compute km and borders
             let kmToAdd = 0;
+            let borderInc = 0;
             if (rock.path && rock.path.length > 0) {
                 const lastStep = rock.path[rock.path.length - 1];
-                kmToAdd = this.calculateDistance(lastStep.lat, lastStep.lng, pend.lat, pend.lng);
+                kmToAdd = MapUtils.computeDistance(lastStep.lat, lastStep.lng, pend.lat, pend.lng);
+                const lastCountry = lastStep.country || await MapUtils.getCountryForPoint(lastStep.lat, lastStep.lng);
+                const newCountry = pend.country || await MapUtils.getCountryForPoint(pend.lat, pend.lng);
+                if (lastCountry && newCountry && lastCountry !== newCountry) borderInc = 1;
             }
-            
-            const newStep = { lat: pend.lat || 0, lng: pend.lng || 0, name: pend.location };
-            const docRef = db.collection('rocks').doc(rock.id);
-            docRef.update({
-                path: firebase.firestore.FieldValue.arrayUnion(newStep),
-                totalKm: firebase.firestore.FieldValue.increment(kmToAdd),
-                borders: firebase.firestore.FieldValue.increment(1)
-            }).then(() => {
-                const metaRef = db.collection('meta').doc('pendingApprovals');
-                metaRef.get().then(d => {
-                    if (!d.exists) return;
-                    const items = d.data().items || [];
-                    const filtered = items.filter(it => it.id !== pend.id);
-                    metaRef.set({ items: filtered });
-                }).catch(()=>{});
-                alert("Trajet approuvé ! +" + kmToAdd.toFixed(2) + " km");
-            }).catch(err => alert("Erreur approbation : " + err.message));
-        },
+
+            const stepObj = { lat: pend.lat || 0, lng: pend.lng || 0, name: pend.location || '', country: pend.country || await MapUtils.getCountryForPoint(pend.lat, pend.lng), at: pend.at || new Date().toISOString() };
+            const comment = { id: Date.now().toString(), user: pend.by || 'Anonyme', userId: null, avatar: null, text: pend.message || '', date: new Date().toLocaleString(), image: pend.image || null };
+            try {
+                await rockRef.update({
+                    path: firebase.firestore.FieldValue.arrayUnion(stepObj),
+                    totalKm: firebase.firestore.FieldValue.increment(Math.round(kmToAdd*10)/10),
+                    borders: firebase.firestore.FieldValue.increment(borderInc),
+                    comments: firebase.firestore.FieldValue.arrayUnion(comment)
+                });
+                // remove pend
+                const newItems = items.filter(it => it.id !== pend.id);
+                await metaRef.set({ items: newItems });
+                alert('Trajet approuvé ! +' + kmToAdd.toFixed(2) + ' km');
+            } catch(err) {
+                alert('Erreur approbation : ' + (err.message||err));
+            }
+        }
 
         calculateDistance: function(lat1, lon1, lat2, lon2) {
             const R = 6371;
@@ -1186,89 +1251,124 @@
             }, () => { alert("Erreur GPS"); if (l) l.classList.add('hidden'); });
         },
 
-        handleCreateStone: function(e) {
+        handleCreateStone: async function(e) {
             e.preventDefault();
             const lat = document.getElementById('create-lat').value;
             const lng = document.getElementById('create-lng').value;
             const name = document.getElementById('create-name-input').value;
             const desc = document.getElementById('create-desc-input').value;
-            
-            // CORRECTION ICI : Utiliser l'URL uploadée ou une image par défaut simple
-            let imgUrl = this.uploadedImageUrl;
-            if (!imgUrl) {
-                // Image par défaut plus simple
-                imgUrl = "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80";
+            if(!lat || !lng) { alert('Placez un point sur la carte !'); return; }
+            if(!DB.user || !DB.user.uid) { alert('Connectez-vous pour créer une pierre.'); return; }
+
+            // image file from file-input
+            const fileInput = document.getElementById('file-input');
+            let imageUrl = null;
+            try {
+                const file = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0] : null;
+                if (file) {
+                    const blob = await resizeImageFile(file, 1000000);
+                    const filename = `stones/${Date.now()}_${file.name.replace(/\\s+/g,'_')}`;
+                    const uploadTask = storage.ref().child(filename).put(blob);
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed', ()=>{}, reject, () => resolve());
+                    });
+                    imageUrl = await uploadTask.snapshot.ref.getDownloadURL();
+                } else if (this.uploadedImageUrl) {
+                    imageUrl = this.uploadedImageUrl;
+                }
+            } catch(err) {
+                console.error('Image upload error', err);
+                alert('Erreur upload image: ' + (err.message||err));
+                return;
             }
-            
-            const location = document.getElementById('create-location-name').value;
-        
-            if(!lat || !lng) { alert("Placez un point sur la carte !"); return; }
-            if(!DB.user || !DB.user.uid) { alert("Connectez-vous pour créer une pierre."); return; }
-        
+
+            const location = document.getElementById('create-location-name').value || '';
+            const countryCode = await MapUtils.getCountryForPoint(parseFloat(lat), parseFloat(lng));
+
             const newRock = {
                 code: "ST-" + Math.floor(Math.random() * 100000),
                 name: name,
                 author: DB.user.name || DB.user.email || "Anonyme",
                 authorId: DB.user.uid,
-                createdAt: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toISOString(),
                 description: desc,
                 likes: 0,
                 likedBy: [],
                 totalKm: 0,
                 borders: 0,
-                images: [imgUrl], // Utilise l'URL uploadée
+                images: imageUrl ? [imageUrl] : [],
                 path: [{ 
                     lat: parseFloat(lat), 
                     lng: parseFloat(lng), 
-                    name: location 
+                    name: location,
+                    country: countryCode
                 }],
                 comments: []
             };
-        
-            db.collection('rocks').add(newRock).then(ref => {
-                this.closeModal('create');
-                alert("Pierre créée : " + newRock.code);
-                // Réinitialiser l'image uploadée
-                this.uploadedImageUrl = null;
-            }).catch(err => alert("Erreur création pierre : " + err.message));
-        },
 
-        handleStep: function(e) {
+            try {
+                await db.collection('rocks').add(newRock);
+                this.closeModal('create');
+            } catch(err) {
+                alert('Erreur création pierre : ' + (err.message||err));
+            }
+        }
+
+        handleStep: async function(e) {
             e.preventDefault();
             const lat = document.getElementById('step-lat').value;
             const lng = document.getElementById('step-lng').value;
             const code = document.getElementById('step-code-input').value.trim();
             const message = document.getElementById('step-message-input').value.trim();
-            if (!lat || !lng) return alert("Cliquez sur la carte !");
-            if (!code) return alert("Code de la pierre requis.");
-
+            if (!lat || !lng) return alert('Cliquez sur la carte !');
+            if (!code) return alert('Code de la pierre requis.');
             const rock = DB.rocks.find(r => (r.code||'').toLowerCase() === code.toLowerCase());
-            if (!rock) return alert("Pierre introuvable avec ce code.");
+            if (!rock) return alert('Pierre introuvable avec ce code.');
 
-            const metaRef = db.collection('meta').doc('pendingApprovals');
-            metaRef.get().then(d => {
-                let items = [];
-                if (d.exists) items = d.data().items || [];
-                const pend = {
-                    id: Date.now().toString(),
-                    rockId: rock.id,
-                    rockCode: rock.code,
-                    rockName: rock.name,
-                    location: document.getElementById('step-location-name').value || '',
-                    kmToAdd: 0,
-                    lat: parseFloat(lat),
-                    lng: parseFloat(lng),
-                    message: message,
-                    by: DB.user ? (DB.user.name || DB.user.email) : 'Anonyme',
-                    at: new Date().toISOString()
-                };
+            const fileInput = document.getElementById('step-file-input') || document.getElementById('file-input-step');
+            let imageUrl = null;
+            try {
+                const file = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0] : null;
+                if (file) {
+                    const blob = await resizeImageFile(file, 1000000);
+                    const filename = `steps/${Date.now()}_${file.name.replace(/\\s+/g,'_')}`;
+                    const uploadTask = storage.ref().child(filename).put(blob);
+                    await new Promise((resolve,reject)=>{ uploadTask.on('state_changed', ()=>{}, reject, ()=>resolve()); });
+                    imageUrl = await uploadTask.snapshot.ref.getDownloadURL();
+                }
+            } catch(err) {
+                console.error('Step image upload error', err);
+                alert('Erreur upload image: ' + (err.message||err));
+                return;
+            }
+
+            // build pending approval entry with image & message
+            const pend = {
+                id: Date.now().toString(),
+                rockId: rock.id,
+                rockCode: rock.code,
+                rockName: rock.name,
+                location: document.getElementById('step-location-name').value || '',
+                kmToAdd: 0,
+                lat: parseFloat(lat),
+                lng: parseFloat(lng),
+                message: message,
+                image: imageUrl,
+                by: DB.user ? (DB.user.name || DB.user.email) : 'Anonyme',
+                at: new Date().toISOString()
+            };
+            try {
+                const metaRef = db.collection('meta').doc('pendingApprovals');
+                const d = await metaRef.get();
+                let items = d.exists ? (d.data().items||[]) : [];
                 items.unshift(pend);
-                metaRef.set({ items: items }).then(() => {
-                    alert("Étape envoyée (en attente d'approbation).");
-                    this.closeModal('step');
-                }).catch(err => alert("Erreur envoi étape : " + err.message));
-            }).catch(err => alert("Erreur meta read : " + err.message));
-        },
+                await metaRef.set({items});
+                this.closeModal('step');
+                alert('Étape envoyée (en attente d\\'approbation).');
+            } catch(err) {
+                alert('Erreur envoi étape : ' + (err.message||err));
+            }
+        }
 
         postComment: function(e) {
             e.preventDefault();
