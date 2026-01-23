@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://kfcgaming.github.io/Assets/prpyt-icon.png" type="image/x-icon">
+    <title>YTnp - KFCgaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --card-bg: #1e1e1e;
+            --text-main: #ffffff;
+            --text-dim: #aaaaaa;
+            --border-color: #303030;
+            --hover: #383838;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- Header Fixé & Responsive --- */
+        .yt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 200;
+            height: 56px;
+        }
+
+        .yt-logo {
+            display: flex;
+            align-items: center;
+            min-width: fit-content;
+        }
+        .yt-logo img { height: 30px; margin-right: 5px; }
+        .yt-logo span { font-weight: bold; font-size: 1.1rem; letter-spacing: -0.5px; }
+
+        .search-container {
+            flex: 0 1 400px; /* Plus petit et centré */
+            margin: 0 10px;
+        }
+        .search-container input {
+            width: 100%;
+            background: #121212;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            outline: none;
+            font-size: 0.9rem;
+            transition: border 0.2s;
+        }
+        .search-container input:focus { border-color: #3ea6ff; }
+
+        /* --- Contenu & Grilles --- */
+        .main-content { padding: 10px 20px; max-width: 1600px; margin: 0 auto; }
+        
+        .section-title {
+            font-size: 1.2rem;
+            margin: 25px 0 15px 0;
+            font-weight: 700;
+        }
+        .section-title span { color: var(--text-dim); font-size: 0.85rem; margin-left: 8px; }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* --- Cartes Vidéo --- */
+        .video-card { cursor: pointer; }
+        .thumbnail-container {
+            position: relative; width: 100%; padding-top: 56.25%;
+            border-radius: 12px; overflow: hidden; background: #222;
+        }
+        .thumbnail-container img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+        }
+        .video-info { margin-top: 10px; }
+        .video-title {
+            font-size: 0.95rem; font-weight: 500; line-height: 1.4;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .video-meta { font-size: 0.85rem; color: var(--text-dim); margin-top: 4px; }
+
+        /* --- Modal Adapté --- */
+        #player-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; justify-content: center;
+            align-items: center; z-index: 1000;
+        }
+        .modal-wrapper {
+            width: 100%; max-width: 1000px; max-height: 100vh;
+            background: var(--bg-color); position: relative; overflow-y: auto;
+        }
+        .close-btn {
+            position: absolute; top: 10px; right: 10px; color: white;
+            font-size: 2rem; background: rgba(0,0,0,0.6); border: none;
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 11;
+        }
+        .player-box { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+        .player-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .modal-details { padding: 15px; }
+        .modal-stats-bar { 
+            display: flex; flex-wrap: wrap; justify-content: space-between; 
+            align-items: center; gap: 10px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);
+        }
+        .interaction-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-yt { 
+            background: var(--hover); color: white; border: none; padding: 6px 12px; 
+            border-radius: 18px; font-size: 0.85rem; cursor: pointer; text-decoration: none;
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* --- Media Queries Correctives --- */
+        @media (max-width: 600px) {
+            .yt-header { padding: 0 10px; }
+            .yt-logo span { display: none; } /* Cache le texte "Mes Archives" sur tout petit écran */
+            .search-container { flex: 1; }
+            .video-grid { grid-template-columns: 1fr; } /* Une seule grande vidéo sur mobile */
+            .main-content { padding: 10px; }
+            .modal-wrapper { height: 100%; }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="yt-header">
+        <div class="yt-logo">
+            <img src="https://kfcgaming.github.io/Assets/prpyt-large.png" alt="YouTube" onclick="ytchannel()">
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Rechercher..." oninput="handleSearch()">
+        </div>
+        <div style="width: 20px;"></div>
+    </div>
+
+    <div class="main-content" id="content-area"></div>
+    <div id="player-modal">
+        <div class="modal-wrapper">
+            <button class="close-btn" onclick="closePlayer()">&times;</button>
+            <div class="player-box" id="modal-player"></div>
+            <div class="modal-details">
+                <h2 id="modal-title" style="font-size: 1.1rem; margin: 0 0 10px 0;"></h2>
+                <div class="modal-stats-bar">
+                    <span id="modal-views" style="font-size: 0.85rem; color: var(--text-dim);">0 vues</span>
+                    <div class="interaction-btns">
+                        <button id="btn-likes" class="btn-yt">0 👍</button>
+                        <button id="btn-comments" class="btn-yt">0 💬</button>
+                        <a id="modal-link" href="#" target="_blank" class="btn-yt">↗ YouTube</a>
+                    </div>
+                </div>
+                <p id="modal-desc" style="font-size: 0.9rem; background: var(--card-bg); padding: 12px; border-radius: 8px; margin-top: 15px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function ytchannel() {window.open("https://www.youtube.com/@kfcgamingfr", "_blank");}
+        const VIDEOS = [
+            { id: 'U48KFAmvb4I', cat: 'IA', date: '2023-05-29', description: `Bonjour tout le monde,
+                                                                            Je vous présente le premier épisode de la série "Les Histoires de Chat GPT". Au par avant, j'avais fais des shorts faisant le même concept et j'ai décidé d'en faire une version longue.
+
+                                                                            00:00 Intro
+                                                                            00:55 Première Histoire
+                                                                            04:10 Fin de la Première Histoire
+                                                                            04:43 Deuxième Histoire
+                                                                            08:03 Fin de la Deuxième Histoire
+                                                                            08:26 Troisième Histoire
+                                                                            11:04 Fin de la Troisième Histoire
+                                                                            11:25 Dernière Histoire
+                                                                            13:23 Fin de la Dernière Histoire
+                                                                            13:49 Générique`},
+            { id: 'zKWsal9N1y4', cat: 'Doublage', date: '2022-09-24', description: `J'ai refait la video de présentation du niveau de Bunzo Bunny de Poppy Playtime Chapitre 2 en Français avec Acapela Box`},
+            { id: 'RkHe8JFnJ_w', cat: 'Doublage', date: '2022-09-24', description: `J'ai refait la video de présentation du niveau "Whack-A-Wuggy" de Poppy Playtime Chapitre 2 en Français avec Acapela Box`},
+            { id: 'mOrmEt8etJ0', cat: 'Doublage', date: '2022-09-24', description: `J'ai refait la video de présentation du niveau "Statues" de Poppy Playtime Chapitre 2 en Français avec Acapela Box`},
+            { id: 'ZW_5N-6tZlA', cat: 'Autres', date: '2021-06-08', description: `Yo, aujourd'hui, nouvelle série dont le but est la suivante. Dans cette mini-série, je crée des miniatures libre de droit en installer en fin de description.
+                                                                            Le deuxième épisode, si il y aura des commentaires, je ferai avec vos idées.
+
+                                                                            Chapitres:
+                                                                            0:00 Intro
+                                                                            0:30 Première Miniature
+                                                                            3:00 Deuxième Miniature
+                                                                            4:10 Troisième Miniature
+                                                                            5:20 Outro
+
+                                                                            Miniatures:
+                                                                            Roblox : http://bit.ly/RobloxMinia1
+                                                                            Fortnite : https://bit.ly/3w63JQn
+                                                                            Beat Saber : https://bit.ly/2Sa7KEV`},
+            { id: 'eD9DDXfX1w4', cat: 'IA', date: '2024-01-13', description: `Hello, je me suis amusé a généré une musique avec l'IA Suno, qui est totalement gratuit.
+
+                                                                            Grâce à un prompt et les paroles, j'ai pus généré cette masterclass !
+
+                                                                            Bonne écoute :)` },
+            { id: 'kDliIXdPxhE', cat: 'Short', date: '2024-06-27', description: `L'intrusion | Post de MounaHTR3 sur la communauté Reddit : r/Horreur` },
+            { id: 'f2xhUgdw1w0', cat: 'IA', date: '2024-07-26', description: `La musique ne provient pas de moi mais de Ominix
+
+                                                                            Le but de cette petite vidéo est de montrer de quoi est capable l'IA Suno (IA spécialisé dans la musique) aujourd'hui en prenant comme musique Skelly et en la faisant terminé par l'IA.
+
+                                                                            Merci de votre compréhension 😁
+
+                                                                            Credit : Skelly - Ominix` }
+        ];
+
+        const CATEGORY_NAMES = { 'IA': '🤖 IA', 'Doublage': '🎤 Doublage', 'Short': '🎥 SHORT', 'Autres': '📦 Autres'};
+
+        async function fetchTitle(id) {
+            try {
+                const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}`);
+                const data = await res.json();
+                return data.title || "Vidéo";
+            } catch { return "Archive"; }
+        }
+
+        async function renderArchive(search = "") {
+            const container = document.getElementById('content-area');
+            container.innerHTML = "";
+            let filtered = VIDEOS.filter(v => v.description.toLowerCase().includes(search.toLowerCase()));
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const cats = [...new Set(filtered.map(v => v.cat))];
+            for (const c of cats) {
+                await drawSection(container, CATEGORY_NAMES[c] || c, filtered.filter(v => v.cat === c));
+            }
+        }
+
+        async function drawSection(parent, title, vids) {
+            const sec = document.createElement('div');
+            sec.innerHTML = `<h2 class="section-title">${title} <span>• ${vids.length}</span></h2>`;
+            const grid = document.createElement('div');
+            grid.className = 'video-grid';
+            for (const v of vids) {
+                const t = await fetchTitle(v.id);
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = () => openPlayer({...v, title: t});
+                card.innerHTML = `
+                    <div class="thumbnail-container"><img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg"></div>
+                    <div class="video-info">
+                        <div class="video-title">${t}</div>
+                        <div class="video-meta">${v.date.split('-').reverse().join('/')}</div>
+                    </div>`;
+                grid.appendChild(card);
+            }
+            sec.appendChild(grid);
+            parent.appendChild(sec);
+        }
+
+        function handleSearch() { renderArchive(document.getElementById('search-input').value); }
+
+        async function openPlayer(v) {
+            document.getElementById('player-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('modal-player').innerHTML = `<iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;
+            document.getElementById('modal-title').innerText = v.title;
+            document.getElementById('modal-desc').innerText = v.description;
+            document.getElementById('modal-link').href = `https://www.youtube.com/watch?v=${v.id}`;
+            try {
+                const res = await fetch(`https://api.subscribercounter.nl/api/youtube/videos/stats/${v.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    const s = data.results[0];
+                    document.getElementById('modal-views').innerText = `${Number(s.views).toLocaleString()} vues`;
+                    document.getElementById('btn-likes').innerText = `${Number(s.likes).toLocaleString()} 👍`;
+                    document.getElementById('btn-comments').innerText = `${Number(s.commentCount).toLocaleString()} 💬`;
+                }
+            } catch {}
+        }
+
+        function closePlayer() {
+            document.getElementById('player-modal').style.display = 'none';
+            document.getElementById('modal-player').innerHTML = '';
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => renderArchive());
+    </script>
+</body>
+</html>
