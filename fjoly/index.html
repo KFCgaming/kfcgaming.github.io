@@ -125,32 +125,47 @@
       color: white; z-index: 2001;
     }
 
-    /* --- LISTS --- */
+/* --- LISTS --- */
     .category-section { margin-bottom: 25px; }
+    
     .category-header {
       display: flex; justify-content: space-between; align-items: center;
       border-bottom: 1px solid var(--secondary-violet);
       margin-bottom: 10px;
       padding-bottom: 5px;
+      margin-left: 10px; /* Aligné avec le contenu */
     }
+    
     .cat-title { color: var(--primary-violet); font-size: 1.1rem; font-weight: bold; text-transform: uppercase; }
 
     .product-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 10px;
+      display: flex; /* Passage en ligne */
+      gap: 15px;
+      overflow-x: auto; /* Active le scroll horizontal */
+      padding: 10px;
+      scroll-snap-type: x mandatory; /* Effet d'aimant au scroll */
+      -webkit-overflow-scrolling: touch; /* Scroll fluide sur iOS */
+    }
+
+    /* Cacher la barre de défilement pour un look plus "app" */
+    .product-list::-webkit-scrollbar {
+      height: 4px;
+    }
+    .product-list::-webkit-scrollbar-thumb {
+      background: var(--secondary-violet);
+      border-radius: 10px;
     }
 
     .product-card {
       background: var(--card-bg);
       border: 1px solid #444;
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 12px;
+      padding: 15px;
       text-align: center;
-      position: relative;
-      transition: transform 0.2s;
+      flex: 0 0 160px; /* Taille fixe pour chaque carte dans le slider */
+      scroll-snap-align: start; /* S'aligne sur le bord lors du scroll */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
-    
     .product-name { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.95rem; }
     .product-date { font-size: 0.85rem; color: #aaa; margin-bottom: 8px; }
     .product-qty { 
@@ -538,13 +553,14 @@
                 if (diffDays < 0) statusClass = "dlc-expired";
                 else if (diffDays <= 3) statusClass = "dlc-warning"; // Jaune 3-4 jours (ici <=3 pour inclure J-0 à J-3)
 
+                // Dans ta fonction renderProducts(), assure-toi que les cartes utilisent bien le nouveau CSS :
                 const card = document.createElement('div');
                 card.className = `product-card ${statusClass}`;
                 card.innerHTML = `
-                    <span class="product-name ${statusClass}">${p.name}</span>
+                    <span class="product-name" style="color:${statusClass === 'dlc-expired' ? 'var(--danger)' : statusClass === 'dlc-warning' ? 'var(--warning)' : 'white'}">${p.name}</span>
                     <div class="product-qty">x${p.count}</div>
-                    <div class="product-date">${new Date(p.date).toLocaleDateString()}</div>
-                    <div class="actions">
+                    <div class="product-date" style="margin-top:5px;">${new Date(p.date).toLocaleDateString('fr-FR')}</div>
+                    <div class="actions" style="margin-top:10px;">
                         <button class="decrement-button small" onclick="deleteSingleProduct('${p.name}', '${p.date}', '${p.category}')">-1</button>
                         <button class="danger small" onclick="deleteAllProductGroup('${p.name}', '${p.date}', '${p.category}')">🗑️</button>
                     </div>
