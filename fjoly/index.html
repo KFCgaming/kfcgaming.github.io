@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+  <title>Gestion Frigo & DLC 🧊</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <style>
+    :root {
+      --dark-bg: #1a1a2e;
+      --card-bg: #2e3047;
+      --primary-violet: #8a2be2;
+      --secondary-violet: #6a1ba3;
+      --text-color: #e0e0e0;
+      --danger: #ff6347;
+      --warning: #ffc107;
+      --success: #4caf50;
+      --input-bg: #3a3f5a;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--dark-bg);
+      color: var(--text-color);
+      font-size: 16px;
+      padding-bottom: 80px; /* Espace pour le contenu bas */
+    }
+
+    /* --- AUTH SCREEN --- */
+    #auth-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--dark-bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .auth-box {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    /* --- APP HEADER --- */
+    header {
+      background: var(--card-bg);
+      padding: 15px;
+      text-align: center;
+      border-bottom: 2px solid var(--secondary-violet);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { margin: 0; font-size: 1.2rem; color: var(--primary-violet); }
+    .logout-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+
+    /* --- LAYOUT --- */
+    .container { padding: 15px; max-width: 800px; margin: 0 auto; }
+
+    /* --- FORMS --- */
+    .control-panel {
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+    .input-group.wrap { flex-wrap: wrap; }
+    
+    input, select {
+      background: var(--input-bg);
+      border: 1px solid #555;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+    
+    button {
+      background: var(--primary-violet);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:active { transform: scale(0.98); }
+    button.secondary { background: #555; }
+    button.danger { background: var(--danger); }
+    button.small { padding: 5px 10px; font-size: 0.8rem; }
+    button.icon-btn { padding: 10px; display: flex; align-items: center; justify-content: center; }
+
+    /* --- SCANNER --- */
+    #scanner-container {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #000;
+      z-index: 2000;
+    }
+    #reader { width: 100%; height: 100%; }
+    .close-scanner {
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white; z-index: 2001;
+    }
+
+    /* --- LISTS --- */
+    .category-section { margin-bottom: 25px; }
+    .category-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--secondary-violet);
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+    }
+    .cat-title { color: var(--primary-violet); font-size: 1.1rem; font-weight: bold; text-transform: uppercase; }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    
+    .product-name { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.95rem; }
+    .product-date { font-size: 0.85rem; color: #aaa; margin-bottom: 8px; }
+    .product-qty { 
+        background: var(--secondary-violet); 
+        padding: 2px 8px; 
+        border-radius: 10px; 
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+
+    /* Couleurs DLC */
+    .dlc-ok { border-left: 4px solid var(--success); }
+    .dlc-warning { border-left: 4px solid var(--warning); color: var(--warning); }
+    .dlc-expired { border-left: 4px solid var(--danger); color: var(--danger); border-color: var(--danger); }
+
+    .actions { display: flex; justify-content: center; gap: 5px; }
+
+    /* --- HISTORIQUE & NOTIFS --- */
+    .notification-banner {
+      background: var(--warning); color: #000;
+      padding: 10px; text-align: center; font-weight: bold;
+      display: none;
+    }
+
+    /* --- Category Management Modal --- */
+    #cat-modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 1500;
+        justify-content: center; align-items: center;
+    }
+    .modal-content {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 10px;
+        width: 90%; max-width: 350px;
+    }
+
+    /* Responsive adjustments */
+    @media (min-width: 600px) {
+        .product-list { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="auth-screen">
+    <div class="auth-box">
+      <h1 style="font-size: 2em; margin-bottom: 20px;">🧊 Login</h1>
+      <input type="email" id="email" placeholder="Email (ex: moi@frigo.com)" style="margin-bottom: 10px;">
+      <input type="password" id="password" placeholder="Mot de passe" style="margin-bottom: 20px;">
+      <button onclick="handleLogin()" style="width: 100%; margin-bottom: 10px;">Se connecter / S'inscrire</button>
+      <p style="font-size: 0.8em; color: #aaa;">Si le compte n'existe pas, il sera créé automatiquement.</p>
+    </div>
+  </div>
+
+  <div id="scanner-container">
+    <button class="close-scanner" onclick="stopScanner()">Fermer ❌</button>
+    <div id="reader"></div>
+  </div>
+
+  <div id="cat-modal">
+      <div class="modal-content">
+          <h3>Gérer les catégories</h3>
+          <div class="input-group">
+              <input type="text" id="new-cat-name" placeholder="Nouvelle catégorie...">
+              <button onclick="addCustomCategory()">+</button>
+          </div>
+          <hr style="border-color: #555;">
+          <div id="cat-list-manage">
+              </div>
+          <button onclick="closeCatModal()" class="secondary" style="margin-top: 15px; width: 100%;">Fermer</button>
+      </div>
+  </div>
+
+  <div id="app-content" style="display: none;">
+    
+    <header>
+      <div style="font-size: 1.5rem;">📦</div>
+      <h1>Mon Frigo</h1>
+      <button class="logout-btn" onclick="handleLogout()">🚪</button>
+    </header>
+
+    <div id="notif-area" class="notification-banner"></div>
+
+    <div class="container">
+      
+      <div class="control-panel">
+        <div class="input-group">
+            <button onclick="startScanner()" class="icon-btn" style="flex: 0 0 50px;">📷</button>
+            <input type="text" id="p-name" placeholder="Nom du produit (ou scan)" required>
+        </div>
+        
+        <div class="input-group wrap">
+            <input type="date" id="p-date" required style="flex: 1;">
+            <input type="number" id="p-qty" value="1" min="1" style="flex: 0 0 80px;">
+        </div>
+
+        <div class="input-group">
+            <select id="p-cat" style="flex: 1;">
+                </select>
+            <button onclick="openCatModal()" class="secondary" style="padding: 0 15px;">⚙️</button>
+        </div>
+
+        <button onclick="submitProduct()" style="width: 100%;">Ajouter au Frigo</button>
+      </div>
+
+      <input type="text" id="search" placeholder="🔍 Rechercher..." onkeyup="renderProducts()">
+
+      <div id="product-container"></div>
+      
+      <div style="margin-top: 30px; text-align: center; color: #666; font-size: 0.9em;">
+          <p>Historique récent :</p>
+          <ul id="history-log" style="list-style: none; padding: 0;"></ul>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc, updateDoc, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    // --------------------------------------------------------------
+    // 🔴 CONFIGURATION FIREBASE (REMPLACE AVEC TES CLES) 🔴
+    // --------------------------------------------------------------
+    const firebaseConfig = {
+        apiKey: "AIzaSyCN7TcYVcahoBoOwyULH0qvcMjw3Sd_3FM",
+        authDomain: "fridgejoly.firebaseapp.com",
+        projectId: "fridgejoly",
+        storageBucket: "fridgejoly.firebasestorage.app",
+        messagingSenderId: "978044191271",
+        appId: "1:978044191271:web:68909d539582335ced0402",
+        measurementId: "G-KJSHEN4QZZ"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    let currentUser = null;
+    let localProducts = [];
+    let userCategories = ["Viandes", "Laitages", "Légumes", "Boissons", "Plats Préparés", "Sauces", "Divers"]; // Défaut
+
+    // --- AUTHENTIFICATION ---
+    window.handleLogin = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if(!email || !pass) return showToast("Email et mot de passe requis", "error");
+
+            try {
+                // 1. On essaie de se connecter normalement
+                await signInWithEmailAndPassword(auth, email, pass);
+                // Si ça marche, l'utilisateur sera connecté automatiquement
+            } catch (error) {
+                console.log("Erreur détectée:", error.code); 
+
+                // 2. Si l'erreur est "Identifiants invalides" ou "Utilisateur introuvable"
+                // C'est ici qu'on tente la création de compte automatique
+                if (error.code === 'auth/invalid-login-credentials' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    try {
+                        // On essaie de CRÉER le compte avec ces infos
+                        await createUserWithEmailAndPassword(auth, email, pass);
+                        showToast("Nouveau compte créé !", "success");
+                    } catch (createError) {
+                        // 3. Si la création échoue car l'email existe déjà, c'est que le mot de passe était faux
+                        if (createError.code === 'auth/email-already-in-use') {
+                            showToast("Mot de passe incorrect", "error");
+                        } else {
+                            showToast("Erreur lors de la création: " + createError.message, "error");
+                        }
+                    }
+                } else {
+                    // Autres erreurs (réseau, trop de tentatives...)
+                    showToast("Erreur: " + error.message, "error");
+                }
+            }
+        };
+
+    window.handleLogout = () => signOut(auth);
+
+    // --- GESTION CATEGORIES ---
+    async function loadUserCategories() {
+        const userRef = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(userRef);
+        
+        if (docSnap.exists() && docSnap.data().categories) {
+            // Fusionner les défauts et les persos sans doublons
+            const customCats = docSnap.data().categories;
+            customCats.forEach(c => {
+                if(!userCategories.includes(c)) userCategories.push(c);
+            });
+        }
+        updateCategorySelects();
+    }
+
+    function updateCategorySelects() {
+        const select = document.getElementById('p-cat');
+        const manageList = document.getElementById('cat-list-manage');
+        
+        select.innerHTML = '<option value="">-- Choisir Catégorie --</option>';
+        manageList.innerHTML = '';
+
+        userCategories.sort().forEach(cat => {
+            // Select principal
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            select.appendChild(opt);
+
+            // Liste gestion (pour suppression)
+            const div = document.createElement('div');
+            div.style.cssText = "display:flex; justify-content:space-between; margin-bottom:5px; background:#333; padding:5px; border-radius:4px;";
+            div.innerHTML = `<span>${cat}</span> <button class="danger small" onclick="removeCategory('${cat}')">X</button>`;
+            manageList.appendChild(div);
+        });
+    }
+
+    window.addCustomCategory = async () => {
+        const newCat = document.getElementById('new-cat-name').value.trim();
+        if(!newCat) return;
+        
+        // Mise à jour locale
+        if(!userCategories.includes(newCat)) {
+            userCategories.push(newCat);
+            updateCategorySelects();
+            
+            // Sauvegarde Firebase
+            const userRef = doc(db, "users", currentUser.uid);
+            await setDoc(userRef, { categories: arrayUnion(newCat) }, { merge: true });
+            
+            document.getElementById('new-cat-name').value = '';
+            showToast("Catégorie ajoutée", "success");
+        }
+    };
+
+    window.removeCategory = async (catName) => {
+        if(!confirm(`Supprimer la catégorie "${catName}" ? (Les produits existants resteront visibles)`)) return;
+        
+        userCategories = userCategories.filter(c => c !== catName);
+        updateCategorySelects();
+        
+        const userRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userRef, { categories: arrayRemove(catName) });
+    };
+
+    window.openCatModal = () => document.getElementById('cat-modal').style.display = 'flex';
+    window.closeCatModal = () => document.getElementById('cat-modal').style.display = 'none';
+
+    // --- PRODUITS (Flattened DB, Grouped UI) ---
+    function subscribeToProducts() {
+        const q = query(collection(db, "products"), where("uid", "==", currentUser.uid));
+        onSnapshot(q, (snapshot) => {
+            localProducts = [];
+            snapshot.forEach((doc) => {
+                localProducts.push({ id: doc.id, ...doc.data() });
+            });
+            renderProducts();
+        });
+    }
+
+    window.submitProduct = async () => {
+        const name = document.getElementById('p-name').value;
+        const date = document.getElementById('p-date').value;
+        const qty = parseInt(document.getElementById('p-qty').value) || 1;
+        const cat = document.getElementById('p-cat').value || "Divers";
+
+        if(!name || !date) return showToast("Nom et date requis", "error");
+
+        // Ajout Multiple (Flattening : 4 bananes = 4 docs)
+        const batchPromises = [];
+        for(let i=0; i<qty; i++) {
+            batchPromises.push(addDoc(collection(db, "products"), {
+                uid: currentUser.uid,
+                name: name,
+                date: date,
+                category: cat,
+                createdAt: Date.now()
+            }));
+        }
+
+        try {
+            await Promise.all(batchPromises);
+            showToast(`${qty} x ${name} ajouté(s)`, "success");
+            addToHistory(`Ajout: ${name} (x${qty})`);
+            // Reset form sauf catégorie
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-qty').value = '1';
+        } catch (e) {
+            console.error(e);
+            showToast("Erreur d'ajout", "error");
+        }
+    };
+
+    window.deleteSingleProduct = async (name, date, cat) => {
+        // Trouver UN seul produit correspondant pour le supprimer
+        const productToDelete = localProducts.find(p => p.name === name && p.date === date && p.category === cat);
+        if(productToDelete) {
+            await deleteDoc(doc(db, "products", productToDelete.id));
+            showToast("-1 produit retiré", "success");
+            addToHistory(`Retrait: ${name}`);
+        }
+    };
+    
+    window.deleteAllProductGroup = async (name, date, cat) => {
+        if(!confirm("Tout supprimer ?")) return;
+        const toDelete = localProducts.filter(p => p.name === name && p.date === date && p.category === cat);
+        const promises = toDelete.map(p => deleteDoc(doc(db, "products", p.id)));
+        await Promise.all(promises);
+        showToast("Groupe supprimé", "success");
+    };
+
+    window.renderProducts = () => {
+        const container = document.getElementById('product-container');
+        const search = document.getElementById('search').value.toLowerCase();
+        container.innerHTML = '';
+
+        // 1. Groupement visuel (Aggregation)
+        const grouped = {};
+        localProducts.forEach(p => {
+            // Clé unique pour grouper
+            const key = `${p.category}|${p.name}|${p.date}`;
+            if(!grouped[key]) {
+                grouped[key] = { ...p, count: 0 };
+            }
+            grouped[key].count++;
+        });
+
+        // 2. Transformation en tableau pour tri
+        let displayList = Object.values(grouped);
+
+        // 3. Filtrage Recherche
+        if(search) {
+            displayList = displayList.filter(p => p.name.toLowerCase().includes(search));
+        }
+
+        // 4. Tri (Date croissante)
+        displayList.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // 5. Organisation par Catégorie
+        const catsInUse = [...new Set(displayList.map(p => p.category))]; // Quelles cat sont affichées ?
+        // On inclut aussi les catégories supprimées si elles ont des produits
+
+        catsInUse.forEach(catName => {
+            const section = document.createElement('div');
+            section.className = 'category-section';
+            
+            section.innerHTML = `<div class="category-header"><span class="cat-title">${catName}</span></div>`;
+            
+            const listDiv = document.createElement('div');
+            listDiv.className = 'product-list';
+
+            // Produits de cette catégorie
+            displayList.filter(p => p.category === catName).forEach(p => {
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const expDate = new Date(p.date);
+                const diffTime = expDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let statusClass = "dlc-ok";
+                if (diffDays < 0) statusClass = "dlc-expired";
+                else if (diffDays <= 3) statusClass = "dlc-warning"; // Jaune 3-4 jours (ici <=3 pour inclure J-0 à J-3)
+
+                const card = document.createElement('div');
+                card.className = `product-card ${statusClass}`;
+                card.innerHTML = `
+                    <span class="product-name ${statusClass}">${p.name}</span>
+                    <div class="product-qty">x${p.count}</div>
+                    <div class="product-date">${new Date(p.date).toLocaleDateString()}</div>
+                    <div class="actions">
+                        <button class="decrement-button small" onclick="deleteSingleProduct('${p.name}', '${p.date}', '${p.category}')">-1</button>
+                        <button class="danger small" onclick="deleteAllProductGroup('${p.name}', '${p.date}', '${p.category}')">🗑️</button>
+                    </div>
+                `;
+                listDiv.appendChild(card);
+            });
+
+            section.appendChild(listDiv);
+            container.appendChild(section);
+        });
+    };
+
+    // --- SCANNER (OpenFoodFacts) ---
+    let html5QrcodeScanner = null;
+
+    window.startScanner = () => {
+        document.getElementById('scanner-container').style.display = 'block';
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        
+        html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
+        .catch(err => {
+            console.error(err);
+            showToast("Erreur caméra (HTTPS requis)", "error");
+            stopScanner();
+        });
+    };
+
+    window.stopScanner = () => {
+        if(html5QrcodeScanner) {
+            html5QrcodeScanner.stop().then(() => {
+                html5QrcodeScanner.clear();
+                document.getElementById('scanner-container').style.display = 'none';
+            }).catch(err => console.log(err));
+        } else {
+            document.getElementById('scanner-container').style.display = 'none';
+        }
+    };
+
+    async function onScanSuccess(decodedText, decodedResult) {
+        stopScanner();
+        showToast("Code détecté, recherche...", "success");
+        
+        try {
+            const resp = await fetch(`https://world.openfoodfacts.org/api/v0/product/${decodedText}.json`);
+            const data = await resp.json();
+            
+            if(data.status === 1) {
+                let name = data.product.product_name_fr || data.product.product_name;
+                document.getElementById('p-name').value = name || "Produit inconnu";
+                
+                // Essai de deviner la catégorie (optionnel, basique)
+                if(data.product.categories_tags) {
+                   // Logique complexe, on laisse l'utilisateur choisir pour l'instant
+                }
+            } else {
+                showToast("Produit non trouvé sur OpenFoodFacts", "warning");
+            }
+        } catch(e) {
+            showToast("Erreur API", "error");
+        }
+    }
+
+    // --- NOTIFICATIONS & HISTORIQUE ---
+    function checkNotifications() {
+        if ("Notification" in window) {
+            Notification.requestPermission();
+        }
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        
+        const expiringTomorrow = localProducts.filter(p => {
+            const d = new Date(p.date);
+            const diff = (d - today) / (1000 * 60 * 60 * 24);
+            return diff > 0 && diff <= 1.5; // Environ 1 jour
+        });
+
+        if(expiringTomorrow.length > 0) {
+            const msg = `⚠️ ${expiringTomorrow.length} produit(s) expirent demain !`;
+            document.getElementById('notif-area').textContent = msg;
+            document.getElementById('notif-area').style.display = 'block';
+            
+            // Notif Système (si supporté par le Webview/Navigateur)
+            if (Notification.permission === "granted") {
+                new Notification("DLC Proche", { body: msg });
+            }
+        }
+    }
+
+    function addToHistory(action) {
+        const ul = document.getElementById('history-log');
+        const li = document.createElement('li');
+        li.textContent = `${new Date().toLocaleTimeString()} - ${action}`;
+        ul.prepend(li);
+        if(ul.children.length > 5) ul.lastChild.remove();
+    }
+
+    // Helper Toast
+    function showToast(msg, type="normal") {
+        let bg = "#333";
+        if(type === "error") bg = "#ff6347";
+        if(type === "success") bg = "#4caf50";
+        if(type === "warning") bg = "#ffc107";
+        
+        Toastify({
+            text: msg,
+            duration: 3000,
+            gravity: "bottom",
+            position: "center",
+            style: { background: bg, borderRadius: "10px" }
+        }).showToast();
+    }
+    
+    // Pour rendre les fonctions accessibles au HTML global
+    window.startScanner = window.startScanner;
+    window.stopScanner = window.stopScanner;
+    // (Les autres sont attachées via window.X = X ci-dessus)
+
+    
+    // --- SURVEILLANCE DE LA CONNEXION (IMPORTANT) ---
+        onAuthStateChanged(auth, (user) => {
+            const authScreen = document.getElementById('auth-screen');
+            const appContent = document.getElementById('app-content');
+
+            if (user) {
+                // L'utilisateur est connecté
+                currentUser = user;
+                authScreen.style.display = 'none'; // Cache le login
+                appContent.style.display = 'block'; // Affiche le frigo
+                
+                // On lance le chargement des données
+                loadUserCategories();
+                subscribeToProducts();
+                
+                // Petite vérification des DLC au démarrage
+                setTimeout(checkNotifications, 2000); 
+                
+                console.log("Connecté en tant que:", user.email);
+            } else {
+                // L'utilisateur est déconnecté
+                currentUser = null;
+                authScreen.style.display = 'flex'; // Affiche le login
+                appContent.style.display = 'none'; // Cache le frigo
+                console.log("Utilisateur déconnecté");
+            }
+        });
+  </script>
+</body>
+</html>
