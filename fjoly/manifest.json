@@ -2,6 +2,7 @@
   "short_name": "FridgeJoly",
   "name": "FridgeJoly",
   "start_url": "./index.html",
+  "scope": "/fjoly/",
   "display": "standalone",
   "theme_color": "#af07e3",
   "background_color": "#2f2033",
@@ -9,7 +10,8 @@
     {
       "src": "https://kfcgaming.github.io/fjoly/icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
