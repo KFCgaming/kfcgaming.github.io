@@ -1,0 +1,15 @@
+{
+  "short_name": "FridgeJoly",
+  "name": "FridgeJoly",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#af07e3",
+  "background_color": "#2f2033",
+  "icons": [
+    {
+      "src": "https://kfcgaming.github.io/fjoly/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
