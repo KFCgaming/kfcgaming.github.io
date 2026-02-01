@@ -342,18 +342,25 @@
 
     // --- GESTION CATEGORIES ---
     async function loadUserCategories() {
-        const userRef = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(userRef);
-        
-        if (docSnap.exists() && docSnap.data().categories) {
-            // Fusionner les défauts et les persos sans doublons
-            const customCats = docSnap.data().categories;
-            customCats.forEach(c => {
-                if(!userCategories.includes(c)) userCategories.push(c);
-            });
+            if (!currentUser) return;
+
+            const userRef = doc(db, "users", currentUser.uid);
+            try {
+                const docSnap = await getDoc(userRef);
+                
+                if (docSnap.exists() && docSnap.data().categories) {
+                    // On récupère les catégories sauvegardées
+                    const savedCats = docSnap.data().categories;
+                    
+                    // On fusionne avec les catégories de base sans doublons
+                    const combined = [...new Set([...userCategories, ...savedCats])];
+                    userCategories = combined.sort();
+                }
+                updateCategorySelects();
+            } catch (e) {
+                console.error("Erreur lors du chargement des catégories:", e);
+            }
         }
-        updateCategorySelects();
-    }
 
     function updateCategorySelects() {
         const select = document.getElementById('p-cat');
@@ -377,24 +384,32 @@
         });
     }
 
-    window.addCustomCategory = async () => {
-        const newCat = document.getElementById('new-cat-name').value.trim();
-        if(!newCat) return;
-        
-        // Mise à jour locale
-        if(!userCategories.includes(newCat)) {
-            userCategories.push(newCat);
-            updateCategorySelects();
-            
-            // Sauvegarde Firebase
-            const userRef = doc(db, "users", currentUser.uid);
-            await setDoc(userRef, { categories: arrayUnion(newCat) }, { merge: true });
-            
-            document.getElementById('new-cat-name').value = '';
-            showToast("Catégorie ajoutée", "success");
-        }
-    };
-
+        window.addCustomCategory = async () => {
+                const newCat = document.getElementById('new-cat-name').value.trim();
+                if(!newCat) return;
+                
+                if(!userCategories.includes(newCat)) {
+                    // 1. Mise à jour locale pour l'interface
+                    userCategories.push(newCat);
+                    updateCategorySelects();
+                    
+                    // 2. Sauvegarde permanente dans Firebase
+                    const userRef = doc(db, "users", currentUser.uid);
+                    try {
+                        // arrayUnion ajoute l'élément seulement s'il n'existe pas encore
+                        await setDoc(userRef, { 
+                            categories: arrayUnion(newCat) 
+                        }, { merge: true });
+                        
+                        document.getElementById('new-cat-name').value = '';
+                        showToast("Catégorie enregistrée !", "success");
+                    } catch (e) {
+                        showToast("Erreur de sauvegarde", "error");
+                    }
+                } else {
+                    showToast("Existe déjà", "warning");
+                }
+            };
     window.removeCategory = async (catName) => {
         if(!confirm(`Supprimer la catégorie "${catName}" ? (Les produits existants resteront visibles)`)) return;
         
@@ -650,32 +665,26 @@
     window.stopScanner = window.stopScanner;
     // (Les autres sont attachées via window.X = X ci-dessus)
 
-    
+
     // --- SURVEILLANCE DE LA CONNEXION (IMPORTANT) ---
-        onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => { // Ajoute async ici
             const authScreen = document.getElementById('auth-screen');
             const appContent = document.getElementById('app-content');
 
             if (user) {
-                // L'utilisateur est connecté
                 currentUser = user;
-                authScreen.style.display = 'none'; // Cache le login
-                appContent.style.display = 'block'; // Affiche le frigo
+                authScreen.style.display = 'none';
+                appContent.style.display = 'block';
                 
-                // On lance le chargement des données
-                loadUserCategories();
-                subscribeToProducts();
+                // CHARGEMENT DES DONNÉES DANS L'ORDRE
+                await loadUserCategories(); // On charge d'abord les catégories
+                subscribeToProducts();      // Puis les produits
                 
-                // Petite vérification des DLC au démarrage
-                setTimeout(checkNotifications, 2000); 
-                
-                console.log("Connecté en tant que:", user.email);
+                setTimeout(checkNotifications, 2000);
             } else {
-                // L'utilisateur est déconnecté
                 currentUser = null;
-                authScreen.style.display = 'flex'; // Affiche le login
-                appContent.style.display = 'none'; // Cache le frigo
-                console.log("Utilisateur déconnecté");
+                authScreen.style.display = 'flex';
+                appContent.style.display = 'none';
             }
         });
   </script>
