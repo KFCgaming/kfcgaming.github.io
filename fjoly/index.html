@@ -273,11 +273,11 @@
             <button onclick="openCatModal()" class="secondary" style="padding: 0 15px;">⚙️</button>
         </div>
 
-        <button onclick="submitProduct()" style="width: 100%;">Ajouter au Frigo</button>
+        <button onclick="submitProduct()" style="width: 100%;">Ajouter</button>
       </div>
 
       <input type="text" id="search" placeholder="🔍 Rechercher..." onkeyup="renderProducts()">
-
+      <br>
       <div id="product-container"></div>
       
       <div style="margin-top: 30px; text-align: center; color: #666; font-size: 0.9em;">
@@ -316,7 +316,7 @@
     
     let currentUser = null;
     let localProducts = [];
-    let userCategories = ["Viandes", "Laitages", "Légumes", "Boissons", "Plats Préparés", "Sauces", "Divers"]; // Défaut
+    let userCategories = ["Viandes","Boissons","Plats", "Sauces", "Divers"]; // Défaut
 
     // --- AUTHENTIFICATION ---
     window.handleLogin = async () => {
