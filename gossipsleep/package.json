@@ -1,0 +1,9 @@
+{
+  "name": "gossipsleep",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://kfcgaming.github.io/gossipsleep",
+  "dependencies": {
+    ...
+  }
+}
