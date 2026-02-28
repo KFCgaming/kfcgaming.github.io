@@ -1,25 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Scan</title>
+    <style>
+        body { margin: 0; background: #000; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #app { background: #1a1a1a; padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #333; width: 260px; display: none; }
+        .photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #e63946; margin-bottom: 15px; }
+        h1 { margin: 10px 0 5px; font-size: 1.4em; }
+        .id-label { color: #888; font-size: 0.9em; margin-bottom: 15px; }
+        .info { background: #333; padding: 8px; border-radius: 8px; font-family: monospace; font-size: 1em; margin-top: 10px; color: #ffb703; }
+    </style>
 </head>
-<body style="margin:0; background:#000;">
-    <div id="app"></div>
+<body>
+
+    <div id="app">
+        <img id="view_img" class="photo" src="" alt="Profil">
+        <h1 id="view_name"></h1>
+        <div class="id-label" id="view_id"></div>
+        <div class="info" id="view_tel"></div>
+    </div>
 
     <script>
-        // On récupère ce qu'il y a après le #
         const payload = window.location.hash.substring(1);
         
         if (payload) {
             try {
-                // On décode le contenu (qui peut être du HTML pur ou du JSON)
-                const decoded = decodeURIComponent(payload);
+                // On transforme le texte du lien en objet utilisable
+                const data = JSON.parse(decodeURIComponent(payload));
                 
-                // On l'injecte directement dans la page
-                document.getElementById('app').innerHTML = decoded;
+                // On remplit les éléments HTML avec les données du JSON
+                document.getElementById('view_name').textContent = (data.p || "") + " " + (data.n || "");
+                document.getElementById('view_id').textContent = "ID : " + (data.id || "N/A");
+                document.getElementById('view_tel').textContent = data.tel || "---";
+                document.getElementById('view_img').src = data.img || "https://via.placeholder.com/150";
+
+                // On affiche la carte une fois prête
+                document.getElementById('app').style.display = 'block';
             } catch (e) {
-                console.error("Erreur de décodage");
+                document.body.innerHTML = "<p style='text-align:center'>Erreur : Données invalides.</p>";
             }
         }
     </script>
