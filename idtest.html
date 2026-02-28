@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; background:#000;">
+    <div id="app"></div>
+
+    <script>
+        // On récupère ce qu'il y a après le #
+        const payload = window.location.hash.substring(1);
+        
+        if (payload) {
+            try {
+                // On décode le contenu (qui peut être du HTML pur ou du JSON)
+                const decoded = decodeURIComponent(payload);
+                
+                // On l'injecte directement dans la page
+                document.getElementById('app').innerHTML = decoded;
+            } catch (e) {
+                console.error("Erreur de décodage");
+            }
+        }
+    </script>
+</body>
+</html>
