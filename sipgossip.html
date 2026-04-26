@@ -1,0 +1,3120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sip & Gossip ✦ Flippe & Go Sleep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300;1,9..144,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   ROOT VARIABLES & THEMES
+═══════════════════════════════════════════════ */
+:root {
+  --bg: #fff8f5;
+  --bg2: #fff0eb;
+  --surface: #ffffff;
+  --surface2: #fef3ee;
+  --border: rgba(220,150,130,0.15);
+  --text: #2d1a14;
+  --text2: #7a5448;
+  --text3: #b08070;
+  --accent: #ff7f7f;
+  --accent2: #ffb3a0;
+  --accent3: #ffe0d8;
+  --gossip-glow: rgba(255,127,127,0.15);
+  --flippe-glow: rgba(130,100,200,0.15);
+  --star-color: transparent;
+  --noise-opacity: 0.03;
+  --font-story: 'Lora', Georgia, serif;
+  --story-size: 16px;
+  --story-lh: 1.8;
+  --story-ls: 0em;
+  --story-ws: 0em;
+  --radius: 24px;
+  --shadow: 0 4px 24px rgba(200,100,80,0.08);
+  --shadow-lg: 0 12px 48px rgba(200,100,80,0.15);
+  transition: background 0.5s, color 0.5s;
+}
+
+[data-theme="flippe"] {
+  --bg: #0d0b1a;
+  --bg2: #110e22;
+  --surface: #1a1630;
+  --surface2: #211c3a;
+  --border: rgba(150,120,220,0.15);
+  --text: #e8e0ff;
+  --text2: #a090cc;
+  --text3: #6a5a99;
+  /* accent, accent2, accent3 set dynamically by JS per-preset dark variant */
+  --star-color: rgba(255,255,255,0.6);
+  --noise-opacity: 0.04;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+}
+
+/* ═══════════════════════════════════════════════
+   THEME TRANSITION WIPE OVERLAY
+═══════════════════════════════════════════════ */
+#theme-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  overflow: hidden;
+}
+#theme-wipe svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+#wipe-emoji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.6s ease, color 0.6s ease;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Stars for flippe mode */
+#stars-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+[data-theme="flippe"] #stars-canvas { opacity: 1; }
+
+/* Bubbles + petals for gossip mode */
+#gossip-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+[data-theme="flippe"] #gossip-canvas { opacity: 0; }
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 99px; }
+
+/* ═══════════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════════ */
+.hidden { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+input, textarea, select { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ═══════════════════════════════════════════════
+   LOADING SCREEN
+═══════════════════════════════════════════════ */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: var(--bg);
+  transition: opacity 0.6s ease;
+}
+#loading-screen.fade-out { opacity: 0; pointer-events: none; }
+
+.loader-icon {
+  font-size: 56px;
+  animation: floatIcon 2s ease-in-out infinite;
+}
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+.loader-text {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text3);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+.loader-bar {
+  width: 180px;
+  height: 3px;
+  background: var(--accent3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.loader-bar-inner {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  animation: loadBar 1.8s ease-in-out infinite;
+}
+@keyframes loadBar {
+  0% { width: 0%; margin-left: 0%; }
+  50% { width: 70%; margin-left: 15%; }
+  100% { width: 0%; margin-left: 100%; }
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH SCREEN
+═══════════════════════════════════════════════ */
+#auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--bg);
+}
+#auth-screen.hidden { display: none !important; }
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.auth-logo .logo-emoji {
+  font-size: 52px;
+  display: block;
+  margin-bottom: 12px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+.auth-logo h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+.auth-logo p { font-size: 14px; color: var(--text3); margin-top: 4px; }
+
+.auth-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: var(--bg2);
+  padding: 4px;
+  border-radius: 14px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text3);
+  transition: all 0.3s;
+}
+.auth-tab.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  outline: none;
+}
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--gossip-glow); }
+.form-input::placeholder { color: var(--text3); opacity: 0.7; }
+
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: white;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  transition: all 0.2s;
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 40%, transparent); }
+.btn-primary:hover::after { opacity: 0.1; }
+.btn-primary:active { transform: translateY(0); }
+
+.auth-error {
+  padding: 10px 14px;
+  background: #fff0f0;
+  border: 1px solid #ffcccc;
+  border-radius: 10px;
+  color: #cc3333;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: none;
+}
+[data-theme="flippe"] .auth-error { background: #2a1a1a; border-color: #553333; color: #ff9999; }
+
+/* ═══════════════════════════════════════════════
+   APP LAYOUT
+═══════════════════════════════════════════════ */
+#app { min-height: 100vh; position: relative; z-index: 1; }
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.5s;
+}
+.nav-inner {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+}
+.nav-logo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: breathe 3s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.7; }
+}
+
+.nav-actions { display: flex; align-items: center; gap: 8px; }
+.nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  font-size: 18px;
+  transition: all 0.2s;
+  position: relative;
+}
+.nav-btn:hover { background: var(--surface2); color: var(--accent); }
+.nav-btn.active { background: var(--accent3); color: var(--accent); }
+
+/* Theme toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Avatar */
+.nav-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent3);
+  border: 2px solid var(--accent2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  position: relative;
+}
+.nav-avatar:hover { transform: scale(1.1); box-shadow: 0 0 0 4px var(--accent3); }
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════ */
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* HERO HEADER */
+.site-header {
+  text-align: center;
+  margin-bottom: 48px;
+  position: relative;
+}
+.site-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(52px, 12vw, 96px);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+.site-title .accent { color: var(--accent); }
+.site-title .italic { font-style: italic; }
+.site-subtitle {
+  font-size: 15px;
+  color: var(--text3);
+  font-weight: 500;
+  font-style: italic;
+  font-family: 'Lora', serif;
+  letter-spacing: 0.02em;
+}
+
+/* AMBIENT BADGE */
+.ambient-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  background: var(--accent3);
+  color: var(--accent);
+  border: 1px solid var(--accent2);
+}
+.ambient-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: breathe 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   COMPOSE BOX
+═══════════════════════════════════════════════ */
+.compose-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 28px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.3s;
+}
+.compose-box:focus-within { box-shadow: var(--shadow-lg), 0 0 0 2px var(--accent2); }
+
+.compose-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.compose-input-title {
+  flex: 1;
+  padding: 12px 18px;
+  background: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.compose-input-title:focus { border-color: var(--accent); }
+.compose-input-title::placeholder { color: var(--text3); opacity: 0.7; }
+
+.compose-select {
+  padding: 12px 18px;
+  background: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b08070' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  transition: border-color 0.3s;
+}
+.compose-select:focus { border-color: var(--accent); }
+
+.compose-tags-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.compose-tag-input {
+  flex: 1;
+  min-width: 140px;
+  padding: 9px 14px;
+  background: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.compose-tag-input:focus { border-color: var(--accent2); }
+.compose-tag-input::placeholder { color: var(--text3); opacity: 0.7; }
+
+.compose-textarea {
+  width: 100%;
+  padding: 16px 18px;
+  background: var(--bg2);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.6;
+  transition: border-color 0.3s;
+  margin-bottom: 12px;
+}
+.compose-textarea:focus { border-color: var(--accent); }
+.compose-textarea::placeholder { color: var(--text3); opacity: 0.7; }
+.compose-textarea.blacklist-alert { border-color: #e53e3e !important; background: #fff5f5; }
+[data-theme="flippe"] .compose-textarea.blacklist-alert { background: #2a1010; }
+
+.blacklist-warning {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e53e3e;
+  margin-bottom: 10px;
+  padding: 8px 14px;
+  background: #fff5f5;
+  border-radius: 10px;
+  border: 1px solid #feb2b2;
+  animation: shake 0.4s ease;
+}
+[data-theme="flippe"] .blacklist-warning { background: #2a1010; border-color: #553333; color: #ff9999; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.compose-footer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.char-count { font-size: 12px; color: var(--text3); font-weight: 600; margin-right: auto; }
+
+.btn-submit {
+  padding: 12px 28px;
+  background: var(--accent);
+  color: white;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
+.btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════════
+   FILTER BAR
+═══════════════════════════════════════════════ */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-icon { position: absolute; left: 14px; font-size: 16px; color: var(--text3); pointer-events: none; }
+.search-input {
+  width: 100%;
+  padding: 11px 14px 11px 42px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--gossip-glow); }
+.search-input::placeholder { color: var(--text3); }
+
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill {
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  color: var(--text2);
+  background: var(--surface);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.pill:hover { border-color: var(--accent2); color: var(--accent); }
+.pill.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+.sort-select {
+  padding: 9px 34px 9px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b08070' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.3s;
+}
+.sort-select:focus { border-color: var(--accent); }
+
+.random-btn {
+  padding: 9px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.random-btn:hover { border-color: var(--accent2); color: var(--accent); background: var(--accent3); }
+
+/* ═══════════════════════════════════════════════
+   STORY CARDS
+═══════════════════════════════════════════════ */
+.stories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.story-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  cursor: pointer;
+  position: relative;
+}
+.story-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--accent2); }
+.story-card.pinned { border-color: var(--accent); border-width: 2px; }
+.story-card.pinned::before {
+  content: '📌 Épinglée';
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent3);
+  padding: 3px 10px;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px;
+}
+.card-meta { flex: 1; min-width: 0; }
+.card-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+.cat-badge.gossip { background: #fff0eb; color: #e8622a; }
+.cat-badge.flippe { background: #f0ebff; color: #7c3aed; }
+[data-theme="flippe"] .cat-badge.gossip { background: #2a1a10; color: #ff9966; }
+[data-theme="flippe"] .cat-badge.flippe { background: #1e1540; color: #c4a8ff; }
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--bg2);
+  color: var(--text3);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tag-badge:hover { background: var(--accent3); color: var(--accent); border-color: var(--accent2); }
+
+.card-date { font-size: 11px; color: var(--text3); font-weight: 600; }
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+  font-size: 16px;
+  transition: all 0.2s;
+}
+.action-btn:hover { background: var(--bg2); color: var(--accent); }
+.action-btn.liked { color: #e53e3e; }
+.action-btn.read { color: #48bb78; }
+.action-btn.bookmarked { color: var(--accent); }
+
+.like-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
+  margin-left: -2px;
+}
+
+/* CARD BODY (expanded) */
+.card-body {
+  display: none;
+  padding: 0 22px 22px;
+  animation: expandIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.card-body.open { display: block; }
+@keyframes expandIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 20px;
+}
+.story-text {
+  font-family: var(--font-story);
+  font-size: var(--story-size);
+  line-height: var(--story-lh);
+  letter-spacing: var(--story-ls);
+  word-spacing: var(--story-ws);
+  color: var(--text);
+  white-space: pre-line;
+}
+
+.card-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.immersive-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: var(--bg2);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+}
+.immersive-btn:hover { background: var(--accent3); color: var(--accent); border-color: var(--accent2); }
+
+.collection-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: var(--bg2);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  position: relative;
+}
+.collection-btn:hover { background: var(--accent3); color: var(--accent); border-color: var(--accent2); }
+
+/* Comments */
+.comments-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.comments-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+.comment-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  animation: slideUp 0.3s ease;
+}
+.comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.comment-bubble {
+  background: var(--bg2);
+  border-radius: 0 12px 12px 12px;
+  padding: 8px 14px;
+  flex: 1;
+}
+.comment-author { font-size: 11px; font-weight: 800; color: var(--accent); margin-bottom: 3px; }
+.comment-text { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.5; }
+.comment-delete { font-size: 11px; color: var(--text3); margin-top: 4px; cursor: pointer; }
+.comment-delete:hover { color: #e53e3e; }
+
+.comment-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.comment-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.comment-input:focus { border-color: var(--accent); }
+.comment-input::placeholder { color: var(--text3); }
+.comment-send {
+  padding: 10px 16px;
+  background: var(--accent);
+  color: white;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.comment-send:hover { transform: scale(1.05); }
+.comment-input.blacklist-alert { border-color: #e53e3e !important; }
+
+/* ═══════════════════════════════════════════════
+   READ ARCHIVE
+═══════════════════════════════════════════════ */
+.archive-section {
+  margin-top: 40px;
+}
+.archive-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--text2);
+  font-size: 14px;
+  font-weight: 700;
+  width: 100%;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+.archive-toggle:hover { border-color: var(--accent2); color: var(--accent); }
+.archive-toggle .arrow { transition: transform 0.3s; }
+.archive-toggle.open .arrow { transform: rotate(90deg); }
+
+/* ═══════════════════════════════════════════════
+   STATS PANEL
+═══════════════════════════════════════════════ */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px 18px;
+  text-align: center;
+}
+.stat-num { font-size: 26px; font-weight: 800; color: var(--accent); font-family: 'Fraunces', serif; }
+.stat-label { font-size: 11px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════
+   IMMERSIVE MODE
+═══════════════════════════════════════════════ */
+#immersive-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: var(--bg);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  animation: fadeIn 0.5s ease;
+  overflow-y: auto;
+  padding: 0 20px 60px;
+}
+#immersive-overlay.open { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.immersive-bg-art {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: radial-gradient(ellipse at center top, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.immersive-close {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--text2);
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+}
+.immersive-close:hover { background: var(--accent3); color: var(--accent); transform: scale(1.1); }
+
+.immersive-content {
+  max-width: 680px;
+  width: 100%;
+  padding-top: 100px;
+  position: relative;
+  z-index: 1;
+}
+.immersive-cat {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.immersive-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 700;
+  font-style: italic;
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 32px;
+  line-height: 1.1;
+}
+.immersive-body {
+  font-family: var(--font-story);
+  font-size: var(--story-size);
+  line-height: var(--story-lh);
+  letter-spacing: var(--story-ls);
+  word-spacing: var(--story-ws);
+  color: var(--text);
+  white-space: pre-line;
+}
+
+/* ═══════════════════════════════════════════════
+   MODALS (Settings, Profile, Collections, Admin)
+═══════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: var(--shadow-lg);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 28px 0;
+  margin-bottom: 24px;
+}
+.modal-title { font-size: 22px; font-weight: 800; font-family: 'Fraunces', serif; letter-spacing: -0.02em; }
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text3);
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--accent3); color: var(--accent); transform: rotate(90deg); }
+
+.modal-body { padding: 0 28px 28px; }
+
+/* Settings sections */
+.settings-section { margin-bottom: 28px; }
+.settings-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.color-presets {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.color-swatch {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.color-swatch:hover { transform: scale(1.1); }
+.color-swatch.selected { border-color: var(--text); transform: scale(1.05); }
+.color-swatch.selected::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 900;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.font-options { display: flex; flex-direction: column; gap: 8px; }
+.font-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.font-option:hover { border-color: var(--accent2); }
+.font-option.selected { border-color: var(--accent); background: var(--accent3); }
+.font-option .check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); transition: all 0.2s; flex-shrink: 0; }
+.font-option.selected .check { background: var(--accent); border-color: var(--accent); }
+.font-option.selected .check::after { content: '✓'; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; height: 100%; }
+
+.range-row { display: flex; gap: 12px; align-items: center; }
+.range-label { font-size: 13px; font-weight: 600; color: var(--text2); width: 80px; }
+.range-val { font-size: 13px; font-weight: 700; color: var(--accent); width: 40px; text-align: right; }
+input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: transform 0.2s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* Profile section */
+.avatar-picker {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.emoji-avatar {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  background: var(--bg2);
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+.emoji-avatar:hover { transform: scale(1.15); border-color: var(--accent2); }
+.emoji-avatar.selected { border-color: var(--accent); background: var(--accent3); transform: scale(1.1); }
+
+.avatar-color-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.avatar-color {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+.avatar-color:hover { transform: scale(1.15); }
+.avatar-color.selected { border-color: var(--text); transform: scale(1.1); }
+
+/* Collections modal */
+.collection-list { display: flex; flex-direction: column; gap: 8px; }
+.collection-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg2);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.collection-item-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.collection-item-count { font-size: 12px; color: var(--text3); font-weight: 600; }
+.collection-delete { color: var(--text3); transition: color 0.2s; font-size: 14px; }
+.collection-delete:hover { color: #e53e3e; }
+
+.new-collection-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.new-collection-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.new-collection-input:focus { border-color: var(--accent); }
+.new-collection-input::placeholder { color: var(--text3); }
+
+/* Admin panel */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+[data-theme="flippe"] .admin-badge { background: #2a200a; border-color: #a16207; color: #fcd34d; }
+
+/* Toast notifications */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  padding: 12px 18px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: auto;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(40px) scale(0.9); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+.toast.fade-out { animation: toastOut 0.3s ease forwards; }
+@keyframes toastOut {
+  to { opacity: 0; transform: translateX(40px) scale(0.9); }
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+.empty-state .emoji { font-size: 48px; margin-bottom: 12px; display: block; }
+.empty-state p { font-size: 15px; font-weight: 600; font-family: 'Lora', serif; font-style: italic; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  nav { padding: 0 16px; }
+  main { padding: 24px 16px 60px; }
+  .site-title { font-size: 48px; }
+  .compose-header { flex-direction: column; }
+  .compose-select { width: 100%; }
+  .filter-bar { gap: 8px; }
+  .stat-card { padding: 12px; }
+  .color-presets { grid-template-columns: repeat(5, 1fr); }
+  .avatar-picker { grid-template-columns: repeat(6, 1fr); }
+  .card-title { font-size: 17px; }
+  .nav-logo span:last-child { display: none; }
+}
+
+/* Custom scrollbar for modals */
+.modal::-webkit-scrollbar { width: 4px; }
+.modal::-webkit-scrollbar-thumb { background: var(--accent2); }
+
+/* Story card hover glow */
+.story-card:hover {
+  box-shadow: 0 16px 48px color-mix(in srgb, var(--accent) 12%, rgba(0,0,0,0.08));
+}
+
+/* Blacklist highlight in textarea */
+.blacklist-word { 
+  background: rgba(229, 62, 62, 0.15);
+  color: #e53e3e;
+  border-radius: 2px;
+}
+
+/* Smooth transition for all theme changes */
+*, *::before, *::after { 
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.15s ease;
+}
+
+/* Except for things that shouldn't transition */
+input, textarea, button { transition: none; }
+input, textarea { transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; }
+button { transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease; }
+</style>
+</head>
+<body>
+
+<!-- NIGHT SKY CANVAS (stars, shooting stars, bats) -->
+<!-- GOSSIP CANVAS (bubbles, petals) -->
+<canvas id="gossip-canvas"></canvas>
+<canvas id="stars-canvas"></canvas>
+
+<!-- THEME TRANSITION WIPE -->
+<div id="theme-wipe"></div>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loader-icon" id="loading-icon">☕</div>
+  <p class="loader-text" id="loading-text">Infusion des potins...</p>
+  <div class="loader-bar"><div class="loader-bar-inner"></div></div>
+</div>
+
+<!-- AUTH -->
+<div id="auth-screen" class="hidden">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span class="logo-emoji" id="auth-emoji">☕</span>
+      <h1>Sip & Gossip</h1>
+      <p>Tes secrets t'attendent...</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Connexion</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Inscription</button>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+    <div class="form-group">
+      <label>Adresse email (Même factice, peu importe 😊)</label>
+      <input type="email" class="form-input" id="auth-email" placeholder="moi@tasse.fr" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" class="form-input" id="auth-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="form-group hidden" id="confirm-group">
+      <label>Confirmer le mot de passe</label>
+      <input type="password" class="form-input" id="auth-confirm" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" id="auth-btn" onclick="handleAuth()">Se connecter ✨</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <div class="nav-logo-dot"></div>
+        <span id="nav-brand">Sip & Gossip</span>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☕ Gossip</button>
+        <button class="nav-btn" onclick="openModal('stats-modal')" title="Mes statistiques">📊</button>
+        <button class="nav-btn" onclick="openModal('collections-modal')" title="Mes collections">🔖</button>
+        <button class="nav-btn" id="admin-nav-btn" style="display:none" onclick="openModal('admin-modal')" title="Admin">⚡</button>
+        <button class="nav-btn" onclick="openModal('settings-modal')" title="Paramètres">⚙️</button>
+        <div class="nav-avatar" onclick="openModal('profile-modal')" title="Mon profil" id="nav-avatar">😊</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="ambient-badge" id="ambient-badge">✦ Mode Gossip</div>
+      <h1 class="site-title" id="site-title">
+        <span class="italic">Sip</span> <span class="accent">&</span> <span>Gossip</span>
+      </h1>
+      <p class="site-subtitle">Prête pour les confidences ?</p>
+    </header>
+
+    <!-- COMPOSE -->
+    <section class="compose-box">
+      <div class="compose-header">
+        <input type="text" class="compose-input-title" id="new-title" placeholder="✍️ Titre de l'histoire..." maxlength="100">
+        <select class="compose-select" id="new-category">
+          <option value="gossip">☕ Gossip</option>
+          <option value="flippe">👻 Flippe</option>
+        </select>
+      </div>
+      <div class="compose-tags-row">
+        <input type="text" class="compose-tag-input" id="new-tags" placeholder="🏷️ Tags séparés par des virgules (ex: amour, paranormal, ...)">
+      </div>
+      <textarea class="compose-textarea" id="new-content" rows="4" placeholder="Raconte nous tout... 🙃" oninput="checkBlacklist(this)"></textarea>
+      <div class="blacklist-warning" id="blacklist-warning">
+        ⚠️ Ton message contient des mots interdits — modifie-le pour publier.
+      </div>
+      <div class="compose-footer">
+        <span class="char-count" id="char-count">0 caractèrest</span>
+        <button class="btn-submit" id="submit-btn" onclick="addStory()">Publier 🚀</button>
+      </div>
+    </section>
+
+    <!-- FILTERS -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="search-input" placeholder="Rechercher... (tag/mots clés)" oninput="renderStories()">
+      </div>
+      <div class="filter-pills">
+        <button class="pill active" data-filter="all" onclick="setFilter('all',this)">Tout</button>
+        <button class="pill" data-filter="gossip" onclick="setFilter('gossip',this)">☕ Gossip</button>
+        <button class="pill" data-filter="flippe" onclick="setFilter('flippe',this)">👻 Flippe</button>
+      </div>
+      <select class="sort-select" id="sort-select" onchange="renderStories()">
+        <option value="newest">🕐 Plus récentes</option>
+        <option value="oldest">🕰️ Plus anciennes</option>
+        <option value="most-liked">❤️ Plus likées</option>
+        <option value="least-liked">💔 Moins likées</option>
+      </select>
+      <button class="random-btn" onclick="openRandom()">🎲 Surprise !</button>
+    </div>
+
+    <!-- STORIES LIST -->
+    <div class="stories-list" id="stories-list"></div>
+
+    <!-- ARCHIVE -->
+    <div class="archive-section" id="archive-section" style="display:none">
+      <button class="archive-toggle" id="archive-toggle" onclick="toggleArchive()">
+        <span>📚</span>
+        <span>Histoires lues</span>
+        <span id="archive-count" style="margin-left:auto;font-size:12px;color:var(--text3)">0</span>
+        <span class="arrow">›</span>
+      </button>
+      <div class="stories-list hidden" id="archive-list"></div>
+    </div>
+  </main>
+</div>
+
+<!-- IMMERSIVE MODE -->
+<div id="immersive-overlay">
+  <div class="immersive-bg-art"></div>
+  <button class="immersive-close" onclick="closeImmersive()">✕</button>
+  <div class="immersive-content">
+    <div class="immersive-cat" id="immersive-cat"></div>
+    <h1 class="immersive-title" id="immersive-title"></h1>
+    <div class="immersive-body" id="immersive-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- SETTINGS -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">⚙️ Style & Ambiance</h2>
+      <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Accent color -->
+      <div class="settings-section">
+        <span class="settings-label">🎨 Couleur d'accent (10 prédéfinis)</span>
+        <div class="color-presets" id="color-presets">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+      <!-- Font family -->
+      <div class="settings-section">
+        <span class="settings-label">✍️ Police de lecture</span>
+        <div class="font-options" id="font-options"></div>
+      </div>
+      <!-- Typography controls -->
+      <div class="settings-section">
+        <span class="settings-label">📐 Mise en page du texte</span>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="range-row">
+            <span class="range-label">Taille</span>
+            <input type="range" min="13" max="26" value="16" id="font-size-range" oninput="updateTypo()">
+            <span class="range-val" id="font-size-val">16px</span>
+          </div>
+          <div class="range-row">
+            <span class="range-label">Interligne</span>
+            <input type="range" min="12" max="30" value="18" id="lh-range" oninput="updateTypo()">
+            <span class="range-val" id="lh-val">1.8</span>
+          </div>
+          <div class="range-row">
+            <span class="range-label">Lettres</span>
+            <input type="range" min="-5" max="15" value="0" id="ls-range" oninput="updateTypo()">
+            <span class="range-val" id="ls-val">0em</span>
+          </div>
+          <div class="range-row">
+            <span class="range-label">Mots</span>
+            <input type="range" min="-5" max="15" value="0" id="ws-range" oninput="updateTypo()">
+            <span class="range-val" id="ws-val">0em</span>
+          </div>
+        </div>
+      </div>
+      <!-- Preview -->
+      <div class="settings-section">
+        <span class="settings-label">👁️ Aperçu</span>
+        <div style="padding:16px;background:var(--bg2);border-radius:14px;border:1px solid var(--border);">
+          <p id="typo-preview" style="font-family:var(--font-story);font-size:var(--story-size);line-height:var(--story-lh);letter-spacing:var(--story-ls);word-spacing:var(--story-ws);color:var(--text2);">
+            Hier soir, j'ai vu quelque chose d'étrange dans le couloir... une silhouette que je ne reconnaissais pas. ☕
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">👤 Mon Profil</h2>
+      <button class="modal-close" onclick="closeModal('profile-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-section">
+        <span class="settings-label">🎭 Emoji Avatar</span>
+        <div class="avatar-picker" id="emoji-picker"></div>
+        <span class="settings-label" style="margin-top:12px">🎨 Couleur de fond</span>
+        <div class="avatar-color-row" id="avatar-colors"></div>
+        <div style="display:flex;justify-content:center;margin-bottom:16px;">
+          <div id="avatar-preview" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;border:3px solid var(--accent2);">😊</div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <span class="settings-label">✏️ Pseudo</span>
+        <input type="text" class="form-input" id="pseudo-input" placeholder="Ton pseudo (visible par les autres)" maxlength="30">
+      </div>
+      <div class="settings-section">
+        <span class="settings-label">💬 Bio</span>
+        <textarea class="form-input" id="bio-input" rows="3" placeholder="Dis quelque chose sur toi..." maxlength="160" style="resize:vertical;min-height:80px;"></textarea>
+      </div>
+      <button class="btn-primary" onclick="saveProfile()">Sauvegarder ✨</button>
+      <button style="width:100%;margin-top:10px;padding:14px;border-radius:14px;font-size:15px;font-weight:700;color:#e53e3e;background:#fff5f5;transition:all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff5f5'" onclick="logout()">Déconnexion 👋</button>
+    </div>
+  </div>
+</div>
+
+<!-- COLLECTIONS -->
+<div class="modal-overlay" id="collections-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">🔖 Mes Collections</h2>
+      <button class="modal-close" onclick="closeModal('collections-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="collection-list" id="collection-list"></div>
+      <div class="new-collection-row">
+        <input type="text" class="new-collection-input" id="new-collection-name" placeholder="✨ Nouvelle collection..." maxlength="30">
+        <button class="btn-submit" onclick="addCollection()" style="padding:10px 16px;font-size:13px;">Créer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="modal-overlay" id="stats-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">📊 Mes Statistiques</h2>
+      <button class="modal-close" onclick="closeModal('stats-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="stats-body">
+      <!-- Generated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ADD TO COLLECTION (contextual) -->
+<div class="modal-overlay" id="add-to-collection-modal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <h2 class="modal-title">🔖 Ajouter à...</h2>
+      <button class="modal-close" onclick="closeModal('add-to-collection-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="add-to-collection-body">
+      <!-- Generated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="modal-overlay" id="admin-modal">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <h2 class="modal-title">⚡ Panneau Admin</h2>
+      <button class="modal-close" onclick="closeModal('admin-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:20px;">
+        <span class="admin-badge">👑 Administrateur</span>
+      </div>
+      <!-- Blacklist manager -->
+      <div class="settings-section">
+        <span class="settings-label">🚫 Blacklist de mots</span>
+        <div id="blacklist-display" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:40px;padding:10px;background:var(--bg2);border-radius:12px;border:1px solid var(--border);">
+          <!-- Tags generated by JS -->
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" class="new-collection-input" id="new-blacklist-word" placeholder="Ajouter un mot interdit..." maxlength="50">
+          <button class="btn-submit" onclick="addBlacklistWord()" style="padding:10px 16px;font-size:13px;">Ajouter</button>
+        </div>
+      </div>
+      <!-- All stories management -->
+      <div class="settings-section">
+        <span class="settings-label">📖 Gérer les histoires</span>
+        <div id="admin-stories-list" style="display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, setDoc, getDoc, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ═══════════════════════════════════════════════
+   FIREBASE INIT
+═══════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyBy2CV-_diNxn3o_1-YY1ADcrynZ0rZgqw",
+  authDomain: "mywalletcollection.firebaseapp.com",
+  projectId: "mywalletcollection",
+  storageBucket: "mywalletcollection.firebasestorage.app",
+  messagingSenderId: "455152377190",
+  appId: "1:455152377190:web:b62f7466682258aec1fca7"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ──── ADMIN UID (remplace par ton UID après premier login) ────
+const ADMIN_UID = "cmRY2ITKhufCtQzrjFkvYIjpLI32";
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let currentUser = null;
+let userProfile = {};
+let stories = [];
+let userInteractions = {}; // { storyId: { liked, read, bookmarks } }
+let collections = []; // [{ id, name }]
+let blacklist = [];
+let currentFilter = 'all';
+let archiveOpen = false;
+let expandedStoryId = null;
+let pendingCollectionStoryId = null;
+
+const PRESETS = [
+  // Each preset: light (gossip) + dark (flippe) variants
+  { name: 'Rose Cerise',
+    light:  { accent: '#ff7f7f', accent2: '#ffb3a0', accent3: '#ffe0d8', bg: '#fff8f5',   bg2: '#fff0eb',   surface: '#ffffff', surface2: '#fef3ee', border: 'rgba(220,150,130,0.15)', text: '#2d1a14', text2: '#7a5448', text3: '#b08070' },
+    dark:   { accent: '#ff6b9d', accent2: '#ff99c0', accent3: '#3d1a2e', bg: '#0d0b1a',   bg2: '#110e22',   surface: '#1a1630', surface2: '#211c3a', border: 'rgba(200,100,160,0.18)', text: '#ffe0f0', text2: '#cc88aa', text3: '#7a4460' } },
+  { name: 'Pêche Dorée',
+    light:  { accent: '#ff9a5c', accent2: '#ffbd96', accent3: '#fff0e4', bg: '#fff9f5',   bg2: '#fff3ec',   surface: '#ffffff', surface2: '#fff6f0', border: 'rgba(220,160,100,0.15)', text: '#2d1a00', text2: '#7a5030', text3: '#b07040' },
+    dark:   { accent: '#ff8c42', accent2: '#ffb070', accent3: '#2e1a08', bg: '#0e0a04',   bg2: '#150d06',   surface: '#1c1308', surface2: '#221a0e', border: 'rgba(200,120,60,0.18)',  text: '#ffecd0', text2: '#cc9966', text3: '#7a5030' } },
+  { name: 'Lavande',
+    light:  { accent: '#9b7fe8', accent2: '#c4a8ff', accent3: '#ede5ff', bg: '#f9f7ff',   bg2: '#f2eeff',   surface: '#ffffff', surface2: '#f8f5ff', border: 'rgba(160,130,230,0.15)', text: '#1e1a2d', text2: '#5a4890', text3: '#9080c0' },
+    dark:   { accent: '#b09aff', accent2: '#d0bbff', accent3: '#1e1640', bg: '#0d0b1a',   bg2: '#110e22',   surface: '#1a1630', surface2: '#211c3a', border: 'rgba(150,120,220,0.18)', text: '#e8e0ff', text2: '#a090cc', text3: '#6a5a99' } },
+  { name: 'Menthe',
+    light:  { accent: '#45b89a', accent2: '#82d5bf', accent3: '#dcf5ee', bg: '#f4fdf9',   bg2: '#e8f8f2',   surface: '#ffffff', surface2: '#f0fdf8', border: 'rgba(60,180,140,0.15)',  text: '#0d2620', text2: '#2a7060', text3: '#60a090' },
+    dark:   { accent: '#3dcca6', accent2: '#70e8c8', accent3: '#062018', bg: '#040e0b',   bg2: '#071511',   surface: '#0c1e18', surface2: '#102820', border: 'rgba(40,160,120,0.18)',  text: '#ccfff0', text2: '#80ccb0', text3: '#407060' } },
+  { name: 'Saphir',
+    light:  { accent: '#5b8dee', accent2: '#91b4ff', accent3: '#dce8ff', bg: '#f5f8ff',   bg2: '#ecf0ff',   surface: '#ffffff', surface2: '#f2f6ff', border: 'rgba(80,120,220,0.15)',  text: '#0d1a30', text2: '#304880', text3: '#7090c0' },
+    dark:   { accent: '#7aabff', accent2: '#a8c8ff', accent3: '#0a1428', bg: '#050810',   bg2: '#080c18',   surface: '#0e1420', surface2: '#141c2c', border: 'rgba(80,120,220,0.2)',   text: '#dceeff', text2: '#88aadd', text3: '#4466aa' } },
+  { name: 'Corail',
+    light:  { accent: '#ff6b6b', accent2: '#ff9e9e', accent3: '#ffe4e4', bg: '#fff7f7',   bg2: '#ffeeee',   surface: '#ffffff', surface2: '#fff5f5', border: 'rgba(220,100,100,0.15)', text: '#2d0d0d', text2: '#7a3030', text3: '#b06060' },
+    dark:   { accent: '#ff5555', accent2: '#ff8888', accent3: '#2e0808', bg: '#0e0404',   bg2: '#150606',   surface: '#1c0c0c', surface2: '#221212', border: 'rgba(200,60,60,0.2)',    text: '#ffe8e8', text2: '#cc7777', text3: '#7a3344' } },
+  { name: 'Forêt',
+    light:  { accent: '#5cb85c', accent2: '#8fd48f', accent3: '#dcf0dc', bg: '#f5fdf5',   bg2: '#eaf8ea',   surface: '#ffffff', surface2: '#f2fdf2', border: 'rgba(60,160,60,0.15)',   text: '#0d260d', text2: '#2a6a2a', text3: '#609060' },
+    dark:   { accent: '#55cc55', accent2: '#88e088', accent3: '#061806', bg: '#040c04',   bg2: '#071207',   surface: '#0c1c0c', surface2: '#102410', border: 'rgba(40,140,40,0.18)',   text: '#ccffcc', text2: '#80cc80', text3: '#407040' } },
+  { name: 'Soleil',
+    light:  { accent: '#f5b731', accent2: '#f7d07a', accent3: '#fef6dc', bg: '#fffdf5',   bg2: '#fff8e6',   surface: '#ffffff', surface2: '#fffbf0', border: 'rgba(220,180,40,0.15)',  text: '#2a1e00', text2: '#7a5a00', text3: '#b08800' },
+    dark:   { accent: '#ffcc44', accent2: '#ffe088', accent3: '#1e1600', bg: '#0e0c00',   bg2: '#151200',   surface: '#1c1800', surface2: '#221e04', border: 'rgba(200,160,0,0.2)',    text: '#fff8cc', text2: '#ccaa44', text3: '#7a6600' } },
+  { name: 'Framboise',
+    light:  { accent: '#e0497a', accent2: '#f08caa', accent3: '#fde0ea', bg: '#fff8fb',   bg2: '#ffeef5',   surface: '#ffffff', surface2: '#fff5f9', border: 'rgba(210,60,110,0.15)',  text: '#2d0a18', text2: '#7a2a48', text3: '#b06080' },
+    dark:   { accent: '#ff4488', accent2: '#ff88bb', accent3: '#2e0818', bg: '#0e0408',   bg2: '#15060e',   surface: '#1c0c14', surface2: '#22121a', border: 'rgba(200,40,100,0.2)',   text: '#ffe0ee', text2: '#cc6688', text3: '#7a3355' } },
+  { name: 'Encre',
+    light:  { accent: '#6366f1', accent2: '#a5b4fc', accent3: '#e0e7ff', bg: '#f7f7ff',   bg2: '#eeefff',   surface: '#ffffff', surface2: '#f4f5ff', border: 'rgba(100,100,240,0.15)', text: '#1a1a30', text2: '#484880', text3: '#8888c0' },
+    dark:   { accent: '#818cf8', accent2: '#b0b8ff', accent3: '#0e0e28', bg: '#06060f',   bg2: '#0c0c18',   surface: '#141428', surface2: '#1a1a30', border: 'rgba(100,100,240,0.2)',  text: '#e0e0ff', text2: '#9090cc', text3: '#5050a0' } },
+];
+
+const FONTS = [
+  { label: 'Lora — Élégant & Classique', value: "'Lora', Georgia, serif", preview: 'Lora' },
+  { label: 'Bricolage — Moderne & Vif',  value: "'Bricolage Grotesque', sans-serif", preview: 'Bricolage' },
+  { label: 'Fraunces — Dramatique & Littéraire', value: "'Fraunces', serif", preview: 'Fraunces' },
+  { label: 'DM Mono — Minimaliste & Tech', value: "'DM Mono', monospace", preview: 'DM Mono' },
+  { label: 'Georgia — Lecture Confort',  value: "Georgia, serif", preview: 'Georgia' },
+];
+
+const EMOJIS = ['😊','🌸','🌙','⭐','🦊','🐱','🐻','🦋','🌺','🔮','🌈','🎀','🦄','👻','🍀','🌙','🐼','🌙','🎭','🌿','💫','🦜','🐝','🦩'];
+const AVATAR_COLORS = ['#ffb3a0','#c4a8ff','#82d5bf','#91b4ff','#f7d07a','#f08caa','#8fd48f','#ffa07a','#b0c4de','#dda0dd'];
+
+let settings = {
+  accentIdx: 0,
+  fontIdx: 0,
+  fontSize: 16,
+  lineHeight: 1.8,
+  letterSpacing: 0,
+  wordSpacing: 0,
+  theme: 'gossip',
+  avatarEmoji: '😊',
+  avatarColor: '#ffb3a0',
+  pseudo: '',
+  bio: ''
+};
+
+/* ═══════════════════════════════════════════════
+   GOSSIP CANVAS — Bubbles & Petals
+═══════════════════════════════════════════════ */
+function initGossipCanvas() {
+  const canvas = document.getElementById('gossip-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  let accentColor = '#ff7f7f'; // updated dynamically
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Expose color updater so applyAccent can call it
+  window._updateGossipColor = (hex) => { accentColor = hex; };
+
+  // ── Helper: hex → rgb ──
+  function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return { r, g, b };
+  }
+
+  // ── BUBBLES ──
+  function makeBubble() {
+    const r = 6 + Math.random() * 22;
+    return {
+      x: Math.random() * W,
+      y: H + r + Math.random() * 60,
+      r,
+      vy: -(0.25 + Math.random() * 0.5),
+      vx: (Math.random() - 0.5) * 0.3,
+      wobblePhase: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.018 + Math.random() * 0.012,
+      wobbleAmp: 0.6 + Math.random() * 1.2,
+      alpha: 0,
+      fadeIn: true,
+      life: 1,
+    };
+  }
+
+  let bubbles = Array.from({ length: 18 }, () => {
+    const b = makeBubble();
+    b.y = Math.random() * H; // spread on init
+    b.alpha = Math.random() * 0.25;
+    b.fadeIn = false;
+    return b;
+  });
+
+  function drawBubble(b) {
+    const { r: cr, g: cg, b: cb } = hexToRgb(accentColor);
+    ctx.save();
+    ctx.globalAlpha = b.alpha;
+
+    // Outer ring
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.55)`;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // Inner shimmer fill
+    const grad = ctx.createRadialGradient(b.x - b.r*0.3, b.y - b.r*0.3, b.r*0.05, b.x, b.y, b.r);
+    grad.addColorStop(0, `rgba(255,255,255,0.35)`);
+    grad.addColorStop(0.4, `rgba(${cr},${cg},${cb},0.06)`);
+    grad.addColorStop(1, `rgba(${cr},${cg},${cb},0.03)`);
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Specular highlight
+    ctx.beginPath();
+    ctx.arc(b.x - b.r*0.28, b.y - b.r*0.28, b.r*0.22, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,0.5)`;
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  // ── PETALS ──
+  function makePetal() {
+    return {
+      x: Math.random() * W,
+      y: -20 - Math.random() * 60,
+      size: 5 + Math.random() * 9,
+      vy: 0.4 + Math.random() * 0.7,
+      vx: (Math.random() - 0.5) * 0.5,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.025,
+      swayPhase: Math.random() * Math.PI * 2,
+      swaySpeed: 0.015 + Math.random() * 0.015,
+      swayAmp: 1.2 + Math.random() * 2,
+      alpha: 0.55 + Math.random() * 0.35,
+    };
+  }
+
+  let petals = Array.from({ length: 22 }, () => {
+    const p = makePetal();
+    p.y = Math.random() * H; // spread on init
+    return p;
+  });
+
+  function drawPetal(p) {
+    const { r: cr, g: cg, b: cb } = hexToRgb(accentColor);
+    ctx.save();
+    ctx.globalAlpha = p.alpha * 0.7;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+
+    // Petal shape: two bezier curves meeting at tips
+    const s = p.size;
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.bezierCurveTo(s*0.8, -s*0.5, s*0.8, s*0.5, 0, s);
+    ctx.bezierCurveTo(-s*0.8, s*0.5, -s*0.8, -s*0.5, 0, -s);
+
+    const grad = ctx.createLinearGradient(0, -s, 0, s);
+    grad.addColorStop(0, `rgba(255,255,255,0.9)`);
+    grad.addColorStop(0.3, `rgba(${cr},${cg},${cb},0.65)`);
+    grad.addColorStop(1, `rgba(${cr},${cg},${cb},0.4)`);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Subtle vein
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.lineTo(0, s);
+    ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.2)`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  let isGossipMode = true;
+  window._setGossipMode = (on) => { isGossipMode = on; };
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    if (!isGossipMode) {
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    // Update & draw bubbles
+    bubbles.forEach(b => {
+      b.wobblePhase += b.wobbleSpeed;
+      b.x += b.vx + Math.sin(b.wobblePhase) * b.wobbleAmp * 0.08;
+      b.y += b.vy;
+      if (b.fadeIn) b.alpha = Math.min(0.35, b.alpha + 0.008);
+      if (b.y < -b.r * 2) {
+        Object.assign(b, makeBubble());
+        b.fadeIn = true;
+        b.alpha = 0;
+      }
+      drawBubble(b);
+    });
+
+    // Update & draw petals
+    petals.forEach(p => {
+      p.swayPhase += p.swaySpeed;
+      p.x += p.vx + Math.sin(p.swayPhase) * p.swayAmp * 0.07;
+      p.y += p.vy;
+      p.rot += p.rotSpeed;
+      if (p.y > H + 30) Object.assign(p, makePetal());
+      drawPetal(p);
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ═══════════════════════════════════════════════
+   NIGHT SKY CANVAS — Stars, Shooting Stars, Bats
+═══════════════════════════════════════════════ */
+function initNightSky() {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ── Static twinkling stars ──
+  const stars = Array.from({ length: 180 }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    r: Math.random() * 1.4 + 0.2,
+    phase: Math.random() * Math.PI * 2,
+    speed: Math.random() * 0.007 + 0.002,
+  }));
+
+  // ── Shooting stars ──
+  let shooters = [];
+  function spawnShooter() {
+    // Start from top-right quadrant, travel toward bottom-left
+    const angle = (Math.PI / 180) * (210 + Math.random() * 30); // ~210-240°
+    const speed = 4 + Math.random() * 5;
+    shooters.push({
+      x: W * 0.4 + Math.random() * W * 0.7,
+      y: Math.random() * H * 0.4,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      len: 60 + Math.random() * 80,
+      alpha: 1,
+      life: 1,
+    });
+  }
+  // Spawn every 3-7s
+  function scheduleShooter() {
+    spawnShooter();
+    setTimeout(scheduleShooter, 3000 + Math.random() * 4000);
+  }
+  scheduleShooter();
+
+  // ── Bats ──
+  // A bat is drawn as a simple SVG-like path on canvas: body + two wing curves
+  let bats = [];
+  function spawnBat() {
+    const fromRight = Math.random() > 0.5;
+    bats.push({
+      x: fromRight ? W + 60 : -60,
+      y: H * 0.05 + Math.random() * H * 0.45,
+      vx: fromRight ? -(1.2 + Math.random() * 1.8) : (1.2 + Math.random() * 1.8),
+      vy: 0,
+      waveAmp: 18 + Math.random() * 20,
+      waveFreq: 0.025 + Math.random() * 0.02,
+      wavePhase: Math.random() * Math.PI * 2,
+      wingPhase: Math.random() * Math.PI * 2,
+      wingSpeed: 0.15 + Math.random() * 0.12,
+      scale: 0.6 + Math.random() * 0.7,
+      alpha: 0,
+      fadeDir: 1, // 1=in, -1=out
+    });
+  }
+  function scheduleBat() {
+    spawnBat();
+    setTimeout(scheduleBat, 6000 + Math.random() * 10000);
+  }
+  scheduleBat();
+
+  function drawBat(ctx, x, y, wingPhase, scale, alpha, facingLeft) {
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.75;
+    ctx.translate(x, y);
+    ctx.scale(facingLeft ? -scale : scale, scale);
+
+    const wy = Math.sin(wingPhase) * 10; // wing flap Y offset
+
+    ctx.beginPath();
+    // Body (small oval)
+    ctx.ellipse(0, 0, 5, 4, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#8866cc';
+    ctx.fill();
+
+    // Left wing
+    ctx.beginPath();
+    ctx.moveTo(0, -1);
+    ctx.bezierCurveTo(-10, wy - 14, -22, wy - 8, -28, wy + 2);
+    ctx.bezierCurveTo(-22, wy + 8, -10, 6, 0, 2);
+    ctx.fillStyle = '#7755bb';
+    ctx.fill();
+
+    // Right wing
+    ctx.beginPath();
+    ctx.moveTo(0, -1);
+    ctx.bezierCurveTo(10, wy - 14, 22, wy - 8, 28, wy + 2);
+    ctx.bezierCurveTo(22, wy + 8, 10, 6, 0, 2);
+    ctx.fill();
+
+    // Ears
+    ctx.beginPath();
+    ctx.moveTo(-3, -4);
+    ctx.lineTo(-5, -9);
+    ctx.lineTo(-1, -5);
+    ctx.moveTo(3, -4);
+    ctx.lineTo(5, -9);
+    ctx.lineTo(1, -5);
+    ctx.strokeStyle = '#8866cc';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  let isFlippeMode = false;
+  // exposed so theme toggle can flip it
+  window._setNightMode = (on) => { isFlippeMode = on; };
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    if (!isFlippeMode) {
+      requestAnimationFrame(draw);
+      return; // Canvas invisible in gossip mode anyway
+    }
+
+    // ── Stars ──
+    stars.forEach(s => {
+      s.phase += s.speed;
+      const a = (Math.sin(s.phase) + 1) / 2 * 0.75 + 0.1;
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(210, 195, 255, ${a})`;
+      ctx.fill();
+    });
+
+    // ── Shooting stars ──
+    shooters = shooters.filter(sh => sh.alpha > 0.02);
+    shooters.forEach(sh => {
+      sh.x += sh.vx;
+      sh.y += sh.vy;
+      sh.life -= 0.018;
+      sh.alpha = Math.max(0, sh.life);
+
+      const grad = ctx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * sh.len / 5, sh.y - sh.vy * sh.len / 5);
+      grad.addColorStop(0, `rgba(230, 210, 255, ${sh.alpha})`);
+      grad.addColorStop(1, 'rgba(180,150,255,0)');
+      ctx.beginPath();
+      ctx.moveTo(sh.x, sh.y);
+      ctx.lineTo(sh.x - Math.cos(Math.atan2(sh.vy, sh.vx)) * sh.len, sh.y - Math.sin(Math.atan2(sh.vy, sh.vx)) * sh.len);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Sparkle head
+      ctx.beginPath();
+      ctx.arc(sh.x, sh.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 240, 255, ${sh.alpha})`;
+      ctx.fill();
+    });
+
+    // ── Bats ──
+    bats = bats.filter(b => !(b.alpha <= 0 && b.fadeDir === -1));
+    bats.forEach(b => {
+      b.wavePhase += b.waveFreq;
+      b.wingPhase += b.wingSpeed;
+      b.x += b.vx;
+      b.y += Math.sin(b.wavePhase) * b.waveAmp * 0.04;
+
+      // Fade in / fade out near edges
+      const offscreen = b.vx < 0 ? b.x < -50 : b.x > W + 50;
+      if (offscreen) b.fadeDir = -1;
+      if (b.fadeDir === 1 && b.alpha < 0.95) b.alpha = Math.min(0.95, b.alpha + 0.03);
+      if (b.fadeDir === -1) b.alpha = Math.max(0, b.alpha - 0.04);
+
+      const facingLeft = b.vx < 0;
+      drawBat(ctx, b.x, b.y, b.wingPhase, b.scale, b.alpha, facingLeft);
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ═══════════════════════════════════════════════
+   THEME WIPE TRANSITION
+═══════════════════════════════════════════════ */
+function playThemeWipe(toFlippy, callback) {
+  const wipe = document.getElementById('theme-wipe');
+  // Use the actual target theme's bg color for the ripple
+  const preset = PRESETS[settings.accentIdx];
+  const targetVariant = toFlippy ? preset.dark : preset.light;
+  const color = targetVariant.bg;
+  const emoji = toFlippy ? '🌙' : '☕';
+  const duration = 450; // ≤ 0.5s, safe from epilepsy (smooth radial, no flash)
+
+  wipe.innerHTML = `
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="wg" cx="50%" cy="50%" r="50%">
+          <stop offset="60%" stop-color="${color}" stop-opacity="1"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle id="wipe-circle" cx="50" cy="50" r="0" fill="url(#wg)"/>
+    </svg>
+    <div id="wipe-emoji" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:52px;transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;z-index:1;">${emoji}</div>
+  `;
+
+  const circle = wipe.querySelector('#wipe-circle');
+  const emojiEl = wipe.querySelector('#wipe-emoji');
+  let start = null;
+
+  function step(ts) {
+    if (!start) start = ts;
+    const p = Math.min(1, (ts - start) / duration);
+    // Ease in-out quad — smooth, no jarring flash
+    const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+    circle.setAttribute('r', ease * 130);
+
+    if (p >= 0.38 && !wipe._applied) {
+      wipe._applied = true;
+      emojiEl.style.transform = 'translate(-50%,-50%) scale(1)';
+      callback();
+    }
+    if (p < 1) {
+      requestAnimationFrame(step);
+    } else {
+      wipe.style.transition = 'opacity 0.18s ease';
+      wipe.style.opacity = '0';
+      setTimeout(() => {
+        wipe.innerHTML = '';
+        wipe.style.opacity = '';
+        wipe.style.transition = '';
+        wipe._applied = false;
+      }, 200);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+/* ═══════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════ */
+window.toggleTheme = function() {
+  const toFlippy = settings.theme === 'gossip';
+  playThemeWipe(toFlippy, () => {
+    settings.theme = toFlippy ? 'flippe' : 'gossip';
+    applyTheme();
+    applyAccent(settings.accentIdx);
+  });
+  saveSettings();
+};
+
+function applyTheme() {
+  const isFlip = settings.theme === 'flippe';
+  document.body.dataset.theme = isFlip ? 'flippe' : '';
+  if (window._setNightMode) window._setNightMode(isFlip);
+  if (window._setGossipMode) window._setGossipMode(!isFlip);
+  const btn = document.getElementById('theme-btn');
+  btn.textContent = isFlip ? '👻 Flippe' : '☕ Gossip';
+  document.getElementById('nav-brand').textContent = isFlip ? 'Flippe & Go Sleep' : 'Sip & Gossip';
+  document.getElementById('ambient-badge').textContent = isFlip ? '✦ Mode Flippe' : '✦ Mode Gossip';
+  document.getElementById('site-title').innerHTML = isFlip
+    ? '<span class="italic">Flippe</span> <span class="accent">&</span> <span>Go Sleep</span>'
+    : '<span class="italic">Sip</span> <span class="accent">&</span> <span>Gossip</span>';
+  document.getElementById('loading-icon').textContent = isFlip ? '👻' : '☕';
+  document.getElementById('loading-text').textContent = isFlip ? 'Chargement des frayeurs...' : 'Infusion des potins...';
+}
+
+/* ═══════════════════════════════════════════════
+   ACCENT / COLORS — dual light + dark per preset
+═══════════════════════════════════════════════ */
+function applyAccent(idx) {
+  const p = PRESETS[idx];
+  const isFlip = settings.theme === 'flippe';
+  const v = isFlip ? p.dark : p.light;
+  const root = document.documentElement;
+  root.style.setProperty('--accent',   v.accent);
+  root.style.setProperty('--accent2',  v.accent2);
+  root.style.setProperty('--accent3',  v.accent3);
+  root.style.setProperty('--bg',       v.bg);
+  root.style.setProperty('--bg2',      v.bg2);
+  root.style.setProperty('--surface',  v.surface);
+  root.style.setProperty('--surface2', v.surface2);
+  root.style.setProperty('--border',   v.border);
+  root.style.setProperty('--text',     v.text);
+  root.style.setProperty('--text2',    v.text2);
+  root.style.setProperty('--text3',    v.text3);
+  root.style.setProperty('--gossip-glow', v.accent + '22');
+  if (window._updateGossipColor) window._updateGossipColor(v.accent);
+}
+
+function buildColorPresets() {
+  const wrap = document.getElementById('color-presets');
+  wrap.innerHTML = '';
+  const isFlip = settings.theme === 'flippe';
+  PRESETS.forEach((p, i) => {
+    const v = isFlip ? p.dark : p.light;
+    const btn = document.createElement('button');
+    btn.className = 'color-swatch' + (settings.accentIdx === i ? ' selected' : '');
+    // Show a split circle: light half on left, dark half on right
+    btn.style.background = `linear-gradient(135deg, ${p.light.accent} 50%, ${p.dark.accent} 50%)`;
+    btn.title = p.name + (isFlip ? ' (mode nuit)' : ' (mode jour)');
+    btn.onclick = () => {
+      settings.accentIdx = i;
+      applyAccent(i);
+      saveSettings();
+      buildColorPresets();
+    };
+    // Active indicator ring uses current variant color
+    if (settings.accentIdx === i) btn.style.outline = `3px solid ${v.accent}`;
+    wrap.appendChild(btn);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   FONTS & TYPOGRAPHY
+═══════════════════════════════════════════════ */
+function buildFontOptions() {
+  const wrap = document.getElementById('font-options');
+  wrap.innerHTML = '';
+  FONTS.forEach((f, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'font-option' + (settings.fontIdx === i ? ' selected' : '');
+    btn.innerHTML = `<span style="font-family:${f.value};font-size:16px">${f.preview}</span><span style="font-size:12px;color:var(--text3);flex:1;text-align:right;margin-right:10px">${f.label.split('—')[1]?.trim()}</span><div class="check">${settings.fontIdx === i ? '✓' : ''}</div>`;
+    btn.onclick = () => {
+      settings.fontIdx = i;
+      applyFont();
+      saveSettings();
+      buildFontOptions();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function applyFont() {
+  document.documentElement.style.setProperty('--font-story', FONTS[settings.fontIdx].value);
+}
+
+window.updateTypo = function() {
+  const fs = document.getElementById('font-size-range').value;
+  const lh = document.getElementById('lh-range').value;
+  const ls = document.getElementById('ls-range').value;
+  const ws = document.getElementById('ws-range').value;
+  settings.fontSize = parseInt(fs);
+  settings.lineHeight = lh / 10;
+  settings.letterSpacing = parseInt(ls) / 100;
+  settings.wordSpacing = parseInt(ws) / 100;
+  document.getElementById('font-size-val').textContent = fs + 'px';
+  document.getElementById('lh-val').textContent = (lh/10).toFixed(1);
+  document.getElementById('ls-val').textContent = (ls/100).toFixed(2) + 'em';
+  document.getElementById('ws-val').textContent = (ws/100).toFixed(2) + 'em';
+  document.documentElement.style.setProperty('--story-size', fs + 'px');
+  document.documentElement.style.setProperty('--story-lh', lh/10);
+  document.documentElement.style.setProperty('--story-ls', (ls/100) + 'em');
+  document.documentElement.style.setProperty('--story-ws', (ws/100) + 'em');
+  saveSettings();
+};
+
+function syncTypoRanges() {
+  document.getElementById('font-size-range').value = settings.fontSize;
+  document.getElementById('lh-range').value = settings.lineHeight * 10;
+  document.getElementById('ls-range').value = settings.letterSpacing * 100;
+  document.getElementById('ws-range').value = settings.wordSpacing * 100;
+  document.getElementById('font-size-val').textContent = settings.fontSize + 'px';
+  document.getElementById('lh-val').textContent = settings.lineHeight.toFixed(1);
+  document.getElementById('ls-val').textContent = settings.letterSpacing.toFixed(2) + 'em';
+  document.getElementById('ws-val').textContent = settings.wordSpacing.toFixed(2) + 'em';
+  document.documentElement.style.setProperty('--story-size', settings.fontSize + 'px');
+  document.documentElement.style.setProperty('--story-lh', settings.lineHeight);
+  document.documentElement.style.setProperty('--story-ls', settings.letterSpacing + 'em');
+  document.documentElement.style.setProperty('--story-ws', settings.wordSpacing + 'em');
+}
+
+/* ═══════════════════════════════════════════════
+   AVATAR BUILDER
+═══════════════════════════════════════════════ */
+function buildAvatarPicker() {
+  const emojiWrap = document.getElementById('emoji-picker');
+  emojiWrap.innerHTML = '';
+  EMOJIS.forEach(e => {
+    const btn = document.createElement('button');
+    btn.className = 'emoji-avatar' + (settings.avatarEmoji === e ? ' selected' : '');
+    btn.textContent = e;
+    btn.onclick = () => {
+      settings.avatarEmoji = e;
+      updateAvatarPreview();
+      buildAvatarPicker();
+    };
+    emojiWrap.appendChild(btn);
+  });
+
+  const colorWrap = document.getElementById('avatar-colors');
+  colorWrap.innerHTML = '';
+  AVATAR_COLORS.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'avatar-color' + (settings.avatarColor === c ? ' selected' : '');
+    btn.style.background = c;
+    btn.onclick = () => {
+      settings.avatarColor = c;
+      updateAvatarPreview();
+      buildAvatarPicker();
+    };
+    colorWrap.appendChild(btn);
+  });
+}
+
+function updateAvatarPreview() {
+  const preview = document.getElementById('avatar-preview');
+  preview.style.background = settings.avatarColor;
+  preview.textContent = settings.avatarEmoji;
+  document.getElementById('nav-avatar').style.background = settings.avatarColor;
+  document.getElementById('nav-avatar').textContent = settings.avatarEmoji;
+}
+
+window.saveProfile = async function() {
+  const pseudo = document.getElementById('pseudo-input').value.trim();
+  const bio = document.getElementById('bio-input').value.trim();
+  settings.pseudo = pseudo;
+  settings.bio = bio;
+  await saveSettings();
+  updateAvatarPreview();
+  closeModal('profile-modal');
+  showToast('✅ Profil sauvegardé !');
+};
+
+/* ═══════════════════════════════════════════════
+   SETTINGS SAVE/LOAD (Firestore)
+═══════════════════════════════════════════════ */
+async function saveSettings() {
+  if (!currentUser) return;
+  try {
+    await setDoc(doc(db, 'settings', currentUser.uid), settings);
+  } catch(e) { /* silently fail */ }
+}
+
+async function loadSettings() {
+  if (!currentUser) return;
+  try {
+    const snap = await getDoc(doc(db, 'settings', currentUser.uid));
+    if (snap.exists()) {
+      Object.assign(settings, snap.data());
+    }
+  } catch(e) {}
+  applyTheme();
+  applyAccent(settings.accentIdx);
+  applyFont();
+  syncTypoRanges();
+  buildColorPresets();
+  buildFontOptions();
+  buildAvatarPicker();
+  updateAvatarPreview();
+  document.getElementById('pseudo-input').value = settings.pseudo || '';
+  document.getElementById('bio-input').value = settings.bio || '';
+}
+
+/* ═══════════════════════════════════════════════
+   BLACKLIST
+═══════════════════════════════════════════════ */
+let unsubBlacklist = null;
+async function loadBlacklist() {
+  // Real-time listener so all users instantly get updated blacklist
+  if (unsubBlacklist) unsubBlacklist();
+  unsubBlacklist = onSnapshot(doc(db, 'admin', 'blacklist'), snap => {
+    blacklist = snap.exists() ? (snap.data().words || []) : [];
+    if (currentUser && currentUser.uid === ADMIN_UID) renderBlacklistAdmin();
+  }, () => { blacklist = []; });
+}
+
+window.addBlacklistWord = async function() {
+  const input = document.getElementById('new-blacklist-word');
+  const word = input.value.trim().toLowerCase();
+  if (!word || blacklist.includes(word)) return;
+  blacklist.push(word);
+  await setDoc(doc(db, 'admin', 'blacklist'), { words: blacklist });
+  input.value = '';
+  renderBlacklistAdmin();
+  showToast('🚫 Mot ajouté à la blacklist');
+};
+
+function renderBlacklistAdmin() {
+  const wrap = document.getElementById('blacklist-display');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  blacklist.forEach(w => {
+    const tag = document.createElement('span');
+    tag.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--accent3);color:var(--accent);border-radius:99px;font-size:12px;font-weight:700;border:1px solid var(--accent2);';
+    tag.innerHTML = `${w} <button onclick="removeBlacklistWord('${w}')" style="color:var(--text3);font-size:14px;line-height:1;" title="Supprimer">×</button>`;
+    wrap.appendChild(tag);
+  });
+}
+
+window.removeBlacklistWord = async function(word) {
+  blacklist = blacklist.filter(w => w !== word);
+  await setDoc(doc(db, 'admin', 'blacklist'), { words: blacklist });
+  renderBlacklistAdmin();
+};
+
+window.checkBlacklist = function(el) {
+  const val = el.value;
+  document.getElementById('char-count').textContent = val.length + ' caractères';
+  const words = val.toLowerCase().split(/\s+/);
+  const found = words.some(w => blacklist.some(b => w.includes(b)));
+  el.classList.toggle('blacklist-alert', found);
+  const warn = document.getElementById('blacklist-warning');
+  warn.style.display = found ? 'flex' : 'none';
+  document.getElementById('submit-btn').disabled = found || val.length === 0;
+};
+
+// Same check for comment input
+function checkCommentBlacklist(input) {
+  const val = input.value.toLowerCase();
+  const found = blacklist.some(b => val.includes(b));
+  input.classList.toggle('blacklist-alert', found);
+  return !found;
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════ */
+window.switchAuthTab = function(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tab-login').classList.toggle('active', isLogin);
+  document.getElementById('tab-register').classList.toggle('active', !isLogin);
+  document.getElementById('confirm-group').classList.toggle('hidden', isLogin);
+  document.getElementById('auth-btn').textContent = isLogin ? 'Se connecter ✨' : 'Créer mon compte 🚀';
+  document.getElementById('auth-error').style.display = 'none';
+  window._authTab = tab;
+};
+window._authTab = 'login';
+
+window.handleAuth = async function() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pw = document.getElementById('auth-password').value;
+  const errorEl = document.getElementById('auth-error');
+  errorEl.style.display = 'none';
+  try {
+    if (window._authTab === 'register') {
+      const confirm = document.getElementById('auth-confirm').value;
+      if (pw !== confirm) { errorEl.textContent = 'Les mots de passe ne correspondent pas.'; errorEl.style.display = 'block'; return; }
+      if (pw.length < 6) { errorEl.textContent = 'Le mot de passe doit faire au moins 6 caractères.'; errorEl.style.display = 'block'; return; }
+      await createUserWithEmailAndPassword(auth, email, pw);
+    } else {
+      await signInWithEmailAndPassword(auth, email, pw);
+    }
+  } catch(e) {
+    const msgs = {
+      'auth/invalid-email': 'Email invalide.',
+      'auth/user-not-found': 'Aucun compte avec cet email.',
+      'auth/wrong-password': 'Mot de passe incorrect.',
+      'auth/email-already-in-use': 'Cet email est déjà utilisé.',
+      'auth/weak-password': 'Mot de passe trop faible (min. 6 caractères).',
+      'auth/invalid-credential': 'Email ou mot de passe incorrect.',
+    };
+    errorEl.textContent = msgs[e.code] || 'Erreur : ' + e.message;
+    errorEl.style.display = 'block';
+  }
+};
+
+window.logout = async function() {
+  await signOut(auth);
+  closeModal('profile-modal');
+};
+
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  if (user) {
+    await loadSettings();
+    await loadBlacklist();
+    await loadUserInteractions();
+    await loadCollections();
+    startStoriesListener();
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    if (user.uid === ADMIN_UID) {
+      document.getElementById('admin-nav-btn').style.display = 'flex';
+    }
+  } else {
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('auth-screen').classList.remove('hidden');
+  }
+});
+
+/* ═══════════════════════════════════════════════
+   USER INTERACTIONS (likes, read, bookmarks)
+═══════════════════════════════════════════════ */
+async function loadUserInteractions() {
+  if (!currentUser) return;
+  try {
+    const snap = await getDoc(doc(db, 'userInteractions', currentUser.uid));
+    userInteractions = snap.exists() ? snap.data() : {};
+  } catch(e) { userInteractions = {}; }
+}
+
+async function saveUserInteractions() {
+  if (!currentUser) return;
+  await setDoc(doc(db, 'userInteractions', currentUser.uid), userInteractions);
+}
+
+/* ═══════════════════════════════════════════════
+   COLLECTIONS
+═══════════════════════════════════════════════ */
+async function loadCollections() {
+  if (!currentUser) return;
+  try {
+    const snap = await getDoc(doc(db, 'collections', currentUser.uid));
+    collections = snap.exists() ? (snap.data().list || []) : [];
+  } catch(e) { collections = []; }
+  renderCollectionsModal();
+}
+
+async function saveCollections() {
+  await setDoc(doc(db, 'collections', currentUser.uid), { list: collections });
+}
+
+window.addCollection = async function() {
+  const inp = document.getElementById('new-collection-name');
+  const name = inp.value.trim();
+  if (!name) return;
+  collections.push({ id: Date.now().toString(), name, stories: [] });
+  inp.value = '';
+  await saveCollections();
+  renderCollectionsModal();
+};
+
+function renderCollectionsModal() {
+  const wrap = document.getElementById('collection-list');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (!collections.length) {
+    wrap.innerHTML = '<p style="color:var(--text3);font-size:14px;font-style:italic;text-align:center;padding:20px;">Aucune collection. Crées-en une !</p>';
+    return;
+  }
+  collections.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'collection-item';
+    div.innerHTML = `
+      <span class="collection-item-name">📁 ${c.name}</span>
+      <span class="collection-item-count">${(c.stories || []).length} histoire(s)</span>
+      <button class="collection-delete" onclick="deleteCollection('${c.id}')">🗑️</button>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+window.deleteCollection = async function(id) {
+  if (!confirm('Supprimer cette collection ?')) return;
+  collections = collections.filter(c => c.id !== id);
+  await saveCollections();
+  renderCollectionsModal();
+};
+
+window.openAddToCollection = function(storyId) {
+  pendingCollectionStoryId = storyId;
+  const body = document.getElementById('add-to-collection-body');
+  body.innerHTML = '';
+  if (!collections.length) {
+    body.innerHTML = '<p style="color:var(--text3);font-size:14px;text-align:center;padding:16px;">Crée d\'abord une collection !</p>';
+  } else {
+    collections.forEach(c => {
+      const inCollection = (c.stories || []).includes(storyId);
+      const btn = document.createElement('button');
+      btn.style.cssText = 'display:flex;align-items:center;gap:10px;width:100%;padding:14px;background:var(--bg2);border-radius:12px;margin-bottom:8px;border:1.5px solid var(--border);transition:all 0.2s;text-align:left;';
+      btn.innerHTML = `<span style="font-size:18px">${inCollection ? '✅' : '📁'}</span><span style="font-size:14px;font-weight:700;color:var(--text)">${c.name}</span>`;
+      btn.onclick = async () => {
+        if (inCollection) c.stories = (c.stories || []).filter(s => s !== storyId);
+        else { c.stories = c.stories || []; c.stories.push(storyId); }
+        await saveCollections();
+        closeModal('add-to-collection-modal');
+        showToast(inCollection ? '📁 Retiré de la collection' : '🔖 Ajouté à la collection !');
+        renderStories();
+      };
+      body.appendChild(btn);
+    });
+  }
+  openModal('add-to-collection-modal');
+};
+
+/* ═══════════════════════════════════════════════
+   FIRESTORE — STORIES
+═══════════════════════════════════════════════ */
+let unsubStories = null;
+
+function startStoriesListener() {
+  if (unsubStories) unsubStories();
+  const q = query(collection(db, 'stories'), orderBy('createdAt', 'desc'));
+  unsubStories = onSnapshot(q, snap => {
+    stories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderStories();
+    renderAdminStories();
+    updateStats();
+  });
+}
+
+window.addStory = async function() {
+  const title = document.getElementById('new-title').value.trim();
+  const content = document.getElementById('new-content').value.trim();
+  const category = document.getElementById('new-category').value;
+  const tagsRaw = document.getElementById('new-tags').value.trim();
+  if (!title || !content) return showToast('✏️ Titre et contenu requis !');
+  if (document.getElementById('submit-btn').disabled) return;
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) : [];
+  await addDoc(collection(db, 'stories'), {
+    title, content, category, tags,
+    likes: 0,
+    pinned: false,
+    authorId: currentUser.uid,
+    authorEmoji: settings.avatarEmoji,
+    authorColor: settings.avatarColor,
+    authorPseudo: settings.pseudo || 'Anonyme',
+    createdAt: new Date().toISOString(),
+  });
+  document.getElementById('new-title').value = '';
+  document.getElementById('new-content').value = '';
+  document.getElementById('new-tags').value = '';
+  document.getElementById('char-count').textContent = '0 caractères';
+  showToast('🚀 Histoire publiée !');
+};
+
+window.deleteStoryAdmin = async function(id) {
+  const story = stories.find(s => s.id === id);
+  if (!story) return;
+  const isOwner = story.authorId === currentUser?.uid;
+  const isAdmin = currentUser?.uid === ADMIN_UID;
+  if (!isOwner && !isAdmin) return showToast('🚫 Non autorisé');
+  if (!confirm('Supprimer cette histoire ?')) return;
+  await deleteDoc(doc(db, 'stories', id));
+  if (expandedStoryId === id) expandedStoryId = null;
+  showToast('🗑️ Histoire supprimée');
+};
+
+window.togglePin = async function(id, current) {
+  await updateDoc(doc(db, 'stories', id), { pinned: !current });
+  showToast(current ? '📌 Désépinglée' : '📌 Épinglée !');
+};
+
+/* ═══════════════════════════════════════════════
+   LIKES
+═══════════════════════════════════════════════ */
+window.toggleLike = async function(storyId, e) {
+  e.stopPropagation();
+  const inter = userInteractions[storyId] || {};
+  const isLiked = inter.liked;
+  userInteractions[storyId] = { ...inter, liked: !isLiked };
+  const story = stories.find(s => s.id === storyId);
+  if (story) {
+    await updateDoc(doc(db, 'stories', storyId), { likes: Math.max(0, (story.likes || 0) + (isLiked ? -1 : 1)) });
+  }
+  await saveUserInteractions();
+  renderStories();
+  showToast(isLiked ? '💔 Unliké' : '❤️ Liké !');
+};
+
+/* ═══════════════════════════════════════════════
+   READ / MARK
+═══════════════════════════════════════════════ */
+window.toggleRead = async function(storyId, e) {
+  e.stopPropagation();
+  const inter = userInteractions[storyId] || {};
+  userInteractions[storyId] = { ...inter, read: !inter.read };
+  await saveUserInteractions();
+  renderStories();
+  showToast(inter.read ? '📖 Marquée non lue' : '✅ Marquée comme lue !');
+};
+
+/* ═══════════════════════════════════════════════
+   COMMENTS
+═══════════════════════════════════════════════ */
+window.sendComment = async function(storyId) {
+  const inp = document.getElementById('comment-input-' + storyId);
+  if (!inp) return;
+  if (!checkCommentBlacklist(inp)) { showToast('🚫 Commentaire interdit !'); return; }
+  const text = inp.value.trim();
+  if (!text) return;
+  const story = stories.find(s => s.id === storyId);
+  if (!story) return;
+  const comments = story.comments || [];
+  comments.push({
+    id: Date.now().toString(),
+    text,
+    authorId: currentUser.uid,
+    authorEmoji: settings.avatarEmoji,
+    authorPseudo: settings.pseudo || 'Anonyme',
+    createdAt: new Date().toISOString()
+  });
+  await updateDoc(doc(db, 'stories', storyId), { comments });
+  inp.value = '';
+  showToast('💬 Commentaire ajouté !');
+};
+
+window.deleteComment = async function(storyId, commentId) {
+  const story = stories.find(s => s.id === storyId);
+  if (!story) return;
+  const comments = (story.comments || []).filter(c => c.id !== commentId);
+  await updateDoc(doc(db, 'stories', storyId), { comments });
+  showToast('🗑️ Commentaire supprimé');
+};
+
+/* ═══════════════════════════════════════════════
+   RENDER STORIES
+═══════════════════════════════════════════════ */
+window.setFilter = function(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderStories();
+};
+
+window.renderStories = function() {
+  const search = document.getElementById('search-input').value.trim().toLowerCase();
+  const sort = document.getElementById('sort-select').value;
+
+  let visible = [...stories];
+
+  // Category filter
+  if (currentFilter !== 'all') visible = visible.filter(s => s.category === currentFilter);
+
+  // Search (title, content, tags)
+  if (search) {
+    visible = visible.filter(s => {
+      const inTitle = s.title.toLowerCase().includes(search);
+      const inContent = s.content.toLowerCase().includes(search);
+      const inTags = (s.tags || []).some(t => t.includes(search));
+      return inTitle || inContent || inTags;
+    });
+  }
+
+  // Sort
+  visible.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    switch (sort) {
+      case 'newest': return new Date(b.createdAt) - new Date(a.createdAt);
+      case 'oldest': return new Date(a.createdAt) - new Date(b.createdAt);
+      case 'most-liked': return (b.likes || 0) - (a.likes || 0);
+      case 'least-liked': return (a.likes || 0) - (b.likes || 0);
+    }
+  });
+
+  // Separate read/unread
+  const unread = visible.filter(s => !(userInteractions[s.id]?.read));
+  const read = visible.filter(s => userInteractions[s.id]?.read);
+
+  renderStoryList('stories-list', unread);
+
+  // Archive
+  const archiveSection = document.getElementById('archive-section');
+  archiveSection.style.display = read.length ? '' : 'none';
+  document.getElementById('archive-count').textContent = read.length;
+  renderStoryList('archive-list', read);
+};
+
+function renderStoryList(containerId, list) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return;
+  if (!list.length) {
+    wrap.innerHTML = '<div class="empty-state"><span class="emoji">✨</span><p>Aucune histoire à afficher...</p></div>';
+    return;
+  }
+  wrap.innerHTML = '';
+  list.forEach(story => {
+    const inter = userInteractions[story.id] || {};
+    const isLiked = !!inter.liked;
+    const isRead = !!inter.read;
+    const isInCollection = collections.some(c => (c.stories || []).includes(story.id));
+    const isOwner = story.authorId === currentUser?.uid;
+    const isAdmin = currentUser?.uid === ADMIN_UID;
+    const isExpanded = expandedStoryId === story.id;
+    const date = new Date(story.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+
+    const card = document.createElement('article');
+    card.className = 'story-card' + (story.pinned ? ' pinned' : '');
+    card.dataset.id = story.id;
+
+    const tagsHtml = (story.tags || []).map(t => `<span class="tag-badge" onclick="event.stopPropagation();searchTag('${t}')">#${t}</span>`).join('');
+
+    card.innerHTML = `
+      <div class="card-header" onclick="toggleExpand('${story.id}')">
+        <div class="card-meta">
+          <div class="card-badges">
+            <span class="cat-badge ${story.category}">${story.category === 'gossip' ? '☕ Gossip' : '👻 Flippe'}</span>
+            ${tagsHtml}
+            <span class="card-date">${date}</span>
+          </div>
+          <h4 class="card-title">${escHtml(story.title)}</h4>
+        </div>
+        <div class="card-actions" onclick="event.stopPropagation()">
+          <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${story.id}', event)" title="J'aime">
+            ${isLiked ? '❤️' : '🤍'}
+          </button>
+          <span class="like-count">${story.likes || 0}</span>
+          <button class="action-btn ${isRead ? 'read' : ''}" onclick="toggleRead('${story.id}', event)" title="${isRead ? 'Marquer non lue' : 'Marquer comme lue'}">
+            ${isRead ? '✅' : '👁️'}
+          </button>
+          <button class="action-btn ${isInCollection ? 'bookmarked' : ''}" onclick="openAddToCollection('${story.id}')" title="Ajouter à une collection">
+            ${isInCollection ? '🔖' : '📌'}
+          </button>
+        </div>
+      </div>
+      <div class="card-body ${isExpanded ? 'open' : ''}">
+        <div class="card-divider"></div>
+        <p class="story-text">${escHtml(story.content)}</p>
+        <div class="card-footer-actions">
+          <button class="immersive-btn" onclick="openImmersive('${story.id}')">🌙 Mode Immersif</button>
+          <button class="collection-btn" onclick="openAddToCollection('${story.id}')">🔖 Collections</button>
+          ${isOwner || isAdmin ? `<button class="action-btn" onclick="deleteStoryAdmin('${story.id}')" style="margin-left:auto;color:#e53e3e" title="Supprimer">🗑️</button>` : ''}
+          ${isAdmin ? `<button class="action-btn" onclick="togglePin('${story.id}', ${story.pinned})" title="Épingler">📌</button>` : ''}
+        </div>
+        <div class="comments-section">
+          <p class="comments-title">💬 Commentaires (${(story.comments || []).length})</p>
+          ${renderComments(story)}
+          <div class="comment-input-row">
+            <input type="text" class="comment-input" id="comment-input-${story.id}" placeholder="Réagis..." oninput="checkCommentBlacklist(this)" maxlength="300">
+            <button class="comment-send" onclick="sendComment('${story.id}')">Envoyer</button>
+          </div>
+        </div>
+      </div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+function renderComments(story) {
+  const comments = story.comments || [];
+  if (!comments.length) return '<p style="font-size:13px;color:var(--text3);font-style:italic;margin-bottom:10px;">Aucun commentaire... Sois le premier !</p>';
+  return comments.map(c => {
+    const canDelete = c.authorId === currentUser?.uid || currentUser?.uid === ADMIN_UID;
+    return `
+      <div class="comment-item">
+        <div class="comment-avatar" style="background:${c.authorColor || '#ffb3a0'}">${c.authorEmoji || '😊'}</div>
+        <div class="comment-bubble">
+          <div class="comment-author">${escHtml(c.authorPseudo || 'Anonyme')}</div>
+          <div class="comment-text">${escHtml(c.text)}</div>
+          ${canDelete ? `<div class="comment-delete" onclick="deleteComment('${story.id}','${c.id}')">Supprimer</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.toggleExpand = function(id) {
+  expandedStoryId = expandedStoryId === id ? null : id;
+  renderStories();
+  if (expandedStoryId) {
+    setTimeout(() => {
+      const card = document.querySelector(`[data-id="${id}"]`);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+};
+
+window.searchTag = function(tag) {
+  document.getElementById('search-input').value = tag;
+  renderStories();
+};
+
+/* ═══════════════════════════════════════════════
+   ARCHIVE TOGGLE
+═══════════════════════════════════════════════ */
+window.toggleArchive = function() {
+  archiveOpen = !archiveOpen;
+  const list = document.getElementById('archive-list');
+  const toggle = document.getElementById('archive-toggle');
+  list.classList.toggle('hidden', !archiveOpen);
+  toggle.classList.toggle('open', archiveOpen);
+};
+
+/* ═══════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════ */
+function updateStats() {
+  const statsBody = document.getElementById('stats-body');
+  if (!statsBody) return;
+  const totalStories = stories.length;
+  const myStories = stories.filter(s => s.authorId === currentUser?.uid).length;
+  const totalLikes = Object.values(userInteractions).filter(i => i.liked).length;
+  const totalRead = Object.values(userInteractions).filter(i => i.read).length;
+  const mostLiked = [...stories].sort((a,b) => (b.likes||0)-(a.likes||0))[0];
+  const gossipCount = stories.filter(s => s.category === 'gossip').length;
+  const flippeCount = stories.filter(s => s.category === 'flippe').length;
+
+  statsBody.innerHTML = `
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-num">${totalStories}</div><div class="stat-label">Histoires</div></div>
+      <div class="stat-card"><div class="stat-num">${myStories}</div><div class="stat-label">Mes publis</div></div>
+      <div class="stat-card"><div class="stat-num">${totalLikes}</div><div class="stat-label">Mes likes</div></div>
+      <div class="stat-card"><div class="stat-num">${totalRead}</div><div class="stat-label">Lues</div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;">
+      <div class="stat-card" style="flex:1;text-align:center">
+        <div class="stat-num" style="font-size:20px">☕ ${gossipCount}</div>
+        <div class="stat-label">Gossip</div>
+      </div>
+      <div class="stat-card" style="flex:1;text-align:center">
+        <div class="stat-num" style="font-size:20px">👻 ${flippeCount}</div>
+        <div class="stat-label">Flippe</div>
+      </div>
+    </div>
+    ${mostLiked ? `<div class="stat-card" style="margin-bottom:12px;">
+      <div class="stat-label" style="margin-bottom:8px">🏆 Histoire la + aimée</div>
+      <div style="font-weight:700;font-size:16px;color:var(--text)">${escHtml(mostLiked.title)}</div>
+      <div style="font-size:13px;color:var(--text3);margin-top:4px">❤️ ${mostLiked.likes || 0} likes</div>
+    </div>` : ''}
+  `;
+}
+
+/* ═══════════════════════════════════════════════
+   RANDOM STORY
+═══════════════════════════════════════════════ */
+window.openRandom = function() {
+  if (!stories.length) return showToast('😅 Aucune histoire disponible !');
+  const s = stories[Math.floor(Math.random() * stories.length)];
+  openImmersive(s.id);
+};
+
+/* ═══════════════════════════════════════════════
+   IMMERSIVE MODE
+═══════════════════════════════════════════════ */
+window.openImmersive = function(storyId) {
+  const story = stories.find(s => s.id === storyId);
+  if (!story) return;
+  document.getElementById('immersive-cat').innerHTML = `<span class="cat-badge ${story.category}">${story.category === 'gossip' ? '☕ Gossip' : '👻 Flippe'}</span>`;
+  document.getElementById('immersive-title').textContent = story.title;
+  document.getElementById('immersive-body').textContent = story.content;
+  const overlay = document.getElementById('immersive-overlay');
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeImmersive = function() {
+  document.getElementById('immersive-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+/* ═══════════════════════════════════════════════
+   ADMIN STORIES
+═══════════════════════════════════════════════ */
+function renderAdminStories() {
+  const wrap = document.getElementById('admin-stories-list');
+  if (!wrap || currentUser?.uid !== ADMIN_UID) return;
+  wrap.innerHTML = '';
+  stories.forEach(s => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-radius:12px;border:1px solid var(--border);';
+    div.innerHTML = `
+      <span style="font-size:13px;font-weight:700;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(s.title)}</span>
+      <span style="font-size:11px;color:var(--text3);flex-shrink:0;">❤️${s.likes||0}</span>
+      <button onclick="togglePin('${s.id}',${s.pinned})" style="font-size:14px;padding:4px 8px;background:var(--accent3);border-radius:8px;color:var(--accent);font-weight:700;flex-shrink:0;">${s.pinned ? '📌' : '📍'}</button>
+      <button onclick="deleteStoryAdmin('${s.id}')" style="font-size:14px;padding:4px 8px;background:#fff5f5;border-radius:8px;color:#e53e3e;font-weight:700;flex-shrink:0;">🗑️</button>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════ */
+window.openModal = function(id) {
+  document.getElementById(id).classList.add('open');
+  if (id === 'settings-modal') { buildColorPresets(); buildFontOptions(); }
+  if (id === 'profile-modal') { buildAvatarPicker(); updateAvatarPreview(); }
+  if (id === 'stats-modal') { updateStats(); }
+  if (id === 'collections-modal') { renderCollectionsModal(); }
+  if (id === 'admin-modal') { renderBlacklistAdmin(); renderAdminStories(); }
+};
+window.closeModal = function(id) {
+  document.getElementById(id).classList.remove('open');
+};
+// Click outside to close
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+window.showToast = function(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => { t.classList.add('fade-out'); setTimeout(() => t.remove(), 300); }, 2500);
+};
+
+/* ═══════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════ */
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeImmersive();
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+initGossipCanvas();
+initNightSky();
+// Loading animation then check auth
+setTimeout(() => {
+  const ls = document.getElementById('loading-screen');
+  ls.classList.add('fade-out');
+  setTimeout(() => { ls.style.display = 'none'; }, 600);
+}, 2200);
+
+// Content textarea char count
+document.getElementById('new-content')?.addEventListener('input', function() {
+  document.getElementById('char-count').textContent = this.value.length + ' caractères';
+});
+
+</script>
+</body>
+</html>
