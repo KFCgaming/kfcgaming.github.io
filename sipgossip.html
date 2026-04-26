@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sip & Gossip ✦ Flippe & Go Sleep</title>
+<title>Read & Gossip ✦ Fear & Go Sleep</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,700;12..96,800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300;1,9..144,700&display=swap" rel="stylesheet">
 <style>
@@ -1425,7 +1425,7 @@ button { transition: transform 0.2s ease, box-shadow 0.2s ease, background-color
   <div class="auth-card">
     <div class="auth-logo">
       <span class="logo-emoji" id="auth-emoji">☕</span>
-      <h1>Sip & Gossip</h1>
+      <h1>Read & Gossip</h1>
       <p>Tes secrets t'attendent...</p>
     </div>
     <div class="auth-tabs">
@@ -1456,7 +1456,7 @@ button { transition: transform 0.2s ease, box-shadow 0.2s ease, background-color
     <div class="nav-inner">
       <div class="nav-logo">
         <div class="nav-logo-dot"></div>
-        <span id="nav-brand">Sip & Gossip</span>
+        <span id="nav-brand">Read & Gossip</span>
       </div>
       <div class="nav-actions">
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☕ Gossip</button>
@@ -1497,7 +1497,7 @@ button { transition: transform 0.2s ease, box-shadow 0.2s ease, background-color
         ⚠️ Ton message contient des mots interdits — modifie-le pour publier.
       </div>
       <div class="compose-footer">
-        <span class="char-count" id="char-count">0 caractèrest</span>
+        <span class="char-count" id="char-count">0 caractères</span>
         <button class="btn-submit" id="submit-btn" onclick="addStory()">Publier 🚀</button>
       </div>
     </section>
@@ -2258,11 +2258,11 @@ function applyTheme() {
   if (window._setGossipMode) window._setGossipMode(!isFlip);
   const btn = document.getElementById('theme-btn');
   btn.textContent = isFlip ? '👻 Flippe' : '☕ Gossip';
-  document.getElementById('nav-brand').textContent = isFlip ? 'Flippe & Go Sleep' : 'Sip & Gossip';
+  document.getElementById('nav-brand').textContent = isFlip ? 'Fear & Go Sleep' : 'Read & Gossip';
   document.getElementById('ambient-badge').textContent = isFlip ? '✦ Mode Flippe' : '✦ Mode Gossip';
   document.getElementById('site-title').innerHTML = isFlip
-    ? '<span class="italic">Flippe</span> <span class="accent">&</span> <span>Go Sleep</span>'
-    : '<span class="italic">Sip</span> <span class="accent">&</span> <span>Gossip</span>';
+    ? '<span class="italic">Fear</span> <span class="accent">&</span> <span>Go Sleep</span>'
+    : '<span class="italic">Read</span> <span class="accent">&</span> <span>Gossip</span>';
   document.getElementById('loading-icon').textContent = isFlip ? '👻' : '☕';
   document.getElementById('loading-text').textContent = isFlip ? 'Chargement des frayeurs...' : 'Infusion des potins...';
 }
