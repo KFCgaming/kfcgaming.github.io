@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENZO'S GALLERY</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --accent-color: #2ecc71;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        /* --- GRILLE RESPONSIVE --- */
+        .gallery {
+            display: grid;
+            gap: 15px;
+            /* 8 colonnes sur PC (Desktop) */
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        @media (max-width: 1024px) {
+            .gallery { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            /* 4 colonnes sur Mobile */
+            .gallery { grid-template-columns: repeat(4, 1fr); }
+            body { padding: 10px; }
+            .gallery { gap: 8px; }
+        }
+
+/* --- STYLE DES CARTES --- */
+        .photo-card {
+            position: relative;
+            /* Changement ici : 3 de large pour 4 de haut */
+            aspect-ratio: 3 / 4; 
+            overflow: hidden;
+            border-radius: 8px;
+            background: #ddd;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s;
+        }
+
+        .photo-card:hover {
+            transform: scale(1.02);
+        }
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            /* Important : conserve les proportions sans déformer */
+            object-fit: cover; 
+            /* Centre la photo si elle est trop large */
+            object-position: center; 
+        }
+
+        /* --- LIGHTBOX (Agrandissement) --- */
+        #lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- BOUTON TÉLÉCHARGER --- */
+        .btn-download {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 50%;
+            width: 25px; height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1001;
+        }
+
+        .btn-download:hover { background: var(--accent-color); color: white; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Enzo's Gallery 💖</h1>
+    <p>Pour Enzo le <b>BG</b>, voici une multitude de belles photos de lui ! 😊</p>
+</header>
+
+<div class="gallery" id="gallery">
+    <!-- Les photos s'afficheront ici -->
+</div>
+
+<!-- Overlay pour la vue agrandie -->
+<div id="lightbox" onclick="closeLightbox()">
+    <a id="dl-link" href="#" download class="btn-download" title="Télécharger">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg>
+    </a>
+    <img id="lightbox-img" src="" alt="Vue agrandie">
+</div>
+
+<script>
+    // --- CONFIGURATION ---
+    // Puisque le JS ne peut pas "voir" les fichiers, 
+    // nommez vos photos "1.jpg", "2.jpg", etc. 
+    // Indiquez ici le nombre total de photos.
+    const totalPhotos = 100; 
+    const extension = ".png"; // ou .png
+    const gallery = document.getElementById('gallery');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const dlLink = document.getElementById('dl-link');
+
+    // Génération automatique des images
+    for (let i = 1; i <= totalPhotos; i++) {
+        const fileName = i + extension;
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.innerHTML = `<img src="${fileName}" loading="lazy" onclick="openLightbox(event, '${fileName}')">`;
+        gallery.appendChild(card);
+    }
+
+    function openLightbox(event, src) {
+        event.stopPropagation();
+        lightboxImg.src = src;
+        dlLink.href = src;
+        lightbox.style.display = 'flex';
+    }
+
+    function closeLightbox() {
+        lightbox.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
