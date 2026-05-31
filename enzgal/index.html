@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENZO'S GALLERY</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
             --bg-color: #f4f7f6;
             --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
             --accent-color: #2ecc71;
+            --accent-hover: #27ae60;
         }
 
         body {
@@ -20,15 +22,54 @@
 
         header {
             text-align: center;
-            padding: 40px 0;
+            padding: 40px 0 20px 0;
         }
+
+        /* --- BOUTONS RÉSEAUX SOCIAUX --- */
+        .social-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+        }
+
+        .social-btn svg {
+            fill: currentColor;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Couleurs officielles */
+        .btn-youtube { background-color: #FF0000; }
+        .btn-instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .btn-tiktok { background-color: #010101; }
 
         /* --- GRILLE RESPONSIVE --- */
         .gallery {
             display: grid;
             gap: 15px;
-            /* 8 colonnes sur PC (Desktop) */
             grid-template-columns: repeat(8, 1fr);
+            margin-top: 20px;
         }
 
         @media (max-width: 1024px) {
@@ -36,16 +77,16 @@
         }
 
         @media (max-width: 600px) {
-            /* 4 colonnes sur Mobile */
             .gallery { grid-template-columns: repeat(4, 1fr); }
             body { padding: 10px; }
             .gallery { gap: 8px; }
+            .social-container { gap: 10px; }
+            .social-btn { padding: 8px 15px; font-size: 13px; }
         }
 
-/* --- STYLE DES CARTES --- */
+        /* --- STYLE DES CARTES --- */
         .photo-card {
             position: relative;
-            /* Changement ici : 3 de large pour 4 de haut */
             aspect-ratio: 3 / 4; 
             overflow: hidden;
             border-radius: 8px;
@@ -61,9 +102,7 @@
         .photo-card img {
             width: 100%;
             height: 100%;
-            /* Important : conserve les proportions sans déformer */
             object-fit: cover; 
-            /* Centre la photo si elle est trop large */
             object-position: center; 
         }
 
@@ -87,7 +126,46 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
-        /* --- BOUTON TÉLÉCHARGER --- */
+        /* --- BOUTONS NAVIGATION LIGHTBOX --- */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.7);
+            background: rgba(0,0,0,0.5);
+            border: none;
+            cursor: pointer;
+            font-size: 30px;
+            padding: 15px 20px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 1002;
+        }
+
+        .nav-btn:hover {
+            color: #fff;
+            background: rgba(0,0,0,0.8);
+        }
+
+        #prev-photo { left: 20px; }
+        #next-photo { right: 20px; }
+
+        .nav-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+            background: rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 600px) {
+            .nav-btn {
+                font-size: 20px;
+                padding: 10px 15px;
+            }
+            #prev-photo { left: 10px; }
+            #next-photo { right: 10px; }
+        }
+
+        /* --- BOUTON TÉLÉCHARGER INDIVIDUEL --- */
         .btn-download {
             position: absolute;
             top: 15px;
@@ -108,6 +186,41 @@
 
         .btn-download:hover { background: var(--accent-color); color: white; }
 
+        /* --- BOUTON ZIP MULTIPLE --- */
+        .zip-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .btn-zip {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-zip:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
+        }
+
+        .btn-zip:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
     </style>
 </head>
 <body>
@@ -115,50 +228,165 @@
 <header>
     <h1>Enzo's Gallery 💖</h1>
     <p>Pour Enzo le <b>BG</b>, voici une multitude de belles photos de lui ! 😊</p>
+    
+    <div class="social-container">
+        <a href="https://www.youtube.com/@titou69619" target="_blank" class="social-btn btn-youtube">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            @REQUINPATATE
+        </a>
+
+        <a href="https://www.instagram.com/enzo_fanpagerequin/" target="_blank" class="social-btn btn-instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+            @ENZO_FANPAGEREQUIN
+        </a>
+
+        <a href="https://www.tiktok.com/@enzopgt_fanpage" target="_blank" class="social-btn btn-tiktok">
+            <img src="https://www.tiktok.com/favicon.ico" alt="TikTok" style="width: 18px; height: 18px;">
+            @ENZO_PGT_FANPAGE
+        </a>
+    </div>
 </header>
 
 <div class="gallery" id="gallery">
-    <!-- Les photos s'afficheront ici -->
+    </div>
+
+<div class="zip-container">
+    <button id="btn-zip" class="btn-zip" onclick="downloadAllAsZip()">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg>
+        Télécharger toutes les photos (.zip)
+    </button>
 </div>
 
-<!-- Overlay pour la vue agrandie -->
-<div id="lightbox" onclick="closeLightbox()">
+<div id="lightbox" onclick="closeLightbox(event)">
     <a id="dl-link" href="#" download class="btn-download" title="Télécharger">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg>
     </a>
+    
+    <button id="prev-photo" class="nav-btn" onclick="prevPhoto(event)">❮</button>
     <img id="lightbox-img" src="" alt="Vue agrandie">
+    <button id="next-photo" class="nav-btn" onclick="nextPhoto(event)">❯</button>
 </div>
 
 <script>
-    // --- CONFIGURATION ---
-    // Puisque le JS ne peut pas "voir" les fichiers, 
-    // nommez vos photos "1.jpg", "2.jpg", etc. 
-    // Indiquez ici le nombre total de photos.
-    const totalPhotos = 100; 
-    const extension = ".png"; // ou .png
+    // --- CONFIGURATION MANUELLE DES LIMITES ---
+    const limitePhotos = 83; // Nombre exact de tes photos réelles
+    const extension = ".png"; // .png ou .jpg
+    
     const gallery = document.getElementById('gallery');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const dlLink = document.getElementById('dl-link');
+    const btnZip = document.getElementById('btn-zip');
+    const btnPrev = document.getElementById('prev-photo');
+    const btnNext = document.getElementById('next-photo');
+    
+    let currentPhotoIndex = 0; 
 
-    // Génération automatique des images
-    for (let i = 1; i <= totalPhotos; i++) {
+    // Génération automatique des vignettes
+    for (let i = 1; i <= limitePhotos; i++) {
         const fileName = i + extension;
         const card = document.createElement('div');
         card.className = 'photo-card';
-        card.innerHTML = `<img src="${fileName}" loading="lazy" onclick="openLightbox(event, '${fileName}')">`;
+        card.innerHTML = `<img src="${fileName}" loading="lazy" onclick="openLightbox(event, '${fileName}', ${i})">`;
         gallery.appendChild(card);
     }
 
-    function openLightbox(event, src) {
+    function openLightbox(event, src, index) {
         event.stopPropagation();
-        lightboxImg.src = src;
-        dlLink.href = src;
+        currentPhotoIndex = index; 
+        updateLightboxPhoto();
         lightbox.style.display = 'flex';
     }
 
-    function closeLightbox() {
-        lightbox.style.display = 'none';
+    function closeLightbox(event) {
+        if (event.target === lightbox) {
+            lightbox.style.display = 'none';
+        }
+    }
+
+    function nextPhoto(event) {
+        if(event) event.stopPropagation();
+        if (currentPhotoIndex >= limitePhotos) return; 
+        currentPhotoIndex++;
+        updateLightboxPhoto();
+    }
+
+    function prevPhoto(event) {
+        if(event) event.stopPropagation();
+        if (currentPhotoIndex <= 1) return; 
+        currentPhotoIndex--;
+        updateLightboxPhoto();
+    }
+
+    function updateLightboxPhoto() {
+        const fileName = currentPhotoIndex + extension;
+        lightboxImg.src = fileName;
+        dlLink.href = fileName;
+
+        btnPrev.disabled = (currentPhotoIndex <= 1);
+        btnNext.disabled = (currentPhotoIndex >= limitePhotos);
+    }
+
+    // Gestion de la navigation avec le clavier
+    document.addEventListener('keydown', function(event) {
+        if (lightbox.style.display === 'flex') {
+            if (event.key === 'ArrowRight') {
+                nextPhoto(event);
+            } else if (event.key === 'ArrowLeft') {
+                prevPhoto(event);
+            } else if (event.key === 'Escape') {
+                lightbox.style.display = 'none';
+            }
+        }
+    });
+
+    // --- TELECHARGEMENT DU ZIP ---
+    async function downloadAllAsZip() {
+        btnZip.disabled = true;
+        btnZip.innerHTML = "Création du ZIP...";
+
+        const zip = new JSZip();
+        let photosAddedCount = 0;
+
+        for (let i = 1; i <= limitePhotos; i++) {
+            const fileName = i + extension;
+            btnZip.innerHTML = `Ajout : Photo ${i}/${limitePhotos}...`;
+            
+            try {
+                const response = await fetch(fileName);
+                if(response.ok) {
+                    const blob = await response.blob();
+                    zip.file(fileName, blob);
+                    photosAddedCount++;
+                }
+            } catch (error) {
+                console.log("Alternative locale activée");
+            }
+        }
+
+        if (photosAddedCount === 0) {
+            alert("⚠️ Sécurité Navigateur :\n\nPour pouvoir télécharger le fichier ZIP complet en local, ouvre ce fichier HTML avec l'extension 'Live Server' sur VS Code, ou place tes photos sur un hébergeur.");
+            resetZipButton();
+            return;
+        }
+
+        btnZip.innerHTML = "Compression finale...";
+
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(content);
+            link.download = "photos_enzo.zip";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            resetZipButton();
+        });
+    }
+
+    function resetZipButton() {
+        btnZip.disabled = false;
+        btnZip.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg> Télécharger toutes les photos (.zip)`;
     }
 </script>
 
