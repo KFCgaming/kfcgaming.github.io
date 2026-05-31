@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENZO'S GALLERY</title>
-    <link rel="icon" href="icon.png" type="image/x-icon">
-    <link rel="manifest" id="pwa-manifest">    
+    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#2ecc71">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Enzo Gallery">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
@@ -222,6 +227,69 @@
             transform: none;
             box-shadow: none;
         }
+
+        /* --- PWA INSTALL BANNER --- */
+        .pwa-install-banner {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            align-items: center;
+            gap: 15px;
+            max-width: 400px;
+            width: calc(100% - 40px);
+        }
+
+        .pwa-install-banner img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .pwa-install-banner .pwa-text {
+            flex: 1;
+        }
+
+        .pwa-install-banner .pwa-text strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .pwa-install-banner .pwa-text small {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .pwa-install-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .pwa-install-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .pwa-dismiss-btn {
+            background: none;
+            border: none;
+            color: #bbb;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 5px;
+        }
     </style>
 </head>
 <body>
@@ -252,19 +320,30 @@
 
 <div class="zip-container">
     <button id="btn-zip" class="btn-zip" onclick="downloadAllAsZip()">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
         Télécharger toutes les photos (.zip)
     </button>
 </div>
 
 <div id="lightbox" onclick="closeLightbox(event)">
     <a id="dl-link" href="#" download class="btn-download" title="Télécharger">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
     </a>
     
     <button id="prev-photo" class="nav-btn" onclick="prevPhoto(event)">❮</button>
     <img id="lightbox-img" src="" alt="Vue agrandie">
     <button id="next-photo" class="nav-btn" onclick="nextPhoto(event)">❯</button>
+</div>
+
+<!-- PWA Install Banner -->
+<div id="pwa-install-banner" class="pwa-install-banner">
+    <img src="icon.png" alt="App Icon">
+    <div class="pwa-text">
+        <strong>Installer Enzo's Gallery</strong>
+        <small>Accès rapide depuis l'écran d'accueil</small>
+    </div>
+    <button class="pwa-install-btn" onclick="installPWA()">Installer</button>
+    <button class="pwa-dismiss-btn" onclick="dismissInstall()">×</button>
 </div>
 
 <footer style="margin-top: 60px; padding: 20px 0; border-top: 1px solid #e0e0e0; text-align: center;">
@@ -275,8 +354,8 @@
 
 <script>
     // --- CONFIGURATION MANUELLE DES LIMITES ---
-    const limitePhotos = 100; // Nombre exact de tes photos réelles
-    const extension = ".png"; // .png ou .jpg
+    const limitePhotos = 100;
+    const extension = ".png";
     
     const gallery = document.getElementById('gallery');
     const lightbox = document.getElementById('lightbox');
@@ -328,7 +407,6 @@
         const fileName = currentPhotoIndex + extension;
         lightboxImg.src = fileName;
         dlLink.href = fileName;
-
         btnPrev.disabled = (currentPhotoIndex <= 1);
         btnNext.disabled = (currentPhotoIndex >= limitePhotos);
     }
@@ -385,94 +463,150 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
             resetZipButton();
         });
     }
 
     function resetZipButton() {
         btnZip.disabled = false;
-        btnZip.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg> Télécharger toutes les photos (.zip)`;
+        btnZip.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg> Télécharger toutes les photos (.zip)`;
     }
 
-// --- GÉNÉRATION DYNAMIQUE DU MANIFEST PWA (COMPATIBLE GITHUB PAGES) ---
-  // On récupère le chemin exact du dossier actuel (gère les sous-dossiers de GitHub)
-  const currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-  const absoluteIconUrl = window.location.origin + currentPath + "icon.png";
+    // =============================================
+    // --- PWA : MANIFEST + SERVICE WORKER ---
+    // =============================================
 
-  const manifest = {
-      "name": "Enzo's Gallery 💖",
-      "short_name": "Enzo Gallery",
-      "description": "Une multitude de belles photos d'Enzo !",
-      "start_url": window.location.href,
-      "display": "standalone",
-      "background_color": "#f4f7f6",
-      "theme_color": "#2ecc71",
-      "icons": [{
-          "src": absoluteIconUrl, // URL parfaite calculée dynamiquement
-          "sizes": "512x512",
-          "type": "image/png",
-          "purpose": "any maskable"
-      }]
-  };
+    // Calculer le chemin de base (compatible GitHub Pages et sous-dossiers)
+    const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    const baseUrl = window.location.origin + basePath;
 
-  const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-  const manifestURL = URL.createObjectURL(manifestBlob);
+    // --- 1. GÉNÉRATION DYNAMIQUE DU MANIFEST ---
+    const manifest = {
+        "name": "Enzo's Gallery",
+        "short_name": "Enzo Gallery",
+        "description": "Une multitude de belles photos d'Enzo !",
+        "start_url": baseUrl,
+        "scope": baseUrl,
+        "display": "standalone",
+        "background_color": "#f4f7f6",
+        "theme_color": "#2ecc71",
+        "orientation": "any",
+        "icons": [
+            {
+                "src": baseUrl + "icon.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+            },
+            {
+                "src": baseUrl + "icon.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "maskable"
+            }
+        ]
+    };
 
-  const manifestLink = document.createElement('link');
-  manifestLink.rel = 'manifest';
-  manifestLink.href = manifestURL;
-  document.head.appendChild(manifestLink);
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = manifestURL;
+    document.head.appendChild(manifestLink);
 
-  // --- SERVICE WORKER COMPATIBLE AVEC TON SCRIPT ---
-  const swCode = `
-      const CACHE_NAME = 'enzo-gallery-v1';
-      const ASSETS = ['./'];
+    // --- 2. SERVICE WORKER INTÉGRÉ DANS LE HTML ---
+    // Important : les navigateurs refusent d'enregistrer un Service Worker depuis du code inline,
+    // blob: ou data:. Le code est gardé ici pour respecter le mode "un seul HTML", mais il ne
+    // peut pas être activé comme vrai Service Worker sans URL .js servie en HTTP/HTTPS.
+    const inlineServiceWorkerCode = `
+        const CACHE_NAME = 'enzo-gallery-v1';
+        const CORE_ASSETS = ['./', './index.html', './icon.png'];
 
-      self.addEventListener('install', (e) => {
-          e.waitUntil(
-              caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-          );
-          self.skipWaiting();
-      });
+        self.addEventListener('install', (event) => {
+            event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)));
+            self.skipWaiting();
+        });
 
-      self.addEventListener('activate', (e) => {
-          self.clients.claim();
-      });
+        self.addEventListener('activate', (event) => {
+            event.waitUntil(
+                caches.keys().then((cacheNames) => Promise.all(
+                    cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
+                ))
+            );
+            self.clients.claim();
+        });
 
-      self.addEventListener('fetch', (e) => {
-          e.respondWith(
-              fetch(e.request)
-                  .then((response) => {
-                      if (e.request.method === 'GET' && response.status === 200) {
-                          const responseClone = response.clone();
-                          caches.open(CACHE_NAME).then((cache) => {
-                              cache.put(e.request, responseClone);
-                          });
-                      }
-                      return response;
-                  })
-                  .catch(() => caches.match(e.request).then((cached) => cached))
-          );
-      });
-  `;
+        self.addEventListener('fetch', (event) => {
+            if (event.request.method !== 'GET') return;
+            event.respondWith(
+                fetch(event.request)
+                    .then((response) => {
+                        if (response && response.status === 200) {
+                            const responseClone = response.clone();
+                            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+                        }
+                        return response;
+                    })
+                    .catch(() => caches.match(event.request).then((cachedResponse) => {
+                        if (cachedResponse) return cachedResponse;
+                        if (event.request.mode === 'navigate') return caches.match('./index.html');
+                        return new Response('Contenu non disponible hors-ligne', {
+                            status: 503,
+                            statusText: 'Service Unavailable'
+                        });
+                    }))
+            );
+        });
+    `;
 
-  if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-          const swBlob = new Blob([swCode], { type: 'application/javascript' });
-          const absoluteSwUrl = URL.createObjectURL(swBlob);
-          
-          // Enregistrement calqué sur la même structure d'URL absolue que ton manifest
-          navigator.serviceWorker.register(absoluteSwUrl, { scope: './' })
-              .then((registration) => {
-                  console.log('PWA active ! Scope:', registration.scope);
-              })
-              .catch((error) => {
-                  console.error("Erreur Service Worker :", error);
-              });
-      });
-  }
-</script>
+    console.info('Mode PWA single-file actif : manifest intégré, icône icon.png, aucun fichier sw.js séparé.');
+
+    // --- 3. PWA INSTALL PROMPT ---
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Montrer la bannière d'installation
+        localStorage.removeItem('pwa-install-dismissed');
+        document.getElementById('pwa-install-banner').style.display = 'flex';
+    });
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('✅ PWA installée !');
+                }
+                deferredPrompt = null;
+                document.getElementById('pwa-install-banner').style.display = 'none';
+            });
+        } else {
+            alert("Installation manuelle :\n\nSur Chrome/Android : ouvre le menu du navigateur, puis choisis Installer l'application ou Ajouter à l'écran d'accueil.\n\nSur iPhone/iPad : touche Partager, puis Ajouter à l'écran d'accueil.");
+        }
+    }
+
+    function dismissInstall() {
+        localStorage.setItem('pwa-install-dismissed', '1');
+        document.getElementById('pwa-install-banner').style.display = 'none';
+    }
+
+    window.addEventListener('load', () => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const dismissed = localStorage.getItem('pwa-install-dismissed') === '1';
+
+        setTimeout(() => {
+            if (!deferredPrompt && !isStandalone && !dismissed) {
+                document.getElementById('pwa-install-banner').style.display = 'flex';
+            }
+        }, 1500);
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('🎉 Enzo\'s Gallery a été installée !');
+        document.getElementById('pwa-install-banner').style.display = 'none';
+    });
 </script>
 
 </body>
