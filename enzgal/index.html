@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENZO'S GALLERY</title>
-    <link rel="icon" href="10.png" type="image/x-icon">
+    <link rel="icon" href="icon.png" type="image/x-icon">
     
     <!-- ASTUCE : Manifest PWA intégré directement en Base64 pour éviter un fichier externe -->
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkVuem8ncyBHYWxsZXJ5IOKdpSIsCiAgInNob3J0X25hbWUiOiAiRW56byBHYWxsZXJ5IiwKICAiZGVzY3JpcHRpb24iOiAiVW5lIG11bHRpdHVkZSBkZSBiZWxsZXMgcGhvdG9zIGQnRW56byAhIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmNGY3ZjYiLAogICJ0aGVtZV9jb2xvciI6ICIjMmVjYzcxIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiMTAucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
@@ -279,7 +279,7 @@
 
 <script>
     // --- CONFIGURATION MANUELLE DES LIMITES ---
-    const limitePhotos = 83; // Nombre exact de tes photos réelles
+    const limitePhotos = 100; // Nombre exact de tes photos réelles
     const extension = ".png"; // .png ou .jpg
     
     const gallery = document.getElementById('gallery');
@@ -399,30 +399,34 @@
         btnZip.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg> Télécharger toutes les photos (.zip)`;
     }
 
-    // --- GÉNÉRATION DYNAMIQUE DU MANIFEST PWA ---
-        const manifest = {
-            "name": "Enzo's Gallery 💖",
-            "short_name": "Enzo Gallery",
-            "description": "Une multitude de belles photos d'Enzo !",
-            "start_url": window.location.href,
-            "display": "standalone",
-            "background_color": "#f4f7f6",
-            "theme_color": "#2ecc71",
-            "icons": [{
-                "src": window.location.origin + "/10.png", // Trouve automatiquement le bon chemin vers ton icône
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "any maskable"
-            }]
-        };
-        const stringManifest = JSON.stringify(manifest);
-        const manifestBlob = new Blob([stringManifest], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        
-        const manifestLink = document.createElement('link');
-        manifestLink.rel = 'manifest';
-        manifestLink.href = manifestURL;
-        document.head.appendChild(manifestLink);
+  // --- GÉNÉRATION DYNAMIQUE DU MANIFEST PWA (COMPATIBLE GITHUB PAGES) ---
+    // On récupère le chemin exact du dossier actuel (gère les sous-dossiers de GitHub)
+    const currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    const absoluteIconUrl = window.location.origin + currentPath + "icon.png";
+
+    const manifest = {
+        "name": "Enzo's Gallery 💖",
+        "short_name": "Enzo Gallery",
+        "description": "Une multitude de belles photos d'Enzo !",
+        "start_url": window.location.href,
+        "display": "standalone",
+        "background_color": "#f4f7f6",
+        "theme_color": "#2ecc71",
+        "icons": [{
+            "src": absoluteIconUrl, // URL parfaite calculée dynamiquement
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }]
+    };
+    
+    const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = manifestURL;
+    document.head.appendChild(manifestLink);
 </script>
 
 </body>
