@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENZO'S GALLERY</title>
     <link rel="icon" href="icon.png" type="image/x-icon">
-    
-    <!-- ASTUCE : Manifest PWA intégré directement en Base64 pour éviter un fichier externe -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkVuem8ncyBHYWxsZXJ5IOKdpSIsCiAgInNob3J0X25hbWUiOiAiRW56byBHYWxsZXJ5IiwKICAiZGVzY3JpcHRpb24iOiAiVW5lIG11bHRpdHVkZSBkZSBiZWxsZXMgcGhvdG9zIGQnRW56byAhIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmNGY3ZjYiLAogICJ0aGVtZV9jb2xvciI6ICIjMmVjYzcxIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiMTAucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
-    
+    <link rel="manifest" id="pwa-manifest">    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
@@ -225,7 +222,6 @@
             transform: none;
             box-shadow: none;
         }
-
     </style>
 </head>
 <body>
@@ -399,34 +395,84 @@
         btnZip.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3"></path></svg> Télécharger toutes les photos (.zip)`;
     }
 
-  // --- GÉNÉRATION DYNAMIQUE DU MANIFEST PWA (COMPATIBLE GITHUB PAGES) ---
-    // On récupère le chemin exact du dossier actuel (gère les sous-dossiers de GitHub)
-    const currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-    const absoluteIconUrl = window.location.origin + currentPath + "icon.png";
+// --- GÉNÉRATION DYNAMIQUE DU MANIFEST PWA (COMPATIBLE GITHUB PAGES) ---
+  // On récupère le chemin exact du dossier actuel (gère les sous-dossiers de GitHub)
+  const currentPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+  const absoluteIconUrl = window.location.origin + currentPath + "icon.png";
 
-    const manifest = {
-        "name": "Enzo's Gallery 💖",
-        "short_name": "Enzo Gallery",
-        "description": "Une multitude de belles photos d'Enzo !",
-        "start_url": window.location.href,
-        "display": "standalone",
-        "background_color": "#f4f7f6",
-        "theme_color": "#2ecc71",
-        "icons": [{
-            "src": absoluteIconUrl, // URL parfaite calculée dynamiquement
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
-        }]
-    };
-    
-    const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(manifestBlob);
-    
-    const manifestLink = document.createElement('link');
-    manifestLink.rel = 'manifest';
-    manifestLink.href = manifestURL;
-    document.head.appendChild(manifestLink);
+  const manifest = {
+      "name": "Enzo's Gallery 💖",
+      "short_name": "Enzo Gallery",
+      "description": "Une multitude de belles photos d'Enzo !",
+      "start_url": window.location.href,
+      "display": "standalone",
+      "background_color": "#f4f7f6",
+      "theme_color": "#2ecc71",
+      "icons": [{
+          "src": absoluteIconUrl, // URL parfaite calculée dynamiquement
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any maskable"
+      }]
+  };
+
+  const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+  const manifestURL = URL.createObjectURL(manifestBlob);
+
+  const manifestLink = document.createElement('link');
+  manifestLink.rel = 'manifest';
+  manifestLink.href = manifestURL;
+  document.head.appendChild(manifestLink);
+
+  // --- SERVICE WORKER COMPATIBLE AVEC TON SCRIPT ---
+  const swCode = `
+      const CACHE_NAME = 'enzo-gallery-v1';
+      const ASSETS = ['./'];
+
+      self.addEventListener('install', (e) => {
+          e.waitUntil(
+              caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+          );
+          self.skipWaiting();
+      });
+
+      self.addEventListener('activate', (e) => {
+          self.clients.claim();
+      });
+
+      self.addEventListener('fetch', (e) => {
+          e.respondWith(
+              fetch(e.request)
+                  .then((response) => {
+                      if (e.request.method === 'GET' && response.status === 200) {
+                          const responseClone = response.clone();
+                          caches.open(CACHE_NAME).then((cache) => {
+                              cache.put(e.request, responseClone);
+                          });
+                      }
+                      return response;
+                  })
+                  .catch(() => caches.match(e.request).then((cached) => cached))
+          );
+      });
+  `;
+
+  if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          const absoluteSwUrl = URL.createObjectURL(swBlob);
+          
+          // Enregistrement calqué sur la même structure d'URL absolue que ton manifest
+          navigator.serviceWorker.register(absoluteSwUrl, { scope: './' })
+              .then((registration) => {
+                  console.log('PWA active ! Scope:', registration.scope);
+              })
+              .catch((error) => {
+                  console.error("Erreur Service Worker :", error);
+              });
+      });
+  }
+</script>
 </script>
 
 </body>
