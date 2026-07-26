@@ -703,7 +703,7 @@ body.disco{ animation: huecycle 4s linear infinite; }
       <h1 id="obQ2Title">Question très scientifique...</h1>
       <p>À quelle fréquence la carotte est-elle aiguisée, en toute honnêteté ?</p>
       <div class="ob-choices" id="obFreq">
-        <button class="ob-choice" data-f="legende">🧊 Rarement, je suis un moine</button>
+        <button class="ob-choice" data-f="legende">🗿 Rarement, je suis une statue</button>
         <button class="ob-choice" data-f="tranquille">🥗 De temps en temps, tranquille</button>
         <button class="ob-choice" data-f="regulier">🔥 Régulièrement, faut ce qu'il faut</button>
         <button class="ob-choice" data-f="machine">🌪️ Je suis une machine, arrêtez-moi</button>
@@ -1334,7 +1334,7 @@ const GREET = {
     "Tiens-toi sur une patte et respire, {n} 🦩🧘",
     "La salsa attend son heure, {n} 🌶️",
     "Discipline et régularité, {n}. C'est ça le secret 🫡",
-    "{n}, même les moines ont des jours off 😇",
+    "{n}, même les statues ont des jours off 😇",
     "Un jour à la fois, {n}. Une carotte à la fois 🥕"
   ],
   machine: [
@@ -1342,7 +1342,7 @@ const GREET = {
     "Calme-toi {n}, il n'est même pas midi 😅"
   ],
   legende: [
-    "{n} le moine... la légende raconte que tu existes 🧊",
+    "{n} la statue... ta carotte a demandé de tes nouvelles 📞",
     "Un jour peut-être, {n}. Un jour. 🧘"
   ],
   camo: [
@@ -1561,12 +1561,12 @@ $("obPinSkip").onclick = ()=>{
 function obPrepareWelcome(){
   const name = $("obName").value.trim();
   const msgs = {
-    legende: ["Respect, moine "+name+" 🧘","On va quand même compter, au cas où..."],
+    legende: ["Respect, "+name+", quel self-control 🗿","On va quand même compter, au cas où..."],
     tranquille: ["L'équilibre, "+name+", tout est là 🥗","Ni trop, ni trop peu. Sage."],
     regulier: ["Un vrai athlète, "+name+" 🔥","La régularité forge les légendes."],
     machine: ["😳 D'accord, "+name+"...","On va avoir besoin d'un plus gros calendrier."]
   };
-  const emos = { legende:"🧊", tranquille:"🥗", regulier:"🔥", machine:"🌪️" };
+  const emos = { legende:"🗿", tranquille:"🥗", regulier:"🔥", machine:"🌪️" };
   $("obWelcome").textContent = msgs[obFreq][0];
   $("obWelcomeSub").textContent = msgs[obFreq][1];
   $("obFinalEmo").textContent = emos[obFreq];
@@ -1993,7 +1993,7 @@ renderAll();
 if(!S.profile) startOnboarding();
 else if(S.pin && !S.camo) openPin("unlock");
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a216d61b0b920248',t:'MTc4NTEwNDg5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 
 </html>
