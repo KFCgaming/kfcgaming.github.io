@@ -40,10 +40,6 @@ Un appui sur le bouton 🥸 et Flamingo devient une app de suivi **"5 fruits et 
 
 Pour en sortir ? **Digicode obligatoire** 🔐. Et si tu l'oublies, l'app te pose LA question de sécurité ultime : *"quand est-ce que tu t'es aiguisé pour la dernière fois ?"* — clique sur le bon jour du calendrier pour prouver que ce téléphone est bien le tien. Sécurité biographique. Incassable. 🧠
 
-## 🥚 Easter eggs
-
-Il y en a. On ne dira pas où. Bon, d'accord, des indices : la mascotte n'aime pas être spammée 💦, le titre cache une parade 🦩, ton clavier connaît un vieux code de jeu vidéo 🪩, et ton téléphone n'aime pas être secoué 🥕.
-
 ## 🚀 Installation
 
 Flamingo est une **PWA** : elle s'installe comme une vraie app, directement depuis le navigateur. Pas de store, pas de compte, pas de questions gênantes.
