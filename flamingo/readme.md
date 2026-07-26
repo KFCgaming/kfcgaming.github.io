@@ -40,11 +40,25 @@ Un appui sur le bouton 🥸 et Flamingo devient une app de suivi **"5 fruits et 
 
 Pour en sortir ? **Digicode obligatoire** 🔐. Et si tu l'oublies, l'app te pose LA question de sécurité ultime : *"quand est-ce que tu t'es aiguisé pour la dernière fois ?"* — clique sur le bon jour du calendrier pour prouver que ce téléphone est bien le tien. Sécurité biographique. Incassable. 🧠
 
+## 🥚 Easter eggs
+
+Il y en a. On ne dira pas où. Bon, d'accord, des indices : la mascotte n'aime pas être spammée 💦, le titre cache une parade 🦩, ton clavier connaît un vieux code de jeu vidéo 🪩, et ton téléphone n'aime pas être secoué 🥕.
+
 ## 🚀 Installation
 
-1. Héberge le dossier n'importe où en HTTPS (GitHub Pages, Netlify, une vieille Freebox...)
-2. Ouvre `index.html` dans ton navigateur
-3. "Ajouter à l'écran d'accueil" — et voilà, une vraie app, qui marche même hors-ligne (personne ne doit savoir que tu es dans le train)
+Flamingo est une **PWA** : elle s'installe comme une vraie app, directement depuis le navigateur. Pas de store, pas de compte, pas de questions gênantes.
+
+### 📱 Sur téléphone
+
+**Android (Chrome)** : ouvre l'app dans le navigateur → menu **⋮** en haut à droite → **"Ajouter à l'écran d'accueil"** (ou "Installer l'application") → confirme. Le flamant-carotte apparaît sur ton écran d'accueil comme n'importe quelle app. 🦩
+
+**iPhone / iPad (Safari)** : ouvre l'app dans Safari → bouton **Partager** (le carré avec la flèche ⬆️) → **"Sur l'écran d'accueil"** → confirme. Et voilà.
+
+### 💻 Sur PC / Mac
+
+**Chrome / Edge** : ouvre l'app → clique sur la petite **icône d'installation** (⊕ ou un écran avec une flèche) à droite de la barre d'adresse → **"Installer"**. Flamingo s'ouvre alors dans sa propre fenêtre, sans barre d'adresse, comme un vrai logiciel.
+
+Une fois installée, l'app fonctionne **même hors-ligne** (personne ne doit savoir que tu es dans le train). 🚂
 
 Tout est stocké **en local sur ton appareil** (localStorage). Aucun serveur, aucun compte, aucune fuite. Ce qui se passe dans Flamingo reste dans Flamingo. 🤫
 
