@@ -497,6 +497,44 @@ header{ text-align:center; padding:14px 0 6px; position:relative; }
 .hm .l4{ background:var(--accent-dark); }
 .insights{ margin-top:14px; }
 
+/* ===== NOMS DE LUSTRAGE ===== */
+.time-chip .t-time{ font-weight:900; }
+.time-chip .t-label{ font-size:.72rem; opacity:.78; font-weight:800; }
+.time-chip button[data-ok]{ color:#58cc02; }
+.chip-edit{
+  border:none; background:transparent; color:var(--text);
+  font-family:var(--font); font-weight:800; font-size:.85rem; width:110px;
+  outline:none; border-bottom:2px solid var(--accent);
+}
+.day .tag{
+  position:absolute; top:3px; left:4px; font-size:.6rem;
+}
+
+/* ===== RAPPEL DU SOIR ===== */
+#remindBanner{
+  margin-top:14px; padding:12px 14px; border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff; font-weight:900; font-size:.86rem;
+  display:flex; align-items:center; gap:10px;
+  box-shadow:0 6px 16px var(--shadow);
+  animation: slide-up .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+#remindBanner .rb-txt{ flex:1; }
+#remindBanner button{
+  border:none; border-radius:12px; padding:8px 12px; font-family:var(--font);
+  font-weight:900; font-size:.78rem; cursor:pointer; color:var(--accent-dark);
+  background:#fff; white-space:nowrap;
+}
+#remindBanner button:active{ transform:scale(.92); }
+
+/* ===== VERROU (trop d'essais) ===== */
+#pinLockBox{ text-align:center; }
+#pinLockCount{
+  font-size:2.3rem; font-weight:900; margin:8px 0 2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
 /* ===== EASTER EGGS ===== */
 body.disco{ animation: huecycle 4s linear infinite; }
 @keyframes huecycle{ to{ filter:hue-rotate(360deg); } }
@@ -529,6 +567,13 @@ body.disco{ animation: huecycle 4s linear infinite; }
     <span class="leaf-deco">🌿</span><span id="appName">Flamingo</span><span class="leaf-deco r">🌿</span><br>
     <div id="greeting"></div>
   </header>
+
+  <!-- RAPPEL DU SOIR -->
+  <div id="remindBanner" style="display:none">
+    <span class="rb-txt" id="remindTxt">🌙 C'est l'heure du bilan !</span>
+    <button id="remindGo">Cocher ✅</button>
+    <button id="remindLater">Plus tard ⏰</button>
+  </div>
 
   <!-- CALENDAR -->
   <div class="card" id="calCard">
@@ -621,6 +666,9 @@ body.disco{ animation: huecycle 4s linear infinite; }
           <input type="time" id="timeInput" class="text-input">
           <button class="choice" id="addTimeBtn">Ajouter ➕</button>
         </div>
+        <div id="timeLabelWrap" style="display:none; margin-top:8px">
+          <input type="text" id="timeLabelInput" class="text-input" maxlength="30" autocomplete="off" placeholder="💬 Motif de ce lustrage (optionnel)">
+        </div>
       </div>
       <div id="countSub" style="display:none; margin-top:10px">
         <div class="count-stepper">
@@ -628,6 +676,19 @@ body.disco{ animation: huecycle 4s linear infinite; }
           <span id="countVal">1</span>
           <button class="choice" id="countPlus">＋</button>
         </div>
+      </div>
+    </div>
+    <div id="nameBlock" style="display:none">
+      <div class="q-label">🏷️ Nommer ce lustrage ? <span style="font-weight:700;color:var(--text-soft);font-size:.72rem">(pour te souvenir des circonstances 😏)</span></div>
+      <div class="choice-row">
+        <button class="choice" id="nameDayBtn">📅 La journée</button>
+        <button class="choice" id="nameEachBtn">🔁 Chaque lustrage</button>
+      </div>
+      <div id="nameDaySub" style="display:none; margin-top:10px">
+        <input type="text" id="dayLabelInput" class="text-input" maxlength="40" autocomplete="off" placeholder="Ex : Réveillon, plage, tournoi, déprime...">
+      </div>
+      <div id="nameEachSub" style="display:none; margin-top:10px">
+        <div id="nameEachHint" style="color:var(--text-soft);font-weight:700;font-size:.82rem;text-align:center;padding:4px 0 2px"></div>
       </div>
     </div>
     <button class="primary-btn" id="saveLog">Valider ✅</button>
@@ -672,6 +733,15 @@ body.disco{ animation: huecycle 4s linear infinite; }
     <div class="mode-row">
       <button class="choice" id="soundOn">🔊 Activés</button>
       <button class="choice" id="soundOff">🔇 Coupés</button>
+    </div>
+    <div class="q-label">🔔 Rappel du soir</div>
+    <div class="mode-row">
+      <button class="choice" id="remindOn">🔔 Activé</button>
+      <button class="choice" id="remindOff">🔕 Désactivé</button>
+    </div>
+    <div id="remindTimeWrap" style="display:none; margin-top:10px; text-align:center">
+      <div style="color:var(--text-soft);font-weight:800;font-size:.8rem;margin-bottom:6px">À quelle heure le flamant doit-il te rappeler ?</div>
+      <input type="time" id="remindTime" class="text-input" style="max-width:190px; display:inline-block">
     </div>
     <div class="q-label">💾 Mes données</div>
     <div class="mode-row">
@@ -756,6 +826,13 @@ body.disco{ animation: huecycle 4s linear infinite; }
       <button class="pin-key ghost" tabindex="-1"></button>
       <button class="pin-key" data-k="0">0</button>
       <button class="pin-key" data-k="del">⌫</button>
+    </div>
+    <div id="pinLockBox" style="display:none">
+      <div style="font-size:2.8rem">🔒</div>
+      <div class="pin-title" style="margin-top:4px">Verrouillé</div>
+      <div class="pin-sub">Trop de tentatives. Le flamant a fermé la porte à clé.</div>
+      <div id="pinLockCount">30:00</div>
+      <div class="pin-sub">Patience... ou bonne mémoire 🕵️</div>
     </div>
     <button class="ghost-btn" id="pinForgot" style="margin-top:10px">Digicode oublié 🤔</button>
     <button class="ghost-btn" id="pinCancel" style="margin-top:6px">Annuler</button>
@@ -847,6 +924,11 @@ const LEX = {
 /* ================== STATE ================== */
 const DKEY = "carotteStreakData";
 let S = load();
+function ensureState(){
+  if(!S.lock) S.lock = { fails:0, calFails:0, lvl:0, until:null };
+  if(!S.remind) S.remind = { on:false, time:"20:00", sent:"" };
+}
+ensureState();
 function load(){
   try{
     const d = JSON.parse(localStorage.getItem(DKEY));
@@ -916,7 +998,12 @@ function renderCalendar(){
         if(rec.salsa) cell.innerHTML += `<span class="salsa-dot">${L.salsaEmo}</span>`;
         const n = rec.times && rec.times.length ? rec.times.length : (rec.count || 1);
         if(n > 1) cell.innerHTML += `<span class="multi">×${n}</span>`;
-        cell.title = (rec.times && rec.times.length) ? rec.times.join(" • ") : (n>1 ? n+" fois" : "");
+        const tm = normTimes(rec).map(x=> x.t + (x.l ? " · " + x.l : ""));
+        cell.title = tm.length ? tm.join(" • ") : (n>1 ? n+" fois" : "");
+        if(rec.label){
+          cell.title = "🏷️ " + rec.label + (cell.title ? " — " + cell.title : "");
+          cell.innerHTML += `<span class="tag">🏷️</span>`;
+        }
       }else{
         cell.classList.add("nope");
         cell.innerHTML = `<span class="num">${d}</span>`;
@@ -1115,6 +1202,12 @@ function renderChallenge(){
 
 /* ================== TENDANCES / HEATMAP / INSIGHTS ================== */
 function sessionsOf(r){ return r && r.done ? (r.times && r.times.length ? r.times.length : (r.count||1)) : 0; }
+/* les sessions peuvent être des chaînes "HH:MM" (ancien format) ou {t,l} avec un petit mot */
+function normTimes(r){
+  if(!r || !Array.isArray(r.times)) return [];
+  return r.times.map(x => typeof x === "string" ? { t:x, l:"" } : { t:x.t || "", l:x.l || "" });
+}
+function storeTimes(arr){ return arr.map(x => x.l ? { t:x.t, l:x.l } : x.t); }
 function renderTrends(){
   const L = lex();
   // barres : 8 dernières semaines
@@ -1155,7 +1248,7 @@ function renderTrends(){
     totSess += n;
     const wk = new Date(d); wk.setDate(d.getDate()-((d.getDay()+6)%7));
     weeksSet.add(keyOf(wk));
-    (S.days[k].times||[]).forEach(t=>{ const h = t.split(":")[0]; hours[h] = (hours[h]||0)+1; });
+    normTimes(S.days[k]).forEach(x=>{ const h = x.t.split(":")[0]; hours[h] = (hours[h]||0)+1; });
   }
   const dowNames = ["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
   const bestDow = totSess ? dowNames[dows.indexOf(Math.max(...dows))] : null;
@@ -1206,6 +1299,91 @@ $("soundOff").onclick = ()=>{ S.sound = false; save(); refreshSoundBtns(); };
 function refreshSoundBtns(){
   $("soundOn").className = "choice" + (S.sound!==false ? " sel-yes":"");
   $("soundOff").className = "choice" + (S.sound===false ? " sel-no":"");
+}
+
+/* ================== RAPPEL DU SOIR ================== */
+let remindTimer = null;
+function remindOn(){ return !!(S.remind && S.remind.on); }
+function remindTimeHM(){ const t = (S.remind && S.remind.time) || "20:00"; const p = t.split(":").map(Number); return [p[0]||20, p[1]||0]; }
+function nextRemindDate(){
+  const [h,m] = remindTimeHM();
+  const d = new Date();
+  const t = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m, 0, 0);
+  if(t.getTime() <= Date.now()) t.setDate(t.getDate()+1);
+  return t;
+}
+function scheduleReminder(){
+  clearTimeout(remindTimer);
+  if(!remindOn()) return;
+  const delay = nextRemindDate().getTime() - Date.now();
+  remindTimer = setTimeout(()=>{ scheduleReminder(); maybeRemindNow(); }, delay);
+  tryScheduleSystemNotification();
+}
+/* notification système planifiée (Android Chrome) : marche même app fermée */
+function tryScheduleSystemNotification(){
+  try{
+    if(!("Notification" in window) || !("showTrigger" in Notification.prototype) || !("TimestampTrigger" in window)) return;
+    if(Notification.permission !== "granted") return;
+    new Notification("Flamingo 🦩", {
+      body: S.camo ? "C'est l'heure du bilan légumes 🥦" : "C'est l'heure du bilan carotte 🥕",
+      showTrigger: new TimestampTrigger(nextRemindDate().getTime())
+    });
+  }catch(e){}
+}
+function maybeRemindNow(){
+  if(!remindOn() || !S.profile) return;
+  const tk = todayKey();
+  if(S.days[tk]) return;                                  // déjà coché aujourd'hui
+  if((S.remind && S.remind.sent) === tk) return;          // déjà rappelé aujourd'hui
+  const [h,m] = remindTimeHM();
+  const now = new Date();
+  if(now.getHours()*60 + now.getMinutes() < h*60 + m) return; // trop tôt
+  S.remind.sent = tk; save();
+  const body = S.camo ? "Légumes du jour : oui ou non ? 🥦" : "Carotte aiguisée (ou pas) aujourd'hui ? 🥕";
+  if("Notification" in window && Notification.permission === "granted"){
+    try{
+      const n = new Notification("Flamingo 🦩", { body: body, tag: "flamingo-remind" });
+      n.onclick = ()=>{ window.focus(); showRemindBanner(); };
+      return;
+    }catch(e){}
+  }
+  showRemindBanner();
+}
+function showRemindBanner(){
+  $("remindTxt").textContent = S.camo
+    ? "🌙 Bilan du soir : légumes mangés aujourd'hui ?"
+    : "🌙 C'est l'heure du bilan ! Carotte aiguisée (ou pas) aujourd'hui ?";
+  $("remindBanner").style.display = "flex";
+}
+$("remindGo").onclick = ()=>{ $("remindBanner").style.display = "none"; openLog(new Date()); };
+$("remindLater").onclick = ()=>{ $("remindBanner").style.display = "none"; toast("Le flamant referme l'œil... pour cette fois 🦩👀"); };
+$("remindOn").onclick = async ()=>{
+  S.remind.on = true; save();
+  refreshRemindBtns();
+  if("Notification" in window && Notification.permission === "default"){
+    try{ const p = await Notification.requestPermission(); if(p === "granted") toast("Notifications autorisées ! 🔔"); }catch(e){}
+  }
+  scheduleReminder();
+  toast("Rappel activé ! Le flamant veillera 🌙");
+};
+$("remindOff").onclick = ()=>{
+  S.remind.on = false; S.remind.sent = ""; save();
+  clearTimeout(remindTimer);
+  refreshRemindBtns();
+  toast("Rappel désactivé 😴");
+};
+$("remindTime").addEventListener("change", ()=>{
+  const v = $("remindTime").value;
+  S.remind.time = v || "20:00"; save();
+  scheduleReminder();
+  toast("Rappel fixé à " + S.remind.time + " ! ⏰");
+});
+function refreshRemindBtns(){
+  const on = remindOn();
+  $("remindOn").className = "choice" + (on ? " sel-yes" : "");
+  $("remindOff").className = "choice" + (on ? "" : " sel-no");
+  $("remindTimeWrap").style.display = on ? "block" : "none";
+  if(on) $("remindTime").value = (S.remind && S.remind.time) || "20:00";
 }
 
 /* ================== EASTER EGGS SUPPLÉMENTAIRES ================== */
@@ -1287,7 +1465,8 @@ function lastSharpening(){
   const rec = S.days[k];
   let approx = true, h = 12, mi = 0;
   if(rec.times && rec.times.length){
-    const t = rec.times[rec.times.length-1].split(":");
+    const last = normTimes(rec).pop();
+    const t = last.t.split(":");
     h = +t[0]; mi = +t[1]; approx = false;
   }
   const d = new Date(k+"T00:00:00");
@@ -1335,13 +1514,10 @@ const GREET = {
     "La salsa attend son heure, {n} 🌶️",
     "Discipline et régularité, {n}. C'est ça le secret 🫡",
     "{n}, même les statues ont des jours off 😇",
-    "Hey {n}, may the force be with you 😏",
-    "Un jour à la fois, {n}. Un lustrage à la fois 🥕"
+    "Un jour à la fois, {n}. Une carotte à la fois 🥕"
   ],
   machine: [
     "{n}, la machine est-elle déjà en route ? 🌪️",
-    "Pauvre carotte 😓",
-    "{n} c'est quand la pause ? 😅",
     "Calme-toi {n}, il n'est même pas midi 😅"
   ],
   legende: [
@@ -1374,14 +1550,75 @@ const pinState = { mode:null, entry:"", first:null, cb:null };
 function openPin(mode, cb){
   pinState.mode = mode; pinState.entry = ""; pinState.first = null; pinState.cb = cb || null;
   $("pinCancel").style.display = (mode === "unlock") ? "none" : "block";
-  $("pinForgot").style.display = (mode === "set") ? "none" : "block";
   $("forgotBox").style.display = "none";
   $("pinBox").style.display = "block";
   pinSetTexts();
   pinRefresh();
+  pinApplyLockUI();
   $("lockScreen").classList.add("open");
 }
-function closePin(){ $("lockScreen").classList.remove("open"); }
+function closePin(){
+  $("lockScreen").classList.remove("open");
+  clearInterval(lockIv); lockIv = null;
+}
+
+/* ---- Verrouillage progressif : 3 essais code, puis 2 essais calendrier, puis verrou 30min -> 1h -> 1h30 -> 2h max ---- */
+const LOCK_MINS = [30, 60, 90, 120];
+function ls(){ return S.lock || (S.lock = { fails:0, calFails:0, lvl:0, until:null }); }
+function isLocked(){ const L = ls(); return !!(L.until && Date.now() < L.until); }
+function lockUntilMs(){ const L = ls(); return L.until ? Math.max(0, L.until - Date.now()) : 0; }
+function resetLock(){
+  const L = ls();
+  L.fails = 0; L.calFails = 0; L.lvl = 0; L.until = null;
+  save();
+}
+function startLockout(){
+  const L = ls();
+  const mins = LOCK_MINS[Math.min(L.lvl, LOCK_MINS.length-1)];
+  L.until = Date.now() + mins*60000;
+  L.lvl = Math.min(L.lvl+1, LOCK_MINS.length-1);
+  L.fails = 0; L.calFails = 0;
+  save();
+  pinApplyLockUI();
+}
+let lockIv = null;
+function showLockCountdown(){
+  const sub = $("pinLockCount");
+  const tick = ()=>{
+    const ms = lockUntilMs();
+    if(ms <= 0){
+      clearInterval(lockIv); lockIv = null;
+      onLockExpired();
+      return;
+    }
+    sub.textContent = Math.floor(ms/60000) + ":" + pad(Math.floor((ms%60000)/1000));
+  };
+  tick();
+  clearInterval(lockIv);
+  lockIv = setInterval(tick, 1000);
+}
+function onLockExpired(){
+  $("pinLockBox").style.display = "none";
+  $("pinDots").style.display = "flex";
+  $("pinPad").style.display = "grid";
+  $("pinForgot").style.display = (pinState.mode === "set") ? "none" : "block";
+  $("pinSub").textContent = "Le verrou est levé. Tu as 3 essais 🫡";
+}
+function pinApplyLockUI(){
+  const locked = isLocked();
+  const burned = ls().fails >= 3;
+  $("pinLockBox").style.display = locked ? "block" : "none";
+  $("pinDots").style.display = (locked || burned) ? "none" : "flex";
+  $("pinPad").style.display = (locked || burned) ? "none" : "grid";
+  $("pinForgot").style.display = (locked || pinState.mode === "set") ? "none" : "block";
+  $("pinForgot").textContent = burned ? "Calendrier de secours 🕵️" : "Digicode oublié 🤔";
+  if(locked){
+    showLockCountdown();
+  }else{
+    clearInterval(lockIv); lockIv = null;
+    if(burned) $("pinSub").textContent = "Essais épuisés ! Dernière chance : le calendrier 🕵️";
+  }
+}
 function pinSetTexts(){
   const t = $("pinTitle"), s = $("pinSub"), m = $("pinMascot");
   if(pinState.mode === "unlock"){
@@ -1414,12 +1651,22 @@ function pinComplete(){
   const p = pinState.entry;
   if(pinState.mode === "unlock" || pinState.mode === "verify"){
     if(p === S.pin){
+      resetLock();
       closePin();
       sfx.unlock();
       if(pinState.mode === "unlock"){ toast(S.profile ? "Re-bonjour " + S.profile.name + " ! 👋" : "Bienvenue ! 👋"); }
       if(pinState.cb) pinState.cb();
     }else{
-      pinError("Mauvais code... le flamant te juge 🦩👀");
+      const L = ls();
+      L.fails++;
+      save();
+      if(L.fails >= 3){
+        pinError("3 essais épuisés ! Dernière chance : le calendrier 🕵️");
+        pinApplyLockUI();
+        setTimeout(()=> $("pinForgot").click(), 900);
+      }else{
+        pinError("Mauvais code... essai " + L.fails + "/3 — le flamant te juge 🦩👀");
+      }
     }
   }else{ // set
     if(pinState.first === null){
@@ -1437,7 +1684,7 @@ function pinComplete(){
 }
 $("pinPad").addEventListener("click", e=>{
   const k = e.target.dataset && e.target.dataset.k;
-  if(!k) return;
+  if(!k || isLocked() || ls().fails >= 3) return;
   if(k === "del"){ pinState.entry = pinState.entry.slice(0,-1); pinRefresh(); return; }
   if(pinState.entry.length >= 4) return;
   pinState.entry += k;
@@ -1446,6 +1693,7 @@ $("pinPad").addEventListener("click", e=>{
 });
 document.addEventListener("keydown", e=>{
   if(!$("lockScreen").classList.contains("open")) return;
+  if(isLocked() || ls().fails >= 3) return;
   if(/^[0-9]$/.test(e.key) && pinState.entry.length < 4){
     pinState.entry += e.key; pinRefresh();
     if(pinState.entry.length === 4) setTimeout(pinComplete, 180);
@@ -1465,6 +1713,7 @@ $("pinForgot").onclick = ()=>{
   if(!lastDoneKey()){
     // aucun jour aiguisé : impossible de vérifier -> on libère (il n'y a rien à cacher !)
     toast("Aucun aiguisage enregistré... accès libre 😅");
+    resetLock();
     closePin();
     if(pinState.cb && pinState.mode !== "unlock") pinState.cb();
     return;
@@ -1477,6 +1726,7 @@ $("pinForgot").onclick = ()=>{
 $("forgotBack").onclick = ()=>{
   $("forgotBox").style.display = "none";
   $("pinBox").style.display = "block";
+  pinApplyLockUI();
 };
 $("fPrev").onclick = ()=>{ fView.setMonth(fView.getMonth()-1); renderFCal(); };
 $("fNext").onclick = ()=>{ fView.setMonth(fView.getMonth()+1); renderFCal(); };
@@ -1501,15 +1751,24 @@ function renderFCal(){
     if(date<=now){
       cell.onclick = ()=>{
         if(keyOf(date) === lastDoneKey()){
+          resetLock();
           $("forgotBox").style.display = "none";
           $("pinBox").style.display = "block";
           closePin();
           toast("Bonne mémoire ! Accès accordé 🧠✨");
           if(pinState.cb && pinState.mode !== "unlock") pinState.cb();
         }else{
-          const box = $("forgotBox");
-          box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-          toast("Raté... tu ne connais pas ce téléphone si bien que ça 🕵️");
+          const L = ls();
+          L.calFails++;
+          save();
+          if(L.calFails >= 2){
+            toast("2 chances épuisées... verrouillage 🥶");
+            startLockout();
+          }else{
+            const box = $("forgotBox");
+            box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
+            toast("Raté ("+L.calFails+"/2)... tu ne connais pas ce téléphone si bien que ça 🕵️");
+          }
         }
       };
     }
@@ -1637,12 +1896,15 @@ function openLog(date){
   tmp = {
     done: rec.done ?? null,
     salsa: rec.salsa ?? null,
-    times: (rec.times || []).slice(),
+    times: normTimes(rec),
     count: rec.count || 1,
-    tMode: rec.times && rec.times.length ? "hours" : (rec.count ? "count" : null)
+    tMode: rec.times && rec.times.length ? "hours" : (rec.count ? "count" : null),
+    nMode: normTimes(rec).some(x=>x.l) ? "each" : "day",
+    dayLabel: rec.label || ""
   };
   $("logTitle").textContent = (k===todayKey()) ? "Alors, aujourd'hui ?" : "Ce jour-là...";
   $("logDate").textContent = editDate.toLocaleDateString("fr-FR",{weekday:"long", day:"numeric", month:"long"});
+  $("timeLabelInput").value = "";
   $("timeInput").value = (k===todayKey())
     ? pad(new Date().getHours())+":"+pad(new Date().getMinutes())
     : "12:00";
@@ -1661,22 +1923,58 @@ function refreshChoices(){
   $("hoursSub").style.display = tmp.tMode==="hours" ? "block":"none";
   $("countSub").style.display = tmp.tMode==="count" ? "block":"none";
   $("countVal").textContent = tmp.count;
+  $("nameBlock").style.display = tmp.done===true ? "block":"none";
+  $("nameDayBtn").className = "choice"+(tmp.nMode==="day" ? " sel-yes":"");
+  $("nameEachBtn").className = "choice"+(tmp.nMode==="each" ? " sel-yes":"");
+  $("nameDaySub").style.display = (tmp.done===true && tmp.nMode==="day") ? "block":"none";
+  $("nameEachSub").style.display = (tmp.done===true && tmp.nMode==="each") ? "block":"none";
+  $("dayLabelInput").value = tmp.dayLabel || "";
+  const eachOk = tmp.tMode==="hours";
+  $("timeLabelWrap").style.display = (tmp.nMode==="each" && eachOk) ? "block":"none";
+  $("nameEachHint").textContent = eachOk
+    ? "Chaque lustrage peut avoir son petit mot 👇"
+    : "Pour nommer chaque lustrage, passe par le mode ⏰ Avec les heures (pas juste le nombre 😉)";
   renderTimes();
 }
+$("nameDayBtn").onclick = ()=>{ tmp.nMode="day"; refreshChoices(); };
+$("nameEachBtn").onclick = ()=>{ tmp.nMode="each"; refreshChoices(); };
 function renderTimes(){
   const L = lex();
   const list = $("timesList");
-  const times = tmp.times.slice().sort();
-  if(!times.length){
+  tmp.times.sort((a,b)=>a.t.localeCompare(b.t));
+  if(!tmp.times.length){
     list.innerHTML = `<span style="color:var(--text-soft);font-weight:700;font-size:.82rem">Aucune heure notée (optionnel, mais on aime la précision 📐)</span>`;
     return;
   }
-  list.innerHTML = times.map(t=>
-    `<span class="time-chip">${L.dayEmo} ${t}<button data-t="${t}" title="Retirer">✕</button></span>`
+  list.innerHTML = tmp.times.map((x,i)=>
+    `<span class="time-chip" data-i="${i}">
+       <span class="t-time">${L.dayEmo} ${x.t}</span>
+       ${x.l ? `<span class="t-label">· ${x.l}</span>` : ""}
+       <button data-edit="${i}" title="Nommer">✏️</button>
+       <button data-del="${i}" title="Retirer">✕</button>
+     </span>`
   ).join("");
-  list.querySelectorAll("button").forEach(b=>{
-    b.onclick = ()=>{ tmp.times = tmp.times.filter(x=>x!==b.dataset.t); renderTimes(); };
+  list.querySelectorAll("[data-del]").forEach(b=>{
+    b.onclick = ()=>{ tmp.times.splice(+b.dataset.del,1); renderTimes(); };
   });
+  list.querySelectorAll("[data-edit]").forEach(b=>{
+    b.onclick = ()=> editTimeChip(+b.dataset.edit);
+  });
+}
+function editTimeChip(i){
+  const chip = document.querySelector(`.time-chip[data-i="${i}"]`);
+  if(!chip || !tmp.times[i]) return;
+  const x = tmp.times[i];
+  chip.innerHTML = `<span class="t-time">${x.t}</span>
+    <input class="chip-edit" value="${(x.l||"").replace(/"/g,"&quot;")}" maxlength="30" placeholder="motif...">
+    <button data-ok="1" title="OK">✓</button>
+    <button data-cancel="1">✕</button>`;
+  const inp = chip.querySelector("input");
+  inp.focus();
+  const done = ()=>{ x.l = inp.value.trim(); renderTimes(); };
+  chip.querySelector("[data-ok]").onclick = done;
+  chip.querySelector("[data-cancel]").onclick = ()=>renderTimes();
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter") done(); });
 }
 $("modeHours").onclick = ()=>{ tmp.tMode = tmp.tMode==="hours" ? null : "hours"; refreshChoices(); };
 $("modeCount").onclick = ()=>{ tmp.tMode = tmp.tMode==="count" ? null : "count"; refreshChoices(); };
@@ -1685,26 +1983,36 @@ $("countPlus").onclick = ()=>{ if(tmp.count<99) tmp.count++; refreshChoices(); }
 $("addTimeBtn").onclick = ()=>{
   const v = $("timeInput").value;
   if(!v){ toast("Choisis une heure ! ⏰"); return; }
-  if(tmp.times.includes(v)){ toast("Déjà notée, celle-là 😄"); return; }
-  tmp.times.push(v);
+  if(tmp.times.some(x=>x.t===v)){ toast("Déjà notée, celle-là 😄"); return; }
+  const lbl = $("timeLabelInput").value.trim();
+  tmp.times.push({ t:v, l: lbl });
+  $("timeLabelInput").value = "";
+  if(tmp.tMode !== "hours") tmp.tMode = "hours";
   if(tmp.done !== true){ tmp.done = true; }
   refreshChoices();
 };
 $("doneYes").onclick = ()=>{ tmp.done=true; refreshChoices(); };
-$("doneNo").onclick = ()=>{ tmp.done=false; tmp.salsa=null; tmp.times=[]; tmp.count=1; tmp.tMode=null; refreshChoices(); };
+$("doneNo").onclick = ()=>{ tmp.done=false; tmp.salsa=null; tmp.times=[]; tmp.count=1; tmp.tMode=null; tmp.nMode="day"; tmp.dayLabel=""; refreshChoices(); };
 $("salsaYes").onclick = ()=>{ tmp.salsa=true; refreshChoices(); };
 $("salsaNo").onclick = ()=>{ tmp.salsa=false; refreshChoices(); };
 $("saveLog").onclick = ()=>{
   if(tmp.done===null){ toast("Choisis oui ou non ! 🤔"); return; }
+  const prevRec = S.days[keyOf(editDate)];
   const rec = { done:tmp.done, salsa: tmp.done ? !!tmp.salsa : false };
   if(tmp.done){
     if(tmp.tMode==="hours" && tmp.times.length){
-      rec.times = tmp.times.slice().sort();
+      rec.times = storeTimes(tmp.times.slice().sort((a,b)=>a.t.localeCompare(b.t)));
       rec.count = rec.times.length;
     }else if(tmp.tMode==="count"){
       rec.count = tmp.count;
     }else{
       rec.count = 1;
+    }
+    if(tmp.nMode==="day"){
+      const lbl = $("dayLabelInput").value.trim();
+      if(lbl) rec.label = lbl;
+    }else if(prevRec && prevRec.label){
+      rec.label = prevRec.label; // on garde le nom de la journée quand on touche aux sessions
     }
   }
   S.days[keyOf(editDate)] = rec;
@@ -1716,6 +2024,7 @@ $("saveLog").onclick = ()=>{
 };
 $("clearLog").onclick = ()=>{
   delete S.days[keyOf(editDate)];
+  if(S.remind) S.remind.sent = ""; // le rappel du soir peut retenter sa chance
   save(); renderAll();
   $("logOverlay").classList.remove("open");
   toast("Jour effacé 🧽");
@@ -1729,6 +2038,7 @@ $("btnSettings").onclick = ()=>{
   $("pinChangeBtn").textContent = S.pin ? "Changer 🔐" : "Activer 🔐";
   $("pinRemoveBtn").style.display = S.pin ? "block" : "none";
   refreshSoundBtns();
+  refreshRemindBtns();
   $("setOverlay").classList.add("open");
 };
 $("saveName").onclick = ()=>{
@@ -1873,8 +2183,23 @@ function buildShareCard(){
   ctx.fillStyle = "#ffffff";
   ctx.fillText(badgeTxt, W/2, 372);
 
+  // petit mot du jour (label) si présent
+  let cy = 460, ch = 640;
+  const todayRec = S.days[todayKey()];
+  if(todayRec && todayRec.label){
+    let lbl = todayRec.label;
+    if(lbl.length > 26) lbl = lbl.slice(0,25)+"…";
+    ctx.font = "800 34px "+F;
+    const lw = ctx.measureText("🏷️ "+lbl).width + 56;
+    ctx.fillStyle = "rgba(255,255,255,.22)";
+    roundRect(ctx,(W-lw)/2, 408, lw, 60, 30); ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.fillText("🏷️ "+lbl, W/2, 448);
+    cy = 500; ch = 610;
+  }
+
   // carte calendrier blanche
-  const cx = 70, cy = 460, cw = W-140, ch = 640;
+  const cx = 70, cw = W-140;
   ctx.save();
   ctx.shadowColor = "rgba(120,50,0,.35)"; ctx.shadowBlur = 40; ctx.shadowOffsetY = 14;
   ctx.fillStyle = "#fffdf9";
@@ -1960,7 +2285,7 @@ function buildShareCard(){
   ctx.fillStyle = "rgba(255,255,255,.75)";
   ctx.font = "800 30px "+F;
   const who = S.profile ? S.profile.name : "";
-  ctx.fillText((who ? who + " • " : "") + "Flamingo 🦩 garde ta flamme allumée", W/2, H-25);
+  ctx.fillText((who ? who + " • " : "") + "Flamingo 🦩 garde ta flamme allumée", W/2, H-58);
 
   return cv;
 }
@@ -1995,8 +2320,14 @@ if("serviceWorker" in navigator){
 renderAll();
 if(!S.profile) startOnboarding();
 else if(S.pin && !S.camo) openPin("unlock");
+scheduleReminder();
+maybeRemindNow();
+setInterval(maybeRemindNow, 60000);
+document.addEventListener("visibilitychange", ()=>{
+  if(!document.hidden){ scheduleReminder(); maybeRemindNow(); }
+});
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a216d61b0b920248',t:'MTc4NTEwNDg5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
 
 </html>
