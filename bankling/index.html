@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Bankling — Gestionnaire de finances personnel, 100% local et hors-ligne. Wallets personnalisés, graphiques, Wrapped.">
+<meta name="theme-color" id="meta-theme-color" content="#150A28">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bankling">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-512.png">
+<title>Bankling — Mes finances</title>
+<style>
+/* ============================================================
+   LocalBank v4 — thème, design system
+   ============================================================ */
+:root{
+  --bg1:#150A28; --bg2:#1E1038; --surface:#241343; --surface2:#2B1750;
+  --accent:#8B5CF6; --good:#34D399; --bad:#F87171;
+  --text:#EDECF1; --soft:rgba(235,235,245,.62); --faint:rgba(235,235,245,.38);
+  --border:rgba(235,235,245,.10); --border2:rgba(235,235,245,.16);
+  --accent-soft:rgba(139,92,246,.16); --accent-2:rgba(139,92,246,.35);
+  --radius:20px;
+  --shadow:0 18px 40px -22px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.05);
+  --shadow-sm:0 8px 20px -14px rgba(0,0,0,.6);
+}
+body.theme-blue{ --bg1:#06152E; --bg2:#0B2148; --surface:#122B55; --surface2:#163264; --accent:#3B82F6; --good:#34D399; --bad:#F87171; }
+body.theme-green{ --bg1:#04170F; --bg2:#07251A; --surface:#0D3323; --surface2:#114029; --accent:#10B981; --good:#4ADE80; --bad:#F87171; }
+body.theme-orange{ --bg1:#26120A; --bg2:#33180D; --surface:#43200F; --surface2:#4F2613; --accent:#F97316; --good:#34D399; --bad:#F87171; }
+body.theme-red{ --bg1:#260A0B; --bg2:#340E10; --surface:#411316; --surface2:#4C181C; --accent:#EF4444; --good:#34D399; --bad:#F87171; }
+body.theme-rose{ --bg1:#260A1C; --bg2:#330F27; --surface:#421531; --surface2:#4D193B; --accent:#EC4899; --good:#34D399; --bad:#F87171; }
+body.theme-teal{ --bg1:#041D1B; --bg2:#072826; --surface:#0C352F; --surface2:#103F39; --accent:#2DD4BF; --good:#4ADE80; --bad:#F87171; }
+body.theme-bw{ --bg1:#161616; --bg2:#1D1D1D; --surface:#262626; --surface2:#2E2E2E; --accent:#A3A3A3; --good:#E5E5E5; --bad:#F87171; }
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Inter,sans-serif;
+  background:linear-gradient(175deg, var(--bg1) 0%, var(--bg2) 100%) fixed;
+  color:var(--text); min-height:100vh;
+  transition: background .5s ease;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{ background:var(--accent-2); }
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-thumb{ background:var(--border2); border-radius:99px; }
+::-webkit-scrollbar-track{ background:transparent; }
+
+.app-shell{ max-width:520px; margin:0 auto; min-height:100vh; padding:0 16px calc(110px + env(safe-area-inset-bottom)); position:relative; }
+
+/* ---------- Topbar ---------- */
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; justify-content:space-between;
+  padding:14px 2px 12px; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  background:linear-gradient(180deg, color-mix(in srgb, var(--bg1) 88%, transparent) 70%, transparent); }
+.logo{ display:flex; align-items:center; gap:10px; }
+.logo-badge{ width:40px; height:40px; border-radius:13px; display:grid; place-items:center; font-size:21px;
+  background:linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #000)); box-shadow:var(--shadow-sm); }
+.logo h1{ margin:0; font-size:19px; font-weight:800; letter-spacing:-.02em; }
+.logo .sub{ font-size:10.5px; color:var(--soft); margin-top:1px; }
+.top-actions{ display:flex; gap:8px; }
+.icon-btn{ width:40px; height:40px; border-radius:13px; border:1px solid var(--border); background:var(--surface);
+  color:var(--text); display:grid; place-items:center; cursor:pointer; transition:.18s; box-shadow:var(--shadow-sm); }
+.icon-btn:hover{ border-color:var(--border2); transform:translateY(-1px); }
+.icon-btn svg{ width:19px; height:19px; }
+#install-btn{ display:none; }
+
+/* ---------- Cartes / divers ---------- */
+.card{ background:linear-gradient(180deg, var(--surface), var(--surface2)); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; margin-bottom:16px; }
+.card-title{ display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; margin:0 0 12px; }
+.card-title .em{ font-size:17px; }
+.muted{ color:var(--soft); font-size:12.5px; }
+.faint{ color:var(--faint); }
+.tnum{ font-variant-numeric:tabular-nums; }
+
+/* ---------- Chips / selects ---------- */
+.chip-row{ display:flex; gap:8px; overflow-x:auto; padding:2px; scrollbar-width:none; }
+.chip-row::-webkit-scrollbar{ display:none; }
+.chip{ flex:0 0 auto; border:1px solid var(--border); background:var(--surface); color:var(--soft);
+  border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer; transition:.18s; white-space:nowrap; }
+.chip:hover{ border-color:var(--border2); color:var(--text); }
+.chip.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--text); }
+.chip .chip-em{ margin-right:4px; }
+.seg{ display:flex; background:var(--bg1); border:1px solid var(--border); border-radius:14px; padding:4px; gap:4px; }
+.seg button{ flex:1; border:0; background:transparent; color:var(--soft); padding:9px 4px; border-radius:10px;
+  font-size:12.5px; font-weight:700; cursor:pointer; transition:.18s; }
+.seg button.active{ background:var(--accent); color:#fff; box-shadow:0 4px 12px -4px var(--accent-2); }
+.select{ appearance:none; -webkit-appearance:none; width:100%; background:var(--bg1); border:1px solid var(--border);
+  color:var(--text); border-radius:12px; padding:11px 34px 11px 12px; font-size:13.5px; font-weight:600; cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888899' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center; }
+.select:focus{ outline:none; border-color:var(--accent); }
+
+/* ---------- Inputs ---------- */
+.field{ margin-bottom:12px; }
+.inp{ width:100%; background:var(--bg1); border:1px solid var(--border); color:var(--text); border-radius:13px;
+  padding:13px 14px; font-size:15px; transition:.2s; }
+.inp::placeholder{ color:var(--faint); }
+.inp:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+.inp.amount{ font-size:20px; font-weight:800; letter-spacing:.01em; }
+label.lbl{ display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--soft); margin:0 0 6px 4px; }
+
+/* ---------- Boutons ---------- */
+.btn{ border:0; border-radius:14px; padding:13px 16px; font-size:14px; font-weight:800; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:.18s; color:#fff; }
+.btn:active{ transform:scale(.97); }
+.btn-block{ width:100%; }
+.btn-primary{ background:linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 60%, #000)); box-shadow:0 10px 24px -10px var(--accent-2); }
+.btn-good{ background:linear-gradient(135deg,#10B981,#059669); box-shadow:0 10px 24px -10px rgba(16,185,129,.5); }
+.btn-bad{ background:linear-gradient(135deg,#EF4444,#DC2626); box-shadow:0 10px 24px -10px rgba(239,68,68,.5); }
+.btn-ghost{ background:var(--bg1); color:var(--text); border:1px solid var(--border); }
+.btn-ghost:hover{ border-color:var(--border2); }
+.btn-sm{ padding:9px 13px; font-size:12.5px; border-radius:11px; }
+.btn[disabled]{ opacity:.45; pointer-events:none; }
+
+/* ---------- Wallets (accueil) ---------- */
+.wallet-strip{ display:flex; gap:10px; overflow-x:auto; padding:4px 2px 10px; scrollbar-width:none; }
+.wallet-strip::-webkit-scrollbar{ display:none; }
+.wallet-pill{ flex:0 0 auto; min-width:128px; border:1px solid var(--border); background:var(--surface);
+  border-radius:16px; padding:11px 13px; cursor:pointer; transition:.18s; text-align:left; color:var(--text); }
+.wallet-pill:hover{ border-color:var(--border2); transform:translateY(-1px); }
+.wallet-pill.active{ border-color:var(--accent); background:var(--accent-soft); box-shadow:0 8px 20px -12px var(--accent-2); }
+.wallet-pill .wp-em{ font-size:20px; }
+.wallet-pill .wp-name{ font-size:12.5px; font-weight:700; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px; }
+.wallet-pill .wp-bal{ font-size:12px; font-weight:800; color:var(--soft); margin-top:1px; }
+.wallet-pill.active .wp-bal{ color:var(--accent); }
+.wallet-pill.add{ display:grid; place-items:center; min-width:60px; color:var(--soft); font-size:22px; }
+
+/* ---------- Balance card ---------- */
+.balance-card{ position:relative; overflow:hidden; padding:22px 20px 20px; }
+.balance-card::before{ content:""; position:absolute; inset:-40% 30% auto -10%; height:200%; border-radius:50%;
+  background:radial-gradient(closest-side, var(--accent-soft), transparent); pointer-events:none; }
+.balance-head{ display:flex; align-items:center; justify-content:space-between; }
+.balance-title{ font-size:13px; font-weight:700; color:var(--soft); display:flex; gap:8px; align-items:center; }
+.balance-title .big-em{ font-size:22px; }
+.balance-display{ font-size:clamp(34px, 9.5vw, 44px); font-weight:800; letter-spacing:-.03em; margin:10px 0 2px; line-height:1.05; transition:color .3s; }
+.balance-sub{ font-size:12px; color:var(--faint); }
+.mini-stats{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:16px; }
+.mini-stat{ background:color-mix(in srgb, var(--bg1) 65%, transparent); border:1px solid var(--border); border-radius:14px; padding:10px 8px; text-align:center; }
+.mini-stat .v{ font-size:14px; font-weight:800; }
+.mini-stat .k{ font-size:10px; color:var(--soft); font-weight:600; margin-top:2px; }
+
+/* ---------- Catégories chips dans formulaire ---------- */
+.cat-chip{ flex:0 0 auto; display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border);
+  background:var(--bg1); border-radius:999px; padding:7px 12px; font-size:12.5px; font-weight:600; color:var(--soft); cursor:pointer; transition:.18s; }
+.cat-chip.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--text); }
+.cat-chip .x{ color:var(--faint); margin-left:2px; }
+
+/* ---------- Liste transactions ---------- */
+.tx-group{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--faint); padding:14px 6px 8px; }
+.tx-row{ display:flex; align-items:center; gap:12px; padding:11px 6px; border-bottom:1px solid var(--border); animation:fadeUp .25s ease; }
+.tx-row:last-child{ border-bottom:0; }
+.tx-emoji{ width:42px; height:42px; flex:0 0 auto; border-radius:13px; display:grid; place-items:center; font-size:20px;
+  background:var(--bg1); border:1px solid var(--border); }
+.tx-main{ flex:1; min-width:0; }
+.tx-label{ font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tx-meta{ font-size:11px; color:var(--soft); margin-top:2px; display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.tag{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; padding:2px 7px; border-radius:99px; }
+.tag.good{ background:color-mix(in srgb, var(--good) 18%, transparent); color:var(--good); }
+.tag.bad{ background:color-mix(in srgb, var(--bad) 18%, transparent); color:var(--bad); }
+.tag.acc{ background:var(--accent-soft); color:var(--accent); }
+.tx-amount{ text-align:right; }
+.tx-amount .a{ font-size:14px; font-weight:800; }
+.tx-amount .d{ font-size:10.5px; color:var(--faint); margin-top:2px; }
+.tx-del{ flex:0 0 auto; width:34px; height:34px; border-radius:10px; border:1px solid var(--border); background:transparent;
+  color:var(--faint); cursor:pointer; display:grid; place-items:center; transition:.18s; }
+.tx-del:hover{ color:var(--bad); border-color:var(--bad); }
+.tx-del svg{ width:15px; height:15px; }
+.empty{ text-align:center; padding:26px 10px; color:var(--soft); }
+.empty .e{ font-size:36px; display:block; margin-bottom:8px; }
+
+/* ---------- Graphique ---------- */
+.chart-wrap{ position:relative; width:100%; }
+.chart-stats{ display:flex; gap:8px; margin-top:12px; }
+.chart-stat{ flex:1; background:var(--bg1); border:1px solid var(--border); border-radius:12px; padding:8px 10px; }
+.chart-stat .k{ font-size:10px; color:var(--soft); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.chart-stat .v{ font-size:13px; font-weight:800; margin-top:2px; }
+#chart-tip{ position:absolute; pointer-events:none; background:var(--bg1); border:1px solid var(--border2); border-radius:12px;
+  padding:8px 11px; font-size:11.5px; box-shadow:var(--shadow-sm); transform:translate(-50%, calc(-100% - 12px));
+  display:none; z-index:5; white-space:nowrap; max-width:220px; }
+#chart-tip .t{ font-weight:800; margin-bottom:2px; }
+#chart-tip .s{ color:var(--soft); font-size:10.5px; }
+
+/* ---------- Wrapped ---------- */
+.wrap-hero{ padding:22px 20px; }
+.wrap-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.wrap-cell{ background:var(--bg1); border:1px solid var(--border); border-radius:16px; padding:14px; }
+.wrap-cell .k{ font-size:11px; color:var(--soft); font-weight:700; display:flex; gap:6px; align-items:center; }
+.wrap-cell .v{ font-size:19px; font-weight:800; margin-top:6px; letter-spacing:-.02em; }
+.wrap-cell .s{ font-size:10.5px; color:var(--faint); margin-top:3px; }
+.bar-row{ margin-bottom:12px; }
+.bar-top{ display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:5px; }
+.bar-track{ height:9px; background:var(--bg1); border-radius:99px; overflow:hidden; }
+.bar-fill{ height:100%; border-radius:99px; background:linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 50%, #fff)); transition:width .5s ease; }
+.kw-res{ border:1px solid var(--border); border-radius:14px; padding:12px; margin-top:10px; background:var(--bg1); }
+.kw-res .head{ display:flex; justify-content:space-between; align-items:center; font-size:12.5px; font-weight:800; }
+
+/* ---------- Navigation bas ---------- */
+.bottomnav{ position:fixed; left:0; right:0; bottom:0; z-index:40; display:flex; justify-content:center; padding:0 16px calc(14px + env(safe-area-inset-bottom)); pointer-events:none; }
+.nav-inner{ pointer-events:auto; display:flex; gap:4px; width:100%; max-width:488px; background:color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border:1px solid var(--border2); border-radius:20px; padding:6px; box-shadow:0 18px 40px -18px rgba(0,0,0,.7); }
+.nav-btn{ flex:1; border:0; background:transparent; color:var(--soft); border-radius:15px; padding:9px 4px 8px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:700; transition:.2s; }
+.nav-btn svg{ width:21px; height:21px; }
+.nav-btn.active{ color:var(--text); background:var(--accent-soft); }
+.nav-btn.active svg{ color:var(--accent); }
+
+/* ---------- Drawer ---------- */
+.drawer{ position:fixed; top:0; left:0; bottom:0; width:305px; max-width:88vw; background:var(--surface); border-right:1px solid var(--border2);
+  z-index:74; transform:translateX(-105%); transition:transform .3s cubic-bezier(.32,.72,.28,1); overflow-y:auto; padding:20px 18px calc(30px + env(safe-area-inset-bottom)); box-shadow:24px 0 60px -30px rgba(0,0,0,.8); }
+.drawer.open{ transform:translateX(0); }
+.drawer h3{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:var(--faint); margin:22px 4px 10px; }
+.drawer h3:first-child{ margin-top:0; }
+.dw-wallet{ display:flex; align-items:center; gap:11px; width:100%; border:1px solid var(--border); background:var(--bg1);
+  border-radius:14px; padding:11px 12px; margin-bottom:8px; cursor:pointer; color:var(--text); transition:.18s; text-align:left; }
+.dw-wallet:hover{ border-color:var(--border2); }
+.dw-wallet.active{ border-color:var(--accent); background:var(--accent-soft); }
+.dw-wallet .em{ font-size:20px; }
+.dw-wallet .nm{ font-size:13.5px; font-weight:700; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dw-wallet .bl{ font-size:11.5px; font-weight:700; color:var(--soft); }
+.dw-wallet .gear{ color:var(--faint); font-size:14px; }
+.dw-btn{ display:flex; align-items:center; gap:10px; width:100%; border:1px solid var(--border); background:var(--bg1); color:var(--text);
+  border-radius:14px; padding:12px 13px; margin-bottom:8px; cursor:pointer; font-size:13px; font-weight:700; transition:.18s; }
+.dw-btn:hover{ border-color:var(--accent); }
+.dw-btn svg{ width:17px; height:17px; color:var(--accent); flex:0 0 auto; }
+.dw-btn.danger{ color:var(--bad); }
+.dw-btn.danger svg{ color:var(--bad); }
+.drawer-close{ position:sticky; top:0; float:right; }
+
+/* ---------- Overlay / Modales ---------- */
+.overlay{ position:fixed; inset:0; background:rgba(5,3,12,.66); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  z-index:70; opacity:0; transition:opacity .25s; pointer-events:none; }
+.overlay.show{ opacity:1; pointer-events:auto; }
+.modal{ position:fixed; left:50%; bottom:0; transform:translate(-50%, 105%); z-index:80; width:100%; max-width:520px; transition:transform .32s cubic-bezier(.32,.72,.28,1); }
+.modal.show{ transform:translate(-50%, 0); }
+.modal-in{ background:linear-gradient(180deg, var(--surface2), var(--surface)); border:1px solid var(--border2); border-bottom:0;
+  border-radius:26px 26px 0 0; padding:20px 20px calc(22px + env(safe-area-inset-bottom)); max-height:88vh; overflow-y:auto; }
+.modal-grab{ width:44px; height:4px; border-radius:99px; background:var(--border2); margin:2px auto 14px; }
+.modal h2{ margin:0 0 4px; font-size:18px; font-weight:800; }
+.modal .sub{ color:var(--soft); font-size:12.5px; margin:0 0 16px; }
+.close-x{ position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:11px; border:1px solid var(--border);
+  background:var(--bg1); color:var(--soft); cursor:pointer; font-size:14px; }
+
+/* ---------- Toasts ---------- */
+#toast-root{ position:fixed; left:0; right:0; bottom:calc(96px + env(safe-area-inset-bottom)); z-index:90; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; }
+.toast{ background:var(--surface2); border:1px solid var(--border2); color:var(--text); border-radius:14px; padding:11px 18px;
+  font-size:13px; font-weight:700; box-shadow:var(--shadow-sm); animation:toastIn .3s ease; max-width:88vw; text-align:center; }
+.toast.out{ animation:toastOut .3s ease forwards; }
+
+/* ---------- Divers ---------- */
+.emoji-grid{ display:grid; grid-template-columns:repeat(8,1fr); gap:6px; }
+.emoji-cell{ aspect-ratio:1; border:1px solid var(--border); background:var(--bg1); border-radius:11px; font-size:19px; cursor:pointer;
+  display:grid; place-items:center; transition:.15s; }
+.emoji-cell:hover{ border-color:var(--border2); transform:scale(1.08); }
+.emoji-cell.active{ border-color:var(--accent); background:var(--accent-soft); box-shadow:0 0 0 2px var(--accent-soft); }
+.mig-card{ border:1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:14px; background:var(--bg1); }
+.mig-old{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.theme-swatch{ display:flex; align-items:center; gap:10px; width:100%; border:1px solid var(--border); background:var(--bg1); border-radius:14px;
+  padding:10px 12px; cursor:pointer; color:var(--text); font-weight:700; font-size:13px; transition:.18s; margin-bottom:8px; text-align:left; }
+.theme-swatch:hover{ border-color:var(--border2); }
+.theme-swatch.active{ border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft); }
+.ts-dot{ width:26px; height:26px; border-radius:9px; flex:0 0 auto; }
+.range-label{ font-size:13px; font-weight:800; margin:2px 0 8px; }
+.view-anim{ animation:fadeUp .3s ease; }
+.backdrop-blur{ backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+@keyframes toastIn{ from{ opacity:0; transform:translateY(12px) scale(.95); } to{ opacity:1; transform:none; } }
+@keyframes toastOut{ to{ opacity:0; transform:translateY(12px) scale(.95); } }
+.bump{ animation:bump .35s ease; }
+@keyframes bump{ 0%{ transform:scale(1);} 40%{ transform:scale(1.045);} 100%{ transform:scale(1);} }
+</style>
+</head>
+<body class="theme-purple">
+<div class="app-shell">
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-badge">🪴</div>
+      <div>
+        <h1>Bankling</h1>
+        <div class="sub" id="topbar-sub">Mes finances — local &amp; privé</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="install-btn" class="icon-btn" onclick="installApp()" title="Installer l'appli" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+      </button>
+      <button class="icon-btn" onclick="openThemes()" title="Thème">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M12 2a10 10 0 100 20 2.5 2.5 0 000-5 2.5 2.5 0 010-5h2a4 4 0 000-8h-2z"/></svg>
+      </button>
+      <button class="icon-btn" onclick="openDrawer()" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<nav class="bottomnav">
+  <div class="nav-inner" id="bottom-nav">
+    <button class="nav-btn" data-view="home" onclick="go('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+      Portefeuille
+    </button>
+    <button class="nav-btn" data-view="chart" onclick="go('chart')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+      Graphique
+    </button>
+    <button class="nav-btn" data-view="wrapped" onclick="go('wrapped')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2.5"/><path d="M12 8v13M3 12h9M3 16h9M12 12h9M12 16h9M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      Wrapped
+    </button>
+    <button class="nav-btn" data-view="history" onclick="go('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v3l2 2"/></svg>
+      Historique
+    </button>
+  </div>
+</nav>
+
+<div id="drawer" class="drawer">
+  <div class="drawer-close" style="display:flex; justify-content:flex-end; padding-bottom:4px;">
+    <button class="close-x" style="position:static" onclick="closeDrawer()">✕</button>
+  </div>
+  <div id="drawer-content"></div>
+</div>
+<div id="overlay" class="overlay" onclick="closeAll()"></div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   LocalBank v4.0 — app 100% locale (PWA, offline)
+   ============================================================ */
+
+/* ---------- Constantes ---------- */
+const STORAGE_KEY = 'bankling_v4';
+const MIGRATE_STORAGE_KEYS = ['localbank_v4'];
+const LEGACY_KEYS = ['personalFinanceV3_2', 'personalFinanceV3', 'personalFinanceV3_1'];
+const LEGACY_NAMES = { card:'Carte Bleue', cash:'Espèces', paypal:'PayPal' };
+const LEGACY_EMOJI = { card:'💳', cash:'💵', paypal:'🅿️' };
+const THEME_ORDER = ['purple','blue','green','orange','red','rose','teal','bw'];
+const THEME_LABELS = { purple:'Violet', blue:'Bleu', green:'Vert', orange:'Orange', red:'Rouge', rose:'Rose', teal:'Sarcelle', bw:'Noir & blanc' };
+const WALLET_EMOJIS = ['💳','💵','💰','🪙','🏦','📱','🅿️','🐷','👛','👜','🏠','🧾','💶','💷','💴','💸','🧧','🏧','📈','🔑','⭐','🎁','🍀','🌊','🔥'];
+const DEFAULT_CATEGORIES = [
+  { id:'cat-transport', name:'Transport', emoji:'🚌' },
+  { id:'cat-food', name:'Alimentation', emoji:'🛒' },
+  { id:'cat-resto', name:'Restaurants', emoji:'🍔' },
+  { id:'cat-home', name:'Logement', emoji:'🏠' },
+  { id:'cat-fun', name:'Loisirs', emoji:'🎮' },
+  { id:'cat-health', name:'Santé', emoji:'💊' },
+  { id:'cat-subs', name:'Abonnements', emoji:'📱' },
+  { id:'cat-salary', name:'Salaire & revenus', emoji:'💼' },
+  { id:'cat-other', name:'Autre', emoji:'✨' }
+];
+const MONTH_PRESETS = [ {id:'7d',label:'7 jours'}, {id:'1m',label:'1 mois'}, {id:'3m',label:'3 mois'}, {id:'6m',label:'6 mois'}, {id:'1y',label:'1 an'}, {id:'all',label:'Tout'}, {id:'custom',label:'Personnalisé'} ];
+const TX_PRESETS = [ {id:'10',label:'10 tx'}, {id:'15',label:'15 tx'}, {id:'20',label:'20 tx'}, {id:'50',label:'50 tx'}, {id:'100',label:'100 tx'}, {id:'all',label:'Tout'}, {id:'custom',label:'Perso'} ];
+
+/*__PURE_START__*/
+/* ---------- Fonctions pures (testables) ---------- */
+function norm(s){
+  return String(s ?? '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/œ/g,'oe').replace(/æ/g,'ae');
+}
+function lev(a, b){
+  const m = a.length, n = b.length;
+  if (Math.abs(m-n) > 3) return 99;
+  const dp = Array.from({length:m+1}, (_,i)=>[i, ...Array(n).fill(0)]);
+  for (let j=0;j<=n;j++) dp[0][j]=j;
+  for (let i=1;i<=m;i++) for (let j=1;j<=n;j++)
+    dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1] + (a[i-1]===b[j-1]?0:1));
+  return dp[m][n];
+}
+/* Recherche "bus" → "BUS", "Bus de nuit", "busticket", "BZX 12" (typographie tolérée),
+   "S.N.C.F" → "sncf"… */
+function fuzzyMatch(label, keyword){
+  const L = norm(label), K = norm(keyword).trim();
+  if (!K) return false;
+  if (L.includes(K)) return true;
+  const glue = L.replace(/[^a-z0-9]/g, '');
+  if (glue.includes(K)) return true;
+  const toks = L.split(/[^a-z0-9]+/).filter(t => t.length > 0);
+  const thr = K.length <= 3 ? 1 : (K.length <= 7 ? 2 : 3);
+  return toks.some(t => Math.abs(t.length - K.length) <= thr && lev(t, K) <= thr);
+}
+function parseAmount(str){
+  if (typeof str === 'number') return str;
+  const s = String(str ?? '').replace(/\s|\u00a0|€/g,'').replace(',', '.');
+  const v = parseFloat(s);
+  return isNaN(v) ? NaN : v;
+}
+function uid(prefix){ return (prefix||'') + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function fmtEUR(n){ return new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR' }).format(n); }
+function fmtCompact(n){ return new Intl.NumberFormat('fr-FR', { notation:'compact', maximumFractionDigits:1 }).format(n) + ' €'; }
+function fmtSigned(n){ return (n > 0 ? '+' : '−') + fmtEUR(Math.abs(n)); }
+function fmtDate(ts){ return new Date(ts).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }); }
+function fmtDayShort(ts){ return new Date(ts).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' }); }
+function fmtTime(ts){ return new Date(ts).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' }); }
+function fmtDayFull(ts){
+  const d = new Date(ts), now = new Date();
+  const k = (t) => new Date(t).toDateString();
+  if (k(d) === k(now)) return "Aujourd'hui";
+  const y = new Date(now); y.setDate(y.getDate()-1);
+  if (k(d) === k(y)) return 'Hier';
+  return d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
+}
+function esc(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function isLegacyFormat(d){ return !!d && typeof d === 'object' && !!d.accounts && !d.wallets && typeof d.accounts === 'object'; }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+/* Series cumulées pour le graphique.
+   txns: transactions triées chronologiquement (toutes celles du périmètre).
+   mode 'date': {mode:'date', from, to} → points dans [from,to], balance de départ = somme avant from.
+   mode 'tx'  : {mode:'tx', count} → les `count` dernières (ou toutes), balance de départ = somme avant. */
+function computeSeries(txns, opts){
+  const pts = [];
+  if (!txns.length) return { points:pts, startBal:0, endBal:0 };
+  let startBal = 0, filtered;
+  if (opts.mode === 'tx'){
+    const count = (opts.count === 'all' || opts.count == null) ? txns.length : Number(opts.count);
+    const n = Math.max(0, Math.min(count, txns.length));
+    filtered = txns.slice(-n);
+    startBal = txns.slice(0, txns.length - n).reduce((s,t)=>s+t.amount, 0);
+  } else {
+    const from = opts.from ?? -Infinity, to = opts.to ?? Infinity;
+    filtered = txns.filter(t => t.timestamp >= from && t.timestamp <= to);
+    startBal = txns.filter(t => t.timestamp < from).reduce((s,t)=>s+t.amount, 0);
+  }
+  let y = startBal;
+  filtered.forEach(t => { y += t.amount; pts.push({ x: t.timestamp, i: pts.length, t, y }); });
+  return { points:pts, startBal, endBal: y };
+}
+
+/* Wrapped : statistiques sur une période */
+function buildWrapped(txns, from, to){
+  const list = txns.filter(t => t.timestamp >= from && t.timestamp <= to);
+  const spent = list.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0);
+  const received = list.filter(t=>t.amount>0).reduce((s,t)=>s+t.amount,0);
+  const nSpent = list.filter(t=>t.amount<0).length, nRecv = list.filter(t=>t.amount>0).length;
+  const days = Math.max(1, Math.round((to-from)/86400000)+1);
+  const biggestExp = list.reduce((b,t)=> t.amount < (b?b.amount:0) ? t : b, null);
+  const biggestInc = list.reduce((b,t)=> t.amount > (b?b.amount:0) ? t : b, null);
+  const byDay = {};
+  list.filter(t=>t.amount<0).forEach(t=>{
+    const k = new Date(t.timestamp).toDateString();
+    byDay[k] = (byDay[k]||0) + t.amount;
+  });
+  let topDay = null;
+  Object.entries(byDay).forEach(([k,v])=>{ if(!topDay || v < topDay.total) topDay = { date:k, total:v }; });
+  const byCat = {};
+  list.filter(t=>t.amount<0).forEach(t=>{
+    const c = t.category || 'cat-other';
+    byCat[c] = byCat[c] || { total:0, count:0 };
+    byCat[c].total += t.amount; byCat[c].count++;
+  });
+  const catRank = Object.entries(byCat)
+    .map(([catId, v]) => ({ catId, total: v.total, count: v.count }))
+    .sort((a,b)=> a.total - b.total);
+  const txs = [...list].sort((a,b)=> a.timestamp - b.timestamp);
+  return { list, total: received+spent, spent: -spent, received, n:list.length, nSpent, nRecv, days,
+    avgPerDay: (-spent)/days, avgTxn: nSpent ? (-spent)/nSpent : 0,
+    biggestExp, biggestInc, topDay, catRank: catRank.slice(0,6) };
+}
+function searchKeyword(txns, kw, catName){
+  const K = norm(kw).trim();
+  if (!K) return null;
+  const resolve = typeof catName === 'function' ? catName : (c => (c || ''));
+  const matches = txns.filter(t =>
+    fuzzyMatch(t.label || '', K) || fuzzyMatch(resolve(t.category) || '', K)
+  ).sort((a,b)=> a.amount - b.amount);
+  return { matches, total: matches.reduce((s,t)=>s+t.amount,0), spent: -matches.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0), count: matches.length };
+}
+/*__PURE_END__*/
+
+/* ---------- État global ---------- */
+let appState = null;
+let view = 'home';
+let chartData = null;         // données du graphique affiché
+let wrappedData = null;       // dernière période du wrapped
+let pendingLegacy = null;     // données ancien format en attente de mapping
+let chartSettings = { mode:'date', interval:'1m', scope:'wallet', txCount:'20', customFrom:'', customTo:'', customN:'', ser:'all' };
+let wrappedSettings = { interval:'6m', scope:'wallet', customFrom:'', customTo:'' };
+let histSettings = { scope:'wallet', type:'all', cat:'all', q:'' };
+let editingCategoryId = null;
+let deferredPrompt = null;
+
+function defState(){
+  return { version:4, currentWallet:null, colorTheme:'purple', categories:clone(DEFAULT_CATEGORIES), wallets:{},
+    ui:{ chart:clone(chartSettings), wrapped:clone(wrappedSettings), hist:clone(histSettings) } };
+}
+function catNameOf(catId){
+  const c = (appState?.categories || []).find(c=>c.id===catId);
+  return c ? c.name : (catId==='cat-other' ? 'Autre' : '');
+}
+function catEmojiOf(catId){
+  const c = (appState?.categories || []).find(c=>c.id===catId);
+  return c ? c.emoji : '✨';
+}
+function walletList(){ return Object.values(appState.wallets); }
+function current(){ return appState.wallets[appState.currentWallet] || null; }
+function allTxns(){
+  const out = [];
+  walletList().forEach(w => w.transactions.forEach(t => out.push({ ...t, walletId:w.id, walletEmoji:w.emoji, walletName:w.name })));
+  return out.sort((a,b)=> a.timestamp - b.timestamp);
+}
+function normalizeState(d){
+  const base = defState();
+  const s = { ...base, ...d };
+  s.version = 4;
+  s.categories = Array.isArray(s.categories) && s.categories.length ? s.categories : clone(DEFAULT_CATEGORIES);
+  s.wallets = s.wallets || {};
+  const ws = Object.values(s.wallets);
+  if (!s.currentWallet || !s.wallets[s.currentWallet]) s.currentWallet = ws.length ? ws[0].id : null;
+  s.colorTheme = THEMES()[s.colorTheme] ? s.colorTheme : 'purple';
+  s.ui = { chart:{...base.ui.chart, ...(s.ui&&s.ui.chart)}, wrapped:{...base.ui.wrapped, ...(s.ui&&s.ui.wrapped)}, hist:{...base.ui.hist, ...(s.ui&&s.ui.hist)} };
+  return s;
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   Stockage sécurisé (localStorage avec repli mémoire pour preview)
+   ============================================================ */
+let MEM = {};
+function sGet(k){ try { return localStorage.getItem(k); } catch(e){ return Object.prototype.hasOwnProperty.call(MEM,k) ? MEM[k] : null; } }
+function sSet(k,v){ try { localStorage.setItem(k,v); } catch(e){ MEM[k]=v; } }
+function sDel(k){ try { localStorage.removeItem(k); } catch(e){ delete MEM[k]; } }
+function saveData(){ if(appState) sSet(STORAGE_KEY, JSON.stringify(appState)); }
+function loadData(){
+  try {
+    const raw = sGet(STORAGE_KEY);
+    if (raw){ appState = normalizeState(JSON.parse(raw)); }
+  } catch(e){ console.warn('Corruption stockage v4, on repart à zéro', e); appState = null; }
+  // Migration : ancienne clé v4 (localbank_v4) → nouvelle clé (bankling_v4)
+  if (!appState){
+    for (const k of MIGRATE_STORAGE_KEYS){
+      try {
+        const raw = sGet(k);
+        if (raw){ appState = normalizeState(JSON.parse(raw)); sSet(STORAGE_KEY, raw); break; }
+      } catch(e){}
+    }
+  }
+  chartSettings = appState ? appState.ui.chart : chartSettings;
+  wrappedSettings = appState && appState.ui.wrapped ? appState.ui.wrapped : wrappedSettings;
+  histSettings = appState && appState.ui.hist ? appState.ui.hist : histSettings;
+  if (!appState){
+    // Migration automatique depuis une ancienne version en localStorage
+    for (const k of LEGACY_KEYS){
+      try {
+        const raw = sGet(k);
+        if (raw){ const d = JSON.parse(raw); if (isLegacyFormat(d)){ pendingLegacy = d; break; } }
+      } catch(e){}
+    }
+    if (pendingLegacy){
+      appState = normalizeState(defState());
+      openLegacyImport({ fromStorage:true });
+    } else {
+      appState = normalizeState(defState());
+    }
+  }
+  applyTheme();
+  if (!walletList().length && !pendingLegacy) openOnboarding();
+  else renderAll();
+}
+
+/* ============================================================
+   Thèmes
+   ============================================================ */
+const THEME_CONFIG = {
+  purple:{ bg1:'#150A28', bg2:'#1E1038', surface:'#241343', surface2:'#2B1750', accent:'#8B5CF6', good:'#34D399', bad:'#F87171' },
+  blue:{ bg1:'#06152E', bg2:'#0B2148', surface:'#122B55', surface2:'#163264', accent:'#3B82F6', good:'#34D399', bad:'#F87171' },
+  green:{ bg1:'#04170F', bg2:'#07251A', surface:'#0D3323', surface2:'#114029', accent:'#10B981', good:'#4ADE80', bad:'#F87171' },
+  orange:{ bg1:'#26120A', bg2:'#33180D', surface:'#43200F', surface2:'#4F2613', accent:'#F97316', good:'#34D399', bad:'#F87171' },
+  red:{ bg1:'#260A0B', bg2:'#340E10', surface:'#411316', surface2:'#4C181C', accent:'#EF4444', good:'#34D399', bad:'#F87171' },
+  rose:{ bg1:'#260A1C', bg2:'#330F27', surface:'#421531', surface2:'#4D193B', accent:'#EC4899', good:'#34D399', bad:'#F87171' },
+  teal:{ bg1:'#041D1B', bg2:'#072826', surface:'#0C352F', surface2:'#103F39', accent:'#2DD4BF', good:'#4ADE80', bad:'#F87171' },
+  bw:{ bg1:'#161616', bg2:'#1D1D1D', surface:'#262626', surface2:'#2E2E2E', accent:'#A3A3A3', good:'#E5E5E5', bad:'#F87171' }
+};
+function THEMES(){ return THEME_CONFIG; }
+function applyTheme(){
+  const t = THEME_CONFIG[appState?.colorTheme || 'purple'] || THEME_CONFIG.purple;
+  document.body.className = 'theme-' + (appState?.colorTheme || 'purple');
+  const r = document.documentElement.style;
+  r.setProperty('--bg1', t.bg1); r.setProperty('--bg2', t.bg2);
+  r.setProperty('--surface', t.surface); r.setProperty('--surface2', t.surface2);
+  r.setProperty('--accent', t.accent); r.setProperty('--good', t.good); r.setProperty('--bad', t.bad);
+  r.setProperty('--accent-soft', t.accent + '26');
+  r.setProperty('--accent-2', t.accent + '59');
+  document.getElementById('meta-theme-color').setAttribute('content', t.bg1);
+}
+
+/* ============================================================
+   Outils UI : toasts, modales, drawer
+   ============================================================ */
+function toast(msg, ms){
+  const root = document.getElementById('toast-root');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  root.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(), 320); }, ms || 2200);
+}
+function showModal(html, opts = {}){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = ''; // remise à zéro immédiate (pas de timer qui pourrait effacer la nouvelle)
+  const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'modal-overlay';
+  ov.onclick = (e)=>{ if (e.target === ov && opts.dismissible !== false) closeModal(); };
+  const md = document.createElement('div'); md.className = 'modal'; md.id = 'modal-box';
+  md.innerHTML = `<div class="modal-in">${opts.noGrab ? '' : '<div class="modal-grab"></div>'}${html}</div>`;
+  root.appendChild(ov); root.appendChild(md);
+  requestAnimationFrame(()=>{ ov.classList.add('show'); md.classList.add('show'); });
+  return md;
+}
+function closeModal(){
+  const root = document.getElementById('modal-root');
+  const ov = document.getElementById('modal-overlay'), md = document.getElementById('modal-box');
+  if (!ov && !md) return;
+  if (md) md.classList.remove('show');
+  if (ov) ov.classList.remove('show');
+  setTimeout(()=>{
+    // on nettoie uniquement si la modale fermée est encore celle affichée
+    if (document.getElementById('modal-box') === md) root.innerHTML = '';
+  }, 280);
+}
+function confirmModal(title, text, okLabel, onOk, danger = true){
+  showModal(`<button class="close-x" onclick="closeModal()">✕</button>
+    <h2>${esc(title)}</h2><p class="sub">${text}</p>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal()">Annuler</button>
+      <button class="btn ${danger?'btn-bad':'btn-primary'}" style="flex:1" id="confirm-ok-btn">${esc(okLabel)}</button>
+    </div>`, { dismissible:true });
+  document.getElementById('confirm-ok-btn').onclick = ()=>{ closeModal(); onOk(); };
+}
+function openDrawer(){ document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('show'); renderDrawer(); }
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+function closeAll(){ closeDrawer(); closeThemeModal(); }
+function go(v){
+  view = v;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  window.scrollTo({ top:0 });
+  renderView(); closeDrawer();
+}
+
+/* ============================================================
+   Rendu principal
+   ============================================================ */
+function renderAll(){ renderTopbar(); go(view); }
+function renderTopbar(){
+  const c = current();
+  document.getElementById('topbar-sub').textContent = c ? `${c.emoji} ${c.name} — local & privé` : 'Mes finances — local & privé';
+}
+function renderView(){
+  const v = document.getElementById('view');
+  if (view === 'home') v.innerHTML = renderHome();
+  else if (view === 'chart') { v.innerHTML = renderChartView(); requestAnimationFrame(()=>drawChart()); }
+  else if (view === 'wrapped') { v.innerHTML = renderWrappedView(); requestAnimationFrame(()=>computeWrapped()); }
+  else if (view === 'history'){ v.innerHTML = renderHistoryView(); requestAnimationFrame(()=>renderHistList()); }
+  renderTopbar();
+}
+
+/* ---------- VUE ACCUEIL ---------- */
+function monthFilter(t){
+  const now = new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  return t.timestamp >= from;
+}
+function renderHome(){
+  const c = current();
+  if (!c) return '<div class="card"><div class="empty"><span class="e">👀</span>Aucun wallet. Crée ton premier portefeuille !</div></div>';
+  const now = new Date();
+  const mStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const monthTx = c.transactions.filter(t => t.timestamp >= mStart);
+  const spentMonth = -monthTx.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0);
+  const gotMonth = monthTx.filter(t=>t.amount>0).reduce((s,t)=>s+t.amount,0);
+  const totalAll = walletList().reduce((s,w)=>s+w.balance,0);
+  const recent = [...c.transactions].sort((a,b)=>b.timestamp-a.timestamp).slice(0,4);
+
+  const strip = walletList().map(w => `
+    <button class="wallet-pill ${w.id===appState.currentWallet?'active':''}" onclick="switchWallet('${w.id}')">
+      <span class="wp-em">${w.emoji}</span>
+      <div class="wp-name">${esc(w.name)}</div>
+      <div class="wp-bal tnum">${fmtEUR(w.balance)}</div>
+    </button>`).join('') +
+    `<button class="wallet-pill add" onclick="openWalletEditor()" title="Nouveau wallet">＋</button>`;
+
+  return `
+  <div class="wallet-strip">${strip}</div>
+  <div class="card balance-card">
+    <div class="balance-head">
+      <div class="balance-title"><span class="big-em">${c.emoji}</span> ${esc(c.name)}</div>
+      <button class="icon-btn" style="width:34px;height:34px;border-radius:10px" onclick="openWalletManager()" title="Gérer les wallets">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 110-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34h.09a1.7 1.7 0 001-1.55V3a2 2 0 114 0v.09a1.7 1.7 0 001 1.55h.09a1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87v.09a1.7 1.7 0 001.55 1H21a2 2 0 110 4h-.09a1.7 1.7 0 00-1.55 1z"/></svg>
+      </button>
+    </div>
+    <div class="balance-display tnum" id="balance-big" style="color:${c.balance>=0?'var(--good)':'var(--bad)'}">${fmtEUR(c.balance)}</div>
+    <div class="balance-sub">Solde ${appState.colorTheme ? 'actuel' : ''} · ${c.transactions.length} opération${c.transactions.length>1?'s':''}</div>
+    <div class="mini-stats">
+      <div class="mini-stat"><div class="v tnum" style="color:var(--bad)">−${fmtEUR(spentMonth)}</div><div class="k">Dépensé ce mois</div></div>
+      <div class="mini-stat"><div class="v tnum" style="color:var(--good)">+${fmtEUR(gotMonth)}</div><div class="k">Reçu ce mois</div></div>
+      <div class="mini-stat"><div class="v tnum" style="color:var(--accent)">${fmtEUR(totalAll)}</div><div class="k">Total wallets</div></div>
+    </div>
+  </div>
+  ${renderOpForm()}
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h2 class="card-title" style="margin:0"><span class="em">🧾</span> Dernières opérations</h2>
+      <button class="btn btn-ghost btn-sm" onclick="go('history')">Tout voir →</button>
+    </div>
+    ${recent.length ? recent.map(t=>txRow(t,false)).join('') : '<div class="empty"><span class="e">🌱</span>Aucune opération pour l\'instant.<br><span class="faint">Ajoute ton premier montant ci-dessus !</span></div>'}
+  </div>`;
+}
+function switchWallet(id){
+  if (!appState.wallets[id]) return;
+  appState.currentWallet = id; saveData(); renderAll();
+  const b = document.getElementById('balance-big');
+  if (b){ b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   Formulaire d'opération (dans l'onglet du wallet)
+   ============================================================ */
+function renderOpForm(){
+  const cats = appState.categories;
+  const chips = cats.map(c => `
+    <button class="cat-chip" data-cat="${c.id}" onclick="pickCat('${c.id}')"><span>${c.emoji}</span>${esc(c.name)}</button>`).join('');
+  return `
+  <div class="card">
+    <h2 class="card-title"><span class="em">✍️</span> Nouvelle opération — <span id="op-wallet-name">${current()? current().emoji + ' ' + esc(current().name) : ''}</span></h2>
+    <div class="seg" style="margin-bottom:12px" id="op-mode-seg">
+      <button type="button" data-mode="add" class="active" onclick="setOpMode('add')">＋ Dépôt</button>
+      <button type="button" data-mode="subtract" onclick="setOpMode('subtract')">− Retrait</button>
+      <button type="button" data-mode="set" onclick="setOpMode('set')">＝ Ajuster</button>
+    </div>
+    <div class="field">
+      <input id="op-amount" class="inp amount tnum" inputmode="decimal" placeholder="0,00 €" autocomplete="off">
+    </div>
+    <div class="field">
+      <input id="op-label" class="inp" placeholder="Intitulé (ex : bus 12, courses…)" autocomplete="off" maxlength="80">
+    </div>
+    <div class="field">
+      <label class="lbl">Catégorie</label>
+      <div class="chip-row" id="cat-chips">${chips}<button class="cat-chip" onclick="openCategoryEditor()" title="Nouvelle catégorie">＋</button></div>
+    </div>
+    <button class="btn btn-primary btn-block" style="padding:15px;font-size:15px;margin-top:6px" onclick="submitOp()">✓ Valider l'opération</button>
+  </div>`;
+}
+let opMode = 'add';
+let opCat = null;
+let lastCatChip = null;
+function setOpMode(m){
+  opMode = m;
+  document.querySelectorAll('#op-mode-seg button').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+}
+function pickCat(id){ opCat = (opCat === id) ? null : id; refreshCatChips(); }
+function refreshCatChips(){
+  document.querySelectorAll('#cat-chips .cat-chip[data-cat]').forEach(el => el.classList.toggle('active', el.dataset.cat === opCat));
+}
+function submitOp(){
+  const c = current(); if (!c) return;
+  const val = parseAmount(document.getElementById('op-amount').value);
+  const label = document.getElementById('op-label').value.trim();
+  if (isNaN(val) || val <= 0){ toast('⚠️ Entre un montant valide (supérieur à 0)'); return; }
+  let diff = 0, type = '';
+  if (opMode === 'add'){ diff = val; type = 'Dépôt'; }
+  else if (opMode === 'subtract'){ diff = -val; type = 'Retrait'; }
+  else { diff = val - c.balance; type = 'Ajustement'; }
+  if (opMode === 'set' && Math.abs(diff) < 0.005){ toast('ℹ️ Le solde est déjà à ce montant'); return; }
+  c.transactions.push({ id: uid('tx'), amount: Math.round(diff*100)/100, type, label, category: opCat, timestamp: Date.now() });
+  c.balance = Math.round((c.balance + diff)*100)/100;
+  opCat = null;
+  document.getElementById('op-amount').value = '';
+  document.getElementById('op-label').value = '';
+  saveData(); renderAll();
+  toast(opMode === 'subtract' ? '🧾 Retrait enregistré' : opMode === 'add' ? '🪙 Dépôt enregistré' : '⚖️ Solde ajusté');
+}
+
+/* ============================================================
+   Catégories (CRUD)
+   ============================================================ */
+function openCategoryEditor(){
+  showModal(`<h2>Nouvelle catégorie</h2><p class="sub">Elle apparaîtra dans le formulaire d'opération.</p>
+    <div class="field"><input id="cat-name" class="inp" placeholder="Nom (ex : École, Animaux…)" maxlength="30"></div>
+    <div id="cat-emoji-area"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="createCategory()">Ajouter la catégorie</button>`);
+  renderEmojiPicker('cat-emoji-area', 'cat-new-emoji', null, true);
+}
+function createCategory(){
+  const name = document.getElementById('cat-name').value.trim();
+  if (!name){ toast('⚠️ Donne un nom à la catégorie'); return; }
+  const emoji = window.__pickedEmoji || '🏷️';
+  appState.categories.push({ id: uid('cat-'), name, emoji });
+  saveData(); closeModal(); renderAll();
+  toast(`🏷️ Catégorie « ${name} » créée`);
+}
+function deleteCategory(id){
+  const c = appState.categories.find(c=>c.id===id); if (!c) return;
+  confirmModal('Supprimer la catégorie ?', `« ${esc(c.name)} » sera retirée. Les opérations déjà classées dedans passeront en « Autre ».`, 'Supprimer', ()=>{
+    appState.categories = appState.categories.filter(x=>x.id!==id);
+    walletList().forEach(w => w.transactions.forEach(t => { if (t.category===id) t.category='cat-other'; }));
+    saveData(); renderAll(); toast('🗑️ Catégorie supprimée');
+  });
+}
+
+/* ============================================================
+   Wallets (CRUD)
+   ============================================================ */
+function walletEditorHTML(w, isNew){
+  const nameVal = w ? esc(w.name) : '';
+  const emoji = w ? w.emoji : '💳';
+  return `<button class="close-x" onclick="closeModal()">✕</button>
+  <h2>${isNew ? 'Nouveau wallet' : 'Modifier le wallet'}</h2>
+  <p class="sub">Nom + emoji, comme tu veux. <span class="faint">(pas de tri imposé ici !)</span></p>
+  <div class="field"><input id="we-name" class="inp" placeholder="Nom du wallet (ex : Mon PayPal, Livret A…)" maxlength="30" value="${nameVal}"></div>
+  <label class="lbl">Emoji</label>
+  <div id="we-emoji-area"></div>
+  <div class="field" style="margin-top:12px"><input id="we-emoji-free" class="inp" placeholder="…ou colle n'importe quel emoji ici" maxlength="4" value="${w ? esc(w.emoji) : ''}"></div>
+  <button class="btn btn-primary btn-block" style="margin-top:10px" onclick="saveWallet(${isNew?'null':`'${w.id}'`})">${isNew ? 'Créer le wallet' : 'Enregistrer'}</button>`;
+}
+function openWalletEditor(){
+  showModal(walletEditorHTML(null, true));
+  renderEmojiPicker('we-emoji-area', 'we-emoji-free', '💳', false);
+}
+function editWallet(id){
+  const w = appState.wallets[id]; if (!w) return;
+  showModal(walletEditorHTML(w, false));
+  renderEmojiPicker('we-emoji-area', 'we-emoji-free', w.emoji, false);
+}
+function renderEmojiPicker(containerId, freeInputId, initial, labelExclude){
+  const area = document.getElementById(containerId); if (!area) return;
+  window.__pickedEmoji = initial || null;
+  area.innerHTML = `<div class="emoji-grid">${WALLET_EMOJIS.map(e =>
+    `<button type="button" class="emoji-cell ${e===initial?'active':''}" data-e="${e}" onclick="pickEmoji(this,'${e}','${freeInputId}')">${e}</button>`).join('')}</div>`;
+}
+function pickEmoji(el, e, freeId){
+  window.__pickedEmoji = e;
+  document.querySelectorAll('.emoji-cell').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const fi = document.getElementById(freeId); if (fi) fi.value = e;
+}
+function saveWallet(id){
+  const name = document.getElementById('we-name').value.trim();
+  if (!name){ toast('⚠️ Il faut un nom pour le wallet'); return; }
+  const free = document.getElementById('we-emoji-free').value.trim();
+  const emoji = free || window.__pickedEmoji || '💳';
+  if (id){
+    const w = appState.wallets[id]; w.name = name; w.emoji = emoji;
+    saveData(); closeModal(); renderAll(); toast('✏️ Wallet modifié');
+  } else {
+    const nid = uid('w_');
+    appState.wallets[nid] = { id:nid, name, emoji, balance:0, transactions:[] };
+    appState.currentWallet = nid;
+    saveData(); closeModal(); renderAll(); toast(`🎉 Wallet « ${name} » créé`);
+  }
+}
+function openWalletManager(){
+  const rows = walletList().map(w => `
+    <div style="display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:14px;padding:11px 12px;margin-bottom:8px;background:var(--bg1)">
+      <span style="font-size:20px">${w.emoji}</span>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13.5px">${esc(w.name)}</div>
+      <div class="muted tnum">${fmtEUR(w.balance)} · ${w.transactions.length} op.</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="editWallet('${w.id}')">✏️</button>
+      <button class="btn btn-ghost btn-sm" onclick="emptyWallet('${w.id}')" title="Vider les données">🧹</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--bad)" onclick="deleteWallet('${w.id}')">🗑️</button>
+    </div>`).join('');
+  showModal(`<button class="close-x" onclick="closeModal()">✕</button>
+    <h2>👛 Mes wallets</h2><p class="sub">${walletList().length} wallet${walletList().length>1?'s':''} — crée, modifie ou nettoie tes portefeuilles.</p>
+    ${rows || ''}
+    <button class="btn btn-primary btn-block" onclick="openWalletEditor()">＋ Nouveau wallet</button>
+    <p class="faint" style="margin:12px 4px 0;font-size:11px">🧹 Vider = garde le wallet mais supprime ses opérations. 🗑️ = supprime tout.</p>`);
+}
+function emptyWallet(id){
+  confirmModal('Vider ce wallet ?', `Toutes les opérations de « ${esc(appState.wallets[id].name)} » seront effacées.`, 'Vider', ()=>{
+    const w = appState.wallets[id]; w.transactions = []; w.balance = 0;
+    saveData(); closeModal(); renderAll(); toast('🧹 Wallet vidé');
+  });
+}
+function deleteWallet(id){
+  confirmModal('Supprimer ce wallet ?', `« ${esc(appState.wallets[id].name)} » et toutes ses opérations seront définitivement supprimées.`, 'Supprimer', ()=>{
+    delete appState.wallets[id];
+    if (appState.currentWallet === id) appState.currentWallet = walletList().length ? walletList()[0].id : null;
+    saveData();
+    if (!walletList().length) openOnboarding(); else renderAll();
+    toast('🗑️ Wallet supprimé');
+  });
+}
+
+/* ---------- Onboarding (premier lancement) ---------- */
+function openOnboarding(){
+  showModal(`
+    <h2>🏁 Bienvenue sur Bankling !</h2>
+    <p class="sub">Fini les 3 wallets imposés : ici, tu choisis tes portefeuilles (nom + emoji). Crée au moins un wallet pour commencer.</p>
+    <div class="field"><input id="ob-name" class="inp" placeholder="Nom du wallet (ex : Mon compte, PayPal…)" maxlength="30"></div>
+    <label class="lbl">Emoji</label>
+    <div id="ob-emoji-area"></div>
+    <div class="field" style="margin-top:12px"><input id="ob-emoji-free" class="inp" placeholder="…ou colle n'importe quel emoji" maxlength="4"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:8px" onclick="onboardAdd()">＋ Ajouter ce wallet</button>
+    <button class="btn btn-good btn-block" style="margin-top:10px" id="ob-start" onclick="onboardStart()" disabled>🚀 C'est parti !</button>
+    <p class="faint" id="ob-count" style="text-align:center;margin:10px 0 0;font-size:12px">0 wallet créé</p>`,
+    { dismissible:false });
+  renderEmojiPicker('ob-emoji-area', 'ob-emoji-free', '💳', true);
+  refreshOnboard();
+}
+function onboardAdd(){
+  const name = document.getElementById('ob-name').value.trim();
+  if (!name){ toast('⚠️ Donne un nom à ton wallet'); return; }
+  const free = document.getElementById('ob-emoji-free').value.trim();
+  const emoji = free || window.__pickedEmoji || '💳';
+  const nid = uid('w_');
+  appState.wallets[nid] = { id:nid, name, emoji, balance:0, transactions:[] };
+  appState.currentWallet = nid;
+  appState.colorTheme = appState.colorTheme || 'purple';
+  saveData(); refreshOnboard();
+  document.getElementById('ob-name').value = ''; document.getElementById('ob-emoji-free').value = '';
+  toast(`🎉 Wallet « ${name} » créé — ajoute-en d'autres ou démarre !`);
+}
+function refreshOnboard(){
+  const n = walletList().length;
+  const el = document.getElementById('ob-start'); if (!el) return;
+  el.disabled = n === 0;
+  el.textContent = n === 0 ? '🚀 C\'est parti !' : `🚀 C'est parti ! (${n} wallet${n>1?'s':''})`;
+  const cnt = document.getElementById('ob-count'); if (cnt) cnt.textContent = n + ' wallet' + (n>1?'s':'') + ' créé' + (n>1?'s':'');
+}
+function onboardStart(){
+  if (!walletList().length) return;
+  closeModal(); applyTheme(); saveData(); renderAll(); go('home');
+  toast('💜 Bienvenue sur Bankling !');
+}
+
+/* ---------- Drawer ---------- */
+function renderDrawer(){
+  const rows = walletList().map(w => `
+    <button class="dw-wallet ${w.id===appState.currentWallet?'active':''}" onclick="switchWallet('${w.id}')">
+      <span class="em">${w.emoji}</span>
+      <span class="nm">${esc(w.name)}</span>
+      <span class="bl tnum">${fmtEUR(w.balance)}</span>
+      <span class="gear" onclick="event.stopPropagation();editWallet('${w.id}')">⚙️</span>
+    </button>`).join('');
+  document.getElementById('drawer-content').innerHTML = `
+    <h3>Portefeuilles</h3>
+    ${rows}
+    <button class="dw-btn" onclick="openWalletEditor()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Nouveau wallet
+    </button>
+    <h3>Données</h3>
+    <button class="dw-btn" onclick="openExport()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> Exporter (backup)
+    </button>
+    <label class="dw-btn" style="cursor:pointer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9m0 0l-4 4m4-4l4 4M4 7V5a2 2 0 012-2h12a2 2 0 012 2v2"/></svg> Importer (JSON)
+      <input type="file" id="import-file" accept=".json,application/json" style="display:none" onchange="handleImportFile(event)">
+    </label>
+    <button class="dw-btn" onclick="openThemes()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M12 2a10 10 0 100 20 2.5 2.5 0 000-5 2.5 2.5 0 010-5h2a4 4 0 000-8h-2z"/></svg> Changer de thème
+    </button>
+    <h3>Zone dangereuse</h3>
+    <button class="dw-btn danger" onclick="wipeAll()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg> Tout effacer
+    </button>
+    <p class="faint" style="margin-top:18px;font-size:11px;line-height:1.6">Bankling v4.0 · 100% local<br>Vos données ne quittent jamais cet appareil. <span class="em">💜</span></p>`;
+}
+function switchWalletById(id){ if (appState.wallets[id]){ switchWallet(id); closeDrawer(); } }
+function wipeAll(){
+  confirmModal('Tout effacer ?', 'Tous les wallets, opérations et réglages seront supprimés. Pense à exporter tes données avant !', 'Tout effacer', ()=>{
+    sDel(STORAGE_KEY);
+    appState = normalizeState(defState());
+    saveData(); openOnboarding(); closeDrawer();
+    toast('🗑️ Données effacées');
+  });
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   VUE GRAPHIQUE — évolution du solde
+   Argent / jour (dates) ou Argent / transactions, intervalle au choix
+   ============================================================ */
+function rangeOfInterval(preset, base){
+  const now = base || new Date();
+  const mk = (d) => (d ? d.getTime() : -Infinity);
+  switch(preset){
+    case '7d':  return { from: mk(new Date(now.getTime() - 7*86400000)), to: mk(now) };
+    case '1m':  { const d = new Date(now); d.setMonth(d.getMonth()-1); return { from: mk(d), to: mk(now) }; }
+    case '3m':  { const d = new Date(now); d.setMonth(d.getMonth()-3); return { from: mk(d), to: mk(now) }; }
+    case '6m':  { const d = new Date(now); d.setMonth(d.getMonth()-6); return { from: mk(d), to: mk(now) }; }
+    case '1y':  { const d = new Date(now); d.setFullYear(d.getFullYear()-1); return { from: mk(d), to: mk(now) }; }
+    case 'all': return { from: mk(null), to: mk(now) };
+    case 'custom': {
+      const f = chartSettings.customFrom ? new Date(chartSettings.customFrom + 'T00:00:00').getTime() : mk(null);
+      const t = chartSettings.customTo ? new Date(chartSettings.customTo + 'T23:59:59').getTime() : mk(now);
+      return { from: f, to: t };
+    }
+    default: return { from: mk(new Date(now.getTime() - 30*86400000)), to: mk(now) };
+  }
+}
+function scopedTxns(scope){
+  if (scope === 'all') return allTxns();
+  return walletList().filter(w=>w.id===appState.currentWallet).flatMap(w => w.transactions.map(t => ({ ...t, walletId:w.id, walletEmoji:w.emoji, walletName:w.name })));
+}
+function renderChartView(){
+  const cs = chartSettings;
+  const chips = (list, cur, fn) => list.map(p => `<button class="chip ${cur===p.id?'active':''}" onclick="${fn}('${p.id}')">${p.label}</button>`).join('');
+  const customDates = cs.interval==='custom' ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+      <div><label class="lbl">Du</label><input type="date" class="inp" id="chart-from" value="${cs.customFrom}" onchange="setChartCustom('from',this.value)"></div>
+      <div><label class="lbl">Au</label><input type="date" class="inp" id="chart-to" value="${cs.customTo}" onchange="setChartCustom('to',this.value)"></div>
+    </div>` : '';
+  const customN = cs.interval === 'customTx' ? `
+    <div style="display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px">
+      <div><label class="lbl">Nombre de transactions</label><input type="number" min="1" class="inp" id="chart-n" value="${cs.customN}" placeholder="ex : 25" onchange="setChartCustom('n',this.value)"></div>
+    </div>` : '';
+  const cur = current();
+  return `
+  <div class="view-anim">
+  <div class="card">
+    <h2 class="card-title"><span class="em">📊</span> Évolution du solde</h2>
+    <div class="seg" style="margin-bottom:12px">
+      <button class="${cs.mode==='date'?'active':''}" onclick="setChartMode('date')">📅 Par jour</button>
+      <button class="${cs.mode==='tx'?'active':''}" onclick="setChartMode('tx')">🔢 Par transaction</button>
+    </div>
+    <label class="lbl">Périmètre</label>
+    <div class="chip-row" style="margin-bottom:14px">
+      <button class="chip ${cs.scope==='wallet'?'active':''}" onclick="setChartScope('wallet')">👛 ${cur ? esc(cur.name) : 'Wallet'}</button>
+      <button class="chip ${cs.scope==='all'?'active':''}" onclick="setChartScope('all')">🌍 Tous les wallets</button>
+    </div>
+    ${cs.mode==='date' ? `
+    <label class="lbl">Intervalle</label>
+    <div class="chip-row" style="flex-wrap:wrap">${chips(MONTH_PRESETS, cs.interval, 'setChartInterval')}</div>
+    ${customDates}` : `
+    <label class="lbl">Intervalle</label>
+    <div class="chip-row" style="flex-wrap:wrap">${chips(TX_PRESETS, cs.interval, 'setChartInterval')}</div>
+    ${customN}`}
+  </div>
+  <div class="card">
+    <div class="chart-wrap" id="chart-wrap">
+      <div id="chart-tip"></div>
+    </div>
+    <div class="chart-stats" id="chart-stats-row"></div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-ghost" style="flex:1" onclick="exportChartPNG()">⬇️ PNG</button>
+    <button class="btn btn-primary" style="flex:1" onclick="go('wrapped')">🎁 Faire un Wrapped</button>
+  </div>
+  </div>`;
+}
+function setChartMode(m){ chartSettings.mode = m; chartSettings.interval = m==='date' ? '1m' : '20'; persistUI(); renderView(); }
+function setChartScope(s){ chartSettings.scope = s; persistUI(); renderView(); }
+function setChartInterval(p){
+  if (p === 'custom' && chartSettings.mode==='date'){ chartSettings.interval = 'custom'; persistUI(); renderView(); return; }
+  if (p === 'custom' && chartSettings.mode==='tx'){ chartSettings.interval = 'customTx'; persistUI(); renderView(); return; }
+  chartSettings.interval = p; persistUI(); renderView();
+}
+function setChartCustom(which, v){
+  if (which==='from') chartSettings.customFrom = v;
+  if (which==='to') chartSettings.customTo = v;
+  if (which==='n') chartSettings.customN = v;
+  persistUI(); requestAnimationFrame(()=>drawChart());
+}
+function persistUI(){
+  if (!appState) return;
+  appState.ui.chart = chartSettings; appState.ui.wrapped = wrappedSettings; appState.ui.hist = histSettings;
+  saveData();
+}
+
+/* ---------- Dessin SVG ---------- */
+let chartPts = [], chartBox = null;
+function niceTicks(min, max, n){
+  if (!isFinite(min) || !isFinite(max)) return [0, 1];
+  const span = max - min || 1;
+  const step0 = span / Math.max(1, n);
+  const mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const norm = step0 / mag;
+  const step = (norm >= 5 ? 10 : norm >= 2 ? 5 : norm >= 1 ? 2 : 1) * mag;
+  const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step;
+  const out = [];
+  for (let v = lo; v <= hi + step/2; v += step) out.push(v);
+  return out;
+}
+function drawChart(){
+  const wrap = document.getElementById('chart-wrap'); if (!wrap) return;
+  const cs = chartSettings;
+  const txns = scopedTxns(cs.scope);
+  let opts;
+  if (cs.mode === 'tx'){
+    const count = cs.interval==='customTx' ? (Number(cs.customN)||20) : (cs.interval==='all' ? 'all' : Number(cs.interval));
+    opts = { mode:'tx', count };
+  } else {
+    const r = rangeOfInterval(cs.interval);
+    opts = { mode:'date', from:r.from, to:r.to };
+  }
+  const series = computeSeries(txns, opts);
+  chartData = series;
+  const W = Math.max(280, wrap.clientWidth || 340), H = 240;
+  const padL = 46, padR = 12, padT = 16, padB = 26;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const pts = series.points;
+  wrap.querySelector('svg')?.remove();
+  wrap.insertAdjacentHTML('afterbegin', `<svg id="chart-svg" width="${W}" height="${H}" style="display:block"></svg>`);
+
+  const svg = document.getElementById('chart-svg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const good = getComputedStyle(document.documentElement).getPropertyValue('--good').trim() || '#34D399';
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#8B5CF6';
+  const surfC = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#241343';
+  const softC = 'rgba(235,235,245,.38)';
+
+  const statsRow = document.getElementById('chart-stats-row');
+  if (!pts.length){
+    svg.innerHTML = '';
+    statsRow.innerHTML = `<div class="empty" style="width:100%"><span class="e">📉</span>Aucune opération sur cette période.<br><span class="faint">Élargis l'intervalle ou ajoute des transactions.</span></div>`;
+    return;
+  }
+  let xs, ys;
+  if (cs.mode === 'date'){
+    const from = pts[0].t.timestamp, to = pts[pts.length-1].t.timestamp;
+    xs = pts.map(p => padL + (from===to ? iw/2 : ((p.t.timestamp - from) / (to - from)) * iw));
+  } else {
+    if (pts.length === 1) xs = [padL + iw/2];
+    else xs = pts.map((p,i) => padL + (i/(pts.length-1)) * iw);
+  }
+  let minV = Math.min(series.startBal, ...pts.map(p=>p.y));
+  let maxV = Math.max(series.startBal, ...pts.map(p=>p.y));
+  const span0 = maxV - minV;
+  minV -= span0*0.12 || 1; maxV += span0*0.12 || 1;
+  ys = pts.map(p => padT + (1 - (p.y - minV) / (maxV - minV)) * ih);
+  const y0 = padT + (1 - (0 - minV) / (maxV - minV)) * ih;
+
+  // ticks Y
+  const ticks = niceTicks(minV, maxV, 4);
+  let g = '';
+  ticks.forEach(t => {
+    const yy = padT + (1 - (t - minV) / (maxV - minV)) * ih;
+    g += `<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="rgba(235,235,245,.07)" stroke-width="1"/>`;
+    g += `<text x="${padL-8}" y="${yy+3.5}" text-anchor="end" font-size="9.5" fill="${softC}">${fmtCompact(t)}</text>`;
+  });
+  // ligne zéro
+  if (0 >= minV && 0 <= maxV)
+    g += `<line x1="${padL}" y1="${y0}" x2="${W-padR}" y2="${y0}" stroke="rgba(235,235,245,.22)" stroke-width="1" stroke-dasharray="4 4"/>`;
+  // ticks X
+  const xTicks = [];
+  if (cs.mode === 'date'){
+    const f = pts[0].t.timestamp, t = pts[pts.length-1].t.timestamp;
+    const n = Math.min(5, Math.max(2, Math.round(iw/90)));
+    for (let i=0;i<n;i++) xTicks.push(f + (t-f) * (i/(n-1)));
+    xTicks.push(t);
+  } else {
+    const n = Math.min(6, pts.length);
+    if (n <= 1) xTicks.push(pts[0].x);
+    else for (let i=0;i<n;i++) xTicks.push(pts[Math.round(i*(pts.length-1)/(n-1))].x);
+  }
+  xTicks.forEach(x => {
+    const xx = cs.mode==='date'
+      ? padL + ((x - pts[0].t.timestamp) / (pts[pts.length-1].t.timestamp - pts[0].t.timestamp || 1)) * iw
+      : (()=>{ const idx = pts.findIndex(p=>p.x===x); return idx<0?null:padL+(idx/(pts.length-1 || 1))*iw; })();
+    if (xx == null) return;
+    g += `<text x="${Math.max(padL, Math.min(W-padR, xx))}" y="${H-8}" text-anchor="middle" font-size="9.5" fill="${softC}">${fmtDayShort(x)}</text>`;
+  });
+
+  // courbe lissée (Catmull-Rom → bézier)
+  const xy = pts.map((p,i)=>({ x:xs[i], y:ys[i] }));
+  function pathFor(ps){
+    if (ps.length < 2) return '';
+    let d = `M ${ps[0].x} ${ps[0].y}`;
+    for (let i=0;i<ps.length-1;i++){
+      const p0 = ps[Math.max(0,i-1)], p1 = ps[i], p2 = ps[i+1], p3 = ps[Math.min(ps.length-1,i+2)];
+      const c1x = p1.x + (p2.x - p0.x)/6, c1y = p1.y + (p2.y - p0.y)/6;
+      const c2x = p2.x - (p3.x - p1.x)/6, c2y = p2.y - (p3.y - p1.y)/6;
+      d += ` C ${c1x} ${c1y} ${c2x} ${c2y} ${p2.x} ${p2.y}`;
+    }
+    return d;
+  }
+  g += `<defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${accent}" stop-opacity=".34"/>
+        <stop offset="100%" stop-color="${accent}" stop-opacity="0"/></linearGradient></defs>`;
+  if (xy.length >= 2){
+    const linePath = pathFor(xy);
+    const areaPath = linePath + ` L ${xy[xy.length-1].x} ${H-padB} L ${xy[0].x} ${H-padB} Z`;
+    g += `<path d="${areaPath}" fill="url(#areaGrad)"/>`;
+    g += `<path d="${linePath}" fill="none" stroke="${accent}" stroke-width="2.4" stroke-linecap="round"/>`;
+  } else {
+    g += `<circle cx="${xy[0].x}" cy="${xy[0].y}" r="5" fill="${accent}" opacity=".9" stroke="${surfC}" stroke-width="2"/>`;
+  }
+  // points
+  const step = Math.max(1, Math.floor(pts.length / 160));
+  pts.forEach((p,i) => {
+    if (i % step !== 0 && i !== pts.length-1) return;
+    g += `<circle cx="${xs[i]}" cy="${ys[i]}" r="${i===pts.length-1?3.6:2.4}" fill="${accent}" stroke="${surfC}" stroke-width="1.4"/>`;
+  });
+  svg.innerHTML = g;
+  chartPts = pts.map((p,i)=>({ x:xs[i], y:ys[i], p }));
+  chartBox = { padL, iw, W, H, padT, padB };
+
+  // stats
+  const delta = series.endBal - series.startBal;
+  const pct = series.startBal !== 0 ? Math.abs(delta/series.startBal)*100 : 0;
+  statsRow.innerHTML = `
+    <div class="chart-stat"><div class="k">Début</div><div class="v tnum" style="color:var(--soft)">${fmtEUR(series.startBal)}</div></div>
+    <div class="chart-stat"><div class="k">Variation</div><div class="v tnum" style="color:${delta>=0?'var(--good)':'var(--bad)'}">${fmtSigned(delta)}${series.startBal!==0?' · '+pct.toFixed(1)+'%':''}</div></div>
+    <div class="chart-stat"><div class="k">Fin</div><div class="v tnum">${fmtEUR(series.endBal)}</div></div>`;
+
+  // tooltip
+  wrap.onmousemove = (ev) => {
+    const rect = wrap.getBoundingClientRect();
+    const mx = ev.clientX - rect.left;
+    if (!chartPts.length) return;
+    let best = 0, bd = Infinity;
+    chartPts.forEach((pt,i)=>{ const d = Math.abs(pt.x - mx); if (d < bd){ bd = d; best = i; } });
+    const pt = chartPts[best];
+    const tip = document.getElementById('chart-tip');
+    tip.style.display = 'block';
+    tip.innerHTML = `<div class="t">${fmtDate(pt.p.t.timestamp)} · <span class="tnum" style="color:${pt.p.t.amount>=0?'var(--good)':'var(--bad)'}">${fmtSigned(pt.p.t.amount)}</span></div>
+      <div class="s">${esc(pt.p.t.label || pt.p.t.type)}${pt.p.walletEmoji ? ' · '+pt.p.walletEmoji : ''} — solde <b class="tnum">${fmtEUR(pt.p.y)}</b></div>`;
+    const leftPct = (pt.x / rect.width) * 100;
+    tip.style.left = Math.min(86, Math.max(14, leftPct)) + '%';
+    tip.style.top = (pt.y / rect.height) * 100 + '%';
+    // point survolé
+    const hl = document.getElementById('chart-hl');
+    if (hl){ hl.setAttribute('cx', pt.x); hl.setAttribute('cy', pt.y); hl.style.display = ''; }
+  };
+  wrap.onmouseleave = () => {
+    const tip = document.getElementById('chart-tip'); if (tip) tip.style.display = 'none';
+    const hl = document.getElementById('chart-hl'); if (hl) hl.style.display = 'none';
+  };
+  if (!document.getElementById('chart-hl'))
+    svg.insertAdjacentHTML('beforeend', `<circle id="chart-hl" r="5.5" fill="none" stroke="${good}" stroke-width="2.5" style="display:none" opacity=".9"/>`);
+  const hl = document.getElementById('chart-hl');
+  if (hl){ hl.setAttribute('cx', xs[pts.length-1]); hl.setAttribute('cy', ys[pts.length-1]); hl.style.display = 'none'; }
+}
+let resizeT = null;
+window.addEventListener('resize', ()=>{ clearTimeout(resizeT); resizeT = setTimeout(()=>{ if (view==='chart') drawChart(); }, 180); });
+
+function exportChartPNG(){
+  const svg = document.getElementById('chart-svg'); if (!svg || !chartPts.length){ toast('⚠️ Rien à exporter pour l\'instant'); return; }
+  try {
+    const xml = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([xml], { type:'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = ()=>{
+      const W = svg.width.baseVal.value * 2, H = svg.height.baseVal.value * 2;
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const cx = cv.getContext('2d');
+      cx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg1').trim();
+      cx.fillRect(0,0,W,H);
+      cx.drawImage(img, 0, 0, W, H);
+      URL.revokeObjectURL(url);
+      cv.toBlob(b => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = 'bankling-graphique.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        toast('📊 Graphique exporté en PNG');
+      });
+    };
+    img.src = url;
+  } catch(e){ toast('❌ Export impossible ici'); }
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   VUE WRAPPED — bilan sur une période
+   ============================================================ */
+const WRAP_PRESETS = [
+  {id:'today', label:'Aujourd\'hui'}, {id:'7d', label:'7 jours'}, {id:'1m', label:'1 mois'},
+  {id:'3m', label:'3 mois'}, {id:'6m', label:'6 mois'}, {id:'1y', label:'1 an'}, {id:'all', label:'Tout'}, {id:'custom', label:'Personnalisé'}
+];
+function wrapRange(){
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  switch(wrappedSettings.interval){
+    case 'today': return { from: todayStart, to: now.getTime() };
+    case '7d': return { from: now.getTime() - 7*86400000, to: now.getTime() };
+    case '1m': { const d=new Date(now); d.setMonth(d.getMonth()-1); return { from:d.getTime(), to:now.getTime() }; }
+    case '3m': { const d=new Date(now); d.setMonth(d.getMonth()-3); return { from:d.getTime(), to:now.getTime() }; }
+    case '6m': { const d=new Date(now); d.setMonth(d.getMonth()-6); return { from:d.getTime(), to:now.getTime() }; }
+    case '1y': { const d=new Date(now); d.setFullYear(d.getFullYear()-1); return { from:d.getTime(), to:now.getTime() }; }
+    case 'all': return { from:-Infinity, to:now.getTime() };
+    case 'custom': {
+      const f = wrappedSettings.customFrom ? new Date(wrappedSettings.customFrom+'T00:00:00').getTime() : todayStart;
+      const t = wrappedSettings.customTo ? new Date(wrappedSettings.customTo+'T23:59:59').getTime() : now.getTime();
+      return { from:f, to:t };
+    }
+    default: return { from: now.getTime()-30*86400000, to: now.getTime() };
+  }
+}
+function renderWrappedView(){
+  const ws = wrappedSettings;
+  const cur = current();
+  const chips = WRAP_PRESETS.map(p => `<button class="chip ${ws.interval===p.id?'active':''}" onclick="setWrapInterval('${p.id}')">${p.label}</button>`).join('');
+  const customDates = ws.interval==='custom' ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+      <div><label class="lbl">Du</label><input type="date" class="inp" id="wrap-from" value="${ws.customFrom}" onchange="setWrapCustom('from',this.value)"></div>
+      <div><label class="lbl">Au</label><input type="date" class="inp" id="wrap-to" value="${ws.customTo}" onchange="setWrapCustom('to',this.value)"></div>
+    </div>` : '';
+  const kwSamples = ['bus','salaire','courses','resto','sncf','loyer'];
+  return `
+  <div class="view-anim">
+  <div class="card">
+    <h2 class="card-title"><span class="em">🎁</span> Mon Wrapped</h2>
+    <p class="muted" style="margin:-6px 0 12px">Ton bilan sur la période : dépenses, entrées, catégories… et recherche par mot-clé (ex : « bus » trouvera aussi « Bus 12 », « abonnement bus »…).</p>
+    <label class="lbl">Périmètre</label>
+    <div class="chip-row" style="margin-bottom:14px">
+      <button class="chip ${ws.scope==='wallet'?'active':''}" onclick="setWrapScope('wallet')">👛 ${cur ? esc(cur.name) : 'Wallet'}</button>
+      <button class="chip ${ws.scope==='all'?'active':''}" onclick="setWrapScope('all')">🌍 Tous les wallets</button>
+    </div>
+    <label class="lbl">Période</label>
+    <div class="chip-row" style="flex-wrap:wrap">${chips}</div>
+    ${customDates}
+  </div>
+  <div id="wrapped-results"></div>
+  </div>`;
+}
+function setWrapInterval(p){ wrappedSettings.interval = p; persistUI(); renderView(); }
+function setWrapScope(s){ wrappedSettings.scope = s; persistUI(); renderView(); }
+function setWrapCustom(which, v){
+  if (which==='from') wrappedSettings.customFrom = v;
+  if (which==='to') wrappedSettings.customTo = v;
+  persistUI(); computeWrapped();
+}
+function computeWrapped(){
+  const box = document.getElementById('wrapped-results'); if (!box) return;
+  const r = wrapRange();
+  const txns = scopedTxns(wrappedSettings.scope);
+  const d = buildWrapped(txns, r.from, r.to);
+  wrappedData = { ...d, range:r };
+  let html = '';
+  if (!d.list.length){
+    box.innerHTML = `<div class="card"><div class="empty"><span class="e">🎁</span>Aucune opération sur cette période.<br><span class="faint">Choisis une autre période ou ajoute des opérations.</span></div></div>`;
+    return;
+  }
+  const fromLbl = isFinite(r.from) ? fmtDate(r.from) : 'Le début';
+  const toLbl = fmtDate(r.to);
+  const net = d.received - d.spent;
+  html += `<div class="card wrap-hero" style="text-align:center">
+    <div class="muted" style="font-weight:700">🎁 Wrapped Bankling — ${esc(fromLbl)} → <b>${esc(toLbl)}</b></div>
+    <div style="font-size:34px;font-weight:800;margin:10px 0 2px;letter-spacing:-.02em;color:${net>=0?'var(--good)':'var(--bad)'}">
+      <span class="tnum">${net>=0?'+':'−'}${fmtEUR(Math.abs(net))}</span></div>
+    <div class="faint">Résultat net sur la période · ${d.n} opération${d.n>1?'s':''}</div>
+  </div>
+  <div class="card">
+    <div class="wrap-grid">
+      <div class="wrap-cell"><div class="k">💸 Dépensé</div><div class="v tnum" style="color:var(--bad)">−${fmtEUR(d.spent)}</div><div class="s">${d.nSpent} dépense${d.nSpent>1?'s':''}</div></div>
+      <div class="wrap-cell"><div class="k">🪙 Reçu</div><div class="v tnum" style="color:var(--good)">+${fmtEUR(d.received)}</div><div class="s">${d.nRecv} entrée${d.nRecv>1?'s':''}</div></div>
+      <div class="wrap-cell"><div class="k">📅 Moyenne / jour</div><div class="v tnum">${fmtEUR(d.avgPerDay)}</div><div class="s">sur ${d.days} jour${d.days>1?'s':''}</div></div>
+      <div class="wrap-cell"><div class="k">🧾 Moyenne / dépense</div><div class="v tnum">${fmtEUR(d.avgTxn)}</div><div class="s">${d.nSpent} dépense${d.nSpent>1?'s':''}</div></div>
+    </div>
+  </div>`;
+  if (d.biggestExp) html += `<div class="card" style="display:flex;gap:12px;align-items:center">
+      <div style="font-size:26px">💥</div>
+      <div style="flex:1;min-width:0"><div class="muted" style="font-weight:700">Plus grosse dépense</div>
+      <div style="font-weight:700;font-size:14px">${esc(d.biggestExp.label || d.biggestExp.type)} <span class="faint">· ${fmtDate(d.biggestExp.timestamp)}</span></div></div>
+      <div class="tnum" style="font-weight:800;color:var(--bad)">−${fmtEUR(Math.abs(d.biggestExp.amount))}</div></div>`;
+  if (d.biggestInc) html += `<div class="card" style="display:flex;gap:12px;align-items:center">
+      <div style="font-size:26px">🎉</div>
+      <div style="flex:1;min-width:0"><div class="muted" style="font-weight:700">Plus gros dépôt</div>
+      <div style="font-weight:700;font-size:14px">${esc(d.biggestInc.label || d.biggestInc.type)} <span class="faint">· ${fmtDate(d.biggestInc.timestamp)}</span></div></div>
+      <div class="tnum" style="font-weight:800;color:var(--good)">+${fmtEUR(d.biggestInc.amount)}</div></div>`;
+  if (d.topDay) html += `<div class="card" style="display:flex;gap:12px;align-items:center">
+      <div style="font-size:26px">🔥</div>
+      <div style="flex:1;min-width:0"><div class="muted" style="font-weight:700">Jour le plus dépensier</div>
+      <div style="font-weight:700;font-size:14px;text-transform:capitalize">${fmtDayFull(new Date(d.topDay.date).getTime())}</div></div>
+      <div class="tnum" style="font-weight:800;color:var(--bad)">−${fmtEUR(Math.abs(d.topDay.total))}</div></div>`;
+  // catégories
+  if (d.catRank.length){
+    const max = Math.abs(d.catRank[0].total) || 1;
+    html += `<div class="card"><h2 class="card-title"><span class="em">🏷️</span> Top catégories de dépenses</h2>` +
+      d.catRank.map(c => {
+        const cat = appState.categories.find(x=>x.id===c.catId) || { emoji:'✨', name:'Autre' };
+        return `<div class="bar-row"><div class="bar-top"><span>${cat.emoji} ${esc(cat.name)} <span class="faint">×${c.count}</span></span>
+        <span class="tnum" style="color:var(--bad)">−${fmtEUR(Math.abs(c.total))}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.max(4, Math.abs(c.total)/max*100).toFixed(1)}%"></div></div></div>`;
+      }).join('') + `</div>`;
+  }
+  // recherche mot-clé
+  const kwSamples = ['bus','salaire','courses','resto','loyer'];
+  html += `<div class="card">
+    <h2 class="card-title"><span class="em">🔍</span> Cherche un thème</h2>
+    <p class="muted" style="margin:-6px 0 10px">La recherche est approximative : « bus » trouvera aussi « BUS », « bus 12 », « abonnement bus »…</p>
+    <div style="display:flex;gap:8px">
+      <input id="wrap-kw" class="inp" placeholder="Ex : bus, école, sncf…" style="flex:1">
+      <button class="btn btn-primary" onclick="doKwSearch()">Chercher</button>
+    </div>
+    <div class="chip-row" style="margin-top:10px">${kwSamples.map(k=>`<button class="chip" onclick="quickKw('${k}')">${k}</button>`).join('')}</div>
+    <div id="kw-results"></div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-ghost" style="flex:1" onclick="copyWrapped()">📋 Copier</button>
+    <button class="btn btn-primary" style="flex:1" onclick="shareWrapped()">📤 Partager</button>
+  </div>
+  <p class="faint" style="text-align:center;margin-top:10px;font-size:11px">Wrapped généré le ${new Date().toLocaleDateString('fr-FR')} · Bankling v4</p>`;
+  box.innerHTML = html;
+  const kwSaved = wrappedData._kw || '';
+  if (kwSaved) quickKw(kwSaved);
+}
+function quickKw(k){
+  document.getElementById('wrap-kw').value = k;
+  doKwSearch();
+}
+function doKwSearch(){
+  const kw = (document.getElementById('wrap-kw').value || '').trim();
+  const box = document.getElementById('kw-results'); if (!box || !wrappedData) return;
+  wrappedData._kw = kw || null;
+  if (!kw){ box.innerHTML = ''; return; }
+  const res = searchKeyword(wrappedData.list, kw, catNameOf);
+  if (!res || !res.matches.length){
+    box.innerHTML = `<div class="kw-res"><div class="head"><span>😶 Aucune correspondance pour « ${esc(kw)} »</span></div>
+      <div class="muted" style="margin-top:4px">Essaie un mot plus court ou une autre orthographe.</div></div>`;
+    return;
+  }
+  const spent = res.spent;
+  box.innerHTML = `<div class="kw-res">
+    <div class="head"><span>🔎 « ${esc(kw)} » — ${res.count} opération${res.count>1?'s':''}</span>
+    <span class="tnum" style="color:${spent?'var(--bad)':'var(--good)'}">${spent ? '−'+fmtEUR(spent) : '+' + fmtEUR(res.total)}</span></div>
+    <div style="margin-top:8px">${res.matches.slice(0,8).map(t=>`
+      <div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid var(--border)">
+        <span>${t.walletEmoji || ''}</span>
+        <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.label || t.type)}</div>
+        <div class="faint" style="font-size:10.5px">${fmtDate(t.timestamp)}</div></div>
+        <div class="tnum" style="font-weight:800;font-size:12.5px;color:${t.amount>=0?'var(--good)':'var(--bad)'}">${fmtSigned(t.amount)}</div>
+      </div>`).join('')}</div>
+    ${res.matches.length>8 ? `<div class="faint" style="text-align:center;margin-top:8px;font-size:11px">…et ${res.matches.length-8} autre(s)</div>` : ''}
+  </div>`;
+}
+function wrappedText(){
+  if (!wrappedData) return '';
+  const d = wrappedData, net = d.received - d.spent;
+  const fromLbl = isFinite(d.range.from) ? fmtDate(d.range.from) : 'le début';
+  const lines = [
+    '🎁 Bankling Wrapped',
+    `📅 ${fromLbl} → ${fmtDate(d.range.to)}`,
+    `💸 Dépensé : ${fmtEUR(d.spent)} (${d.nSpent} dépenses)`,
+    `🪙 Reçu : +${fmtEUR(d.received)} (${d.nRecv} entrées)`,
+    `📈 Net : ${net>=0?'+':'−'}${fmtEUR(Math.abs(net))}`,
+    `🧾 ${d.n} opérations · moyenne ${fmtEUR(d.avgPerDay)}/jour`
+  ];
+  if (d.biggestExp) lines.push(`💥 Plus grosse dépense : ${d.biggestExp.label||d.biggestExp.type} (−${fmtEUR(Math.abs(d.biggestExp.amount))})`);
+  if (d.topDay) lines.push(`🔥 Jour le plus dépensier : ${fmtDayFull(new Date(d.topDay.date).getTime())} (−${fmtEUR(Math.abs(d.topDay.total))})`);
+  if (d.catRank.length){
+    lines.push('🏷️ Top catégories :');
+    d.catRank.slice(0,3).forEach(c => {
+      const cat = appState.categories.find(x=>x.id===c.catId) || { name:'Autre' };
+      lines.push(`   ${cat.name} — ${fmtEUR(Math.abs(c.total))}`);
+    });
+  }
+  lines.push('— Fait avec Bankling 💜');
+  return lines.join('\n');
+}
+async function copyWrapped(){
+  const txt = wrappedText();
+  try { await navigator.clipboard.writeText(txt); toast('📋 Wrapped copié !'); }
+  catch(e){
+    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta);
+    ta.select(); try { document.execCommand('copy'); toast('📋 Wrapped copié !'); } catch(e2){ toast('❌ Copie impossible'); }
+    ta.remove();
+  }
+}
+function shareWrapped(){
+  if (navigator.share){ navigator.share({ title:'Mon Wrapped Bankling', text: wrappedText() }).catch(()=>{}); }
+  else copyWrapped();
+}
+
+/* ============================================================
+   VUE HISTORIQUE
+   ============================================================ */
+function txRow(t, showDelete){
+  const catName = catNameOf(t.category), catEmoji = catEmojiOf(t.category);
+  const cls = t.amount > 0 ? 'good' : (t.type === 'Ajustement' ? 'acc' : 'bad');
+  return `<div class="tx-row">
+    <div class="tx-emoji">${catEmoji}</div>
+    <div class="tx-main">
+      <div class="tx-label">${esc(t.label || t.type)}</div>
+      <div class="tx-meta"><span class="tag ${cls}">${esc(t.type)}</span>${catName?`<span>${catEmoji} ${esc(catName)}</span>`:''}${t.walletEmoji?`<span>${t.walletEmoji}</span>`:''}</div>
+    </div>
+    <div class="tx-amount">
+      <div class="a tnum" style="color:${t.amount>=0?'var(--good)':'var(--bad)'}">${fmtSigned(t.amount)}</div>
+      <div class="d">${fmtDate(t.timestamp)} · ${fmtTime(t.timestamp)}</div>
+    </div>
+    ${showDelete ? `<button class="tx-del" onclick="deleteTx('${t.id}')" title="Supprimer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+    </button>` : ''}
+  </div>`;
+}
+function deleteTx(id){
+  confirmModal('Supprimer cette opération ?', 'Le solde du wallet sera mis à jour automatiquement. Cette action est irréversible.', 'Supprimer', ()=>{
+    for (const w of walletList()){
+      const i = w.transactions.findIndex(t=>t.id===id);
+      if (i !== -1){ w.balance = Math.round((w.balance - w.transactions[i].amount)*100)/100; w.transactions.splice(i,1); break; }
+    }
+    saveData(); renderAll(); toast('🗑️ Opération supprimée');
+  });
+}
+function renderHistoryView(){
+  const hs = histSettings;
+  const cur = current();
+  const typeChips = [ ['all','Tous'], ['Dépôt','Dépôts'], ['Retrait','Retraits'], ['Ajustement','Ajustements'] ]
+    .map(([id,l]) => `<button class="chip ${hs.type===id?'active':''}" onclick="setHist('type','${id}')">${l}</button>`).join('');
+  const catOptions = appState.categories
+    .map(c=>`<option value="${c.id}" ${hs.cat===c.id?'selected':''}>${c.emoji} ${esc(c.name)}</option>`).join('') +
+    `<option value="none" ${hs.cat==='none'?'selected':''}>Sans catégorie</option>`;
+  return `
+  <div class="view-anim">
+  <div class="card">
+    <h2 class="card-title"><span class="em">🧾</span> Historique</h2>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div style="flex:1;position:relative">
+        <input id="hist-q" class="inp" style="padding-left:38px" placeholder="Recherche approximative…" value="${esc(hs.q)}" oninput="histSearch(this.value)">
+        <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.5">🔍</span>
+      </div>
+      <button class="icon-btn" style="flex:0 0 auto;width:48px" onclick="clearHistSearch()" title="Effacer la recherche">✕</button>
+    </div>
+    <div class="chip-row" style="margin-bottom:10px">${typeChips}</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <select class="select" onchange="setHist('cat', this.value)">
+        <option value="all" ${hs.cat==='all'?'selected':''}>Toutes les catégories</option>
+        ${catOptions}
+      </select>
+      <div class="seg">
+        <button class="${hs.scope==='wallet'?'active':''}" onclick="setHist('scope','wallet')">👛 ${cur?esc(cur.name):''}</button>
+        <button class="${hs.scope==='all'?'active':''}" onclick="setHist('scope','all')">🌍 Tous</button>
+      </div>
+    </div>
+  </div>
+  <div id="hist-list"></div>
+  </div>`;
+}
+function histSearch(v){ histSettings.q = v; persistUI(); requestAnimationFrame(()=>renderHistList()); }
+function clearHistSearch(){
+  histSettings.q = '';
+  const el = document.getElementById('hist-q'); if (el) el.value = '';
+  persistUI(); renderHistList();
+}
+function setHist(which, v){
+  if (which==='type') histSettings.type = v;
+  if (which==='cat') histSettings.cat = v;
+  if (which==='scope') histSettings.scope = v;
+  persistUI(); renderHistList();
+}
+function renderHistList(){
+  const box = document.getElementById('hist-list'); if (!box) return;
+  const hs = histSettings;
+  let txns = hs.scope==='all' ? allTxns() : walletList().filter(w=>w.id===appState.currentWallet).flatMap(w=>w.transactions.map(t=>({...t, walletEmoji:w.emoji})));
+  if (hs.type !== 'all') txns = txns.filter(t=>t.type===hs.type);
+  if (hs.cat === 'none') txns = txns.filter(t=>!t.category);
+  else if (hs.cat !== 'all') txns = txns.filter(t=>t.category===hs.cat);
+  if (hs.q) txns = txns.filter(t=>fuzzyMatch(t.label||'', hs.q) || fuzzyMatch(catNameOf(t.category)||'', hs.q) || fuzzyMatch(t.type, hs.q));
+  txns = [...txns].sort((a,b)=>b.timestamp-a.timestamp);
+  if (!txns.length){
+    box.innerHTML = `<div class="card"><div class="empty"><span class="e">🔍</span>Aucune opération trouvée.<br><span class="faint">${hs.q ? 'Essaie un autre mot-clé.' : 'Ajoute des opérations depuis l\'onglet Portefeuille.'}</span></div></div>`;
+    return;
+  }
+  let html = '<div class="card" style="padding:10px 16px">';
+  let lastDay = null;
+  txns.forEach(t => {
+    const day = new Date(t.timestamp).toDateString();
+    const daySpent = txns.filter(x=>new Date(x.timestamp).toDateString()===day && x.amount<0).reduce((s,x)=>s+x.amount,0);
+    if (day !== lastDay){
+      lastDay = day;
+      html += `<div class="tx-group">${fmtDayFull(t.timestamp)} · ${txns.filter(x=>new Date(x.timestamp).toDateString()===day).length} op. · <span style="color:${daySpent?'var(--bad)':'var(--soft)'}">−${fmtEUR(Math.abs(daySpent))}</span></div>`;
+    }
+    html += txRow(t, true);
+  });
+  html += '</div>';
+  box.innerHTML = html;
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   Thèmes (palette)
+   ============================================================ */
+function openThemes(){
+  const cur = appState.colorTheme;
+  const rows = THEME_ORDER.map(id => `
+    <button class="theme-swatch ${cur===id?'active':''}" onclick="changeTheme('${id}')">
+      <span class="ts-dot" style="background:linear-gradient(135deg, ${THEME_CONFIG[id].bg1}, ${THEME_CONFIG[id].accent})"></span>
+      ${THEME_LABELS[id]}
+    </button>`).join('');
+  showModal(`<button class="close-x" onclick="closeThemeModal()">✕</button>
+    <h2>🎨 Palette de couleurs</h2>
+    <p class="sub">L'interface entière change de couleur. Ton choix est sauvegardé.</p>${rows}`);
+}
+function closeThemeModal(){ closeModal(); }
+function changeTheme(t){
+  appState.colorTheme = t; applyTheme(); saveData(); renderTopbar(); closeThemeModal();
+  toast(`🎨 Thème « ${THEME_LABELS[t]} » appliqué`);
+}
+
+/* ============================================================
+   EXPORT / IMPORT
+   ============================================================ */
+function exportJSON(){
+  return JSON.stringify({ version:4, exportedAt:new Date().toISOString(), currentWallet:appState.currentWallet,
+    colorTheme:appState.colorTheme, categories:appState.categories, wallets:appState.wallets }, null, 2);
+}
+function openExport(){
+  const json = exportJSON();
+  showModal(`<button class="close-x" onclick="closeModal()">✕</button>
+    <h2>📤 Exporter mes données</h2>
+    <p class="sub">Fichier JSON v4 — il contient tout : wallets, opérations, catégories, thème.</p>
+    <button class="btn btn-primary btn-block" onclick="downloadBackup()">⬇️ Télécharger le fichier</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="copyBackup()">📋 Copier le JSON</button>
+    <details style="margin-top:14px"><summary class="muted" style="cursor:pointer">Voir le JSON</summary>
+    <pre style="background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:10px;max-height:200px;overflow:auto;margin-top:8px">${esc(json)}</pre></details>`);
+}
+function downloadBackup(){
+  const blob = new Blob([exportJSON()], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bankling-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('💾 Backup téléchargé');
+}
+async function copyBackup(){
+  try { await navigator.clipboard.writeText(exportJSON()); toast('📋 JSON copié dans le presse-papier !'); }
+  catch(e){
+    const ta = document.createElement('textarea'); ta.value = exportJSON();
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('📋 JSON copié !'); } catch(e2){ toast('❌ Copie impossible'); }
+    ta.remove();
+  }
+}
+function handleImportFile(ev){
+  const f = ev.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { try { importData(JSON.parse(rd.result)); } catch(e){ toast('❌ Fichier JSON invalide'); } };
+  rd.readAsText(f);
+  ev.target.value = '';
+}
+function importData(d){
+  if (isLegacyFormat(d)){ pendingLegacy = d; openLegacyImport({ fromStorage:false }); return; }
+  if (d && d.version === 4 && d.wallets){
+    showModal(`<button class="close-x" onclick="closeModal()">✕</button>
+    <h2>📥 Importer un backup</h2>
+    <p class="sub">Ce fichier contient ${Object.keys(d.wallets).length} wallet(s). Comment veux-tu l'importer ?</p>
+    <button class="btn btn-primary btn-block" onclick="closeModal();mergeImport(d);toast('🔀 Backup fusionné !')">🔀 Fusionner avec l'existant</button>
+    <button class="btn btn-bad btn-block" style="margin-top:10px" onclick="closeModal();replaceImport(d);toast('♻️ Données remplacées')">♻️ Remplacer toutes mes données</button>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px" onclick="closeModal()">Annuler</button>`);
+  } else toast('❌ Format de fichier non reconnu');
+}
+function mergeImport(d){
+  // catégories
+  (d.categories||[]).forEach(ic => { if (!appState.categories.some(c=>c.id===ic.id)) appState.categories.push(ic); });
+  // wallets
+  Object.values(d.wallets||{}).forEach(iw => {
+    const w = appState.wallets[iw.id];
+    if (!w){ appState.wallets[iw.id] = { id:iw.id, name:iw.name, emoji:iw.emoji, balance:iw.balance||0, transactions:[] }; }
+    else { w.emoji = iw.emoji || w.emoji; w.name = iw.name || w.name; }
+    const ww = appState.wallets[iw.id];
+    const known = new Set(ww.transactions.map(t=>t.id));
+    (iw.transactions||[]).forEach(t => { if (t && t.id && !known.has(t.id)) ww.transactions.push({ ...t, id:t.id }); });
+    ww.balance = ww.transactions.length ? Math.round(ww.transactions.reduce((s,t)=>s+(t.amount||0),0)*100)/100 : (ww.balance);
+  });
+  if (!appState.currentWallet || !appState.wallets[appState.currentWallet]) appState.currentWallet = walletList()[0]?.id || null;
+  saveData(); renderAll();
+}
+function replaceImport(d){
+  appState = normalizeState({ version:4, currentWallet:d.currentWallet, colorTheme:d.colorTheme,
+    categories:d.categories, wallets:d.wallets, ui:appState && appState.ui ? appState.ui : undefined });
+  saveData(); renderAll();
+}
+
+/* ---------- Import ancienne version (v3 : card / cash / paypal) ---------- */
+function isMappedAuto(oldKey, newWallets){
+  const on = norm(LEGACY_NAMES[oldKey]);
+  return newWallets.find(w => norm(w.name).includes(on.split(' ')[0]));
+}
+let legacyImportKeys = [];
+function openLegacyImport(opts = {}){
+  const legacy = pendingLegacy; if (!legacy) return;
+  const keys = (Object.keys(legacy.accounts || {}).filter(k => legacy.accounts[k] && (legacy.accounts[k].balance !== 0 || (legacy.accounts[k].transactions||[]).length)));
+  legacyImportKeys = keys.length ? keys : Object.keys(legacy.accounts || {});
+  const newWallets = walletList();
+  const rows = keys.map((k, i) => {
+    const acc = legacy.accounts[k];
+    const nbTx = (acc.transactions||[]).length;
+    const auto = isMappedAuto(k, newWallets);
+    return `<div class="mig-card">
+      <div class="mig-old"><span style="font-size:22px">${LEGACY_EMOJI[k]}</span>
+        <div style="flex:1"><div style="font-weight:800;font-size:14px">${LEGACY_NAMES[k]}</div>
+        <div class="muted tnum">solde : ${fmtEUR(acc.balance)} · ${nbTx} opération${nbTx>1?'s':''}</div></div></div>
+      <select class="select" id="mig-sel-${i}" onchange="migTargetChanged(${i})">
+        <option value="new" ${!auto?'selected':''}>➕ Créer un nouveau wallet…</option>
+        ${newWallets.map(w=>`<option value="${w.id}" ${auto&&auto.id===w.id?'selected':''}>${w.emoji} ${esc(w.name)}</option>`).join('')}
+      </select>
+      <div id="mig-new-${i}" style="margin-top:10px;${auto?'display:none':''}">
+        <div style="display:flex;gap:8px">
+          <input class="inp" id="mig-name-${i}" placeholder="Nom du nouveau wallet" maxlength="30" value="${LEGACY_NAMES[k]}" style="flex:1">
+          <input class="inp" id="mig-emoji-${i}" style="width:64px;text-align:center" maxlength="4" value="${LEGACY_EMOJI[k]}">
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const title = opts.fromStorage
+    ? '🕰️ Anciennes données détectées !'
+    : '🕰️ Fichier d\'ancienne version détecté !';
+  showModal(`<button class="close-x" onclick="closeModal();pendingLegacy=null;if(!walletList().length)openOnboarding()">✕</button>
+    <h2>${title}</h2>
+    <p class="sub">Ce fichier vient d'une ancienne version (wallets imposés : Carte Bleue, Espèces, PayPal).<br>
+    <b>Les données sont conservées</b> (solde + opérations), mais toi seul choisis <b>dans quels nouveaux wallets</b> elles atterrissent — noms et emojis, c'est toi qui décides.</p>
+    ${rows}
+    ${!walletList().length ? `<p class="faint" style="font-size:11.5px">💡 Astuce : choisis « Créer un nouveau wallet » pour donner suite à l'onboarding, ou crée d'abord tes wallets.</p>` : ''}
+    <button class="btn btn-good btn-block" style="margin-top:8px" onclick="applyLegacyImport()">✅ Importer les données</button>`,
+    { dismissible:false });
+}
+function migTargetChanged(i){
+  const sel = document.getElementById('mig-sel-' + i);
+  const box = document.getElementById('mig-new-' + i);
+  if (box) box.style.display = sel.value === 'new' ? '' : 'none';
+}
+function applyLegacyImport(){
+  const legacy = pendingLegacy; if (!legacy) return;
+  const keys = legacyImportKeys.length ? legacyImportKeys : Object.keys(legacy.accounts || {});
+  let mapped = 0;
+  const mapping = {};
+  keys.forEach((k, i) => {
+    const acc = legacy.accounts[k]; if (!acc) return;
+    const sel = document.getElementById('mig-sel-' + i);
+    let targetId = sel ? sel.value : 'new';
+    if (targetId === 'new'){
+      const name = (document.getElementById('mig-name-' + i)?.value || '').trim() || LEGACY_NAMES[k];
+      const emoji = document.getElementById('mig-emoji-' + i)?.value.trim() || LEGACY_EMOJI[k];
+      targetId = uid('w_');
+      appState.wallets[targetId] = { id:targetId, name, emoji, balance:0, transactions:[] };
+    }
+    const w = appState.wallets[targetId]; if (!w) return;
+    const txns = (acc.transactions || []).map(t => ({ id: uid('tx'), amount: t.amount, type: t.type, label: t.label || '', category: null, timestamp: t.timestamp ? new Date(t.timestamp).getTime() : Date.now() }));
+    w.transactions.push(...txns);
+    if (txns.length) w.balance = (w.balance || 0) + (acc.balance || 0);
+    else if (acc.balance) { w.transactions.push({ id: uid('tx'), amount: acc.balance, type:'Ajustement', label:'Import ancienne version', category:null, timestamp: Date.now() }); w.balance = (w.balance||0) + acc.balance; }
+    mapping[k] = targetId;
+    mapped++;
+  });
+  const curOld = legacy.currentAccount;
+  if (curOld && mapping[curOld] && appState.wallets[mapping[curOld]]) appState.currentWallet = mapping[curOld];
+  else if (!appState.currentWallet || !appState.wallets[appState.currentWallet]) appState.currentWallet = walletList()[0]?.id || null;
+  if (legacy.colorTheme && THEME_CONFIG[legacy.colorTheme]) appState.colorTheme = legacy.colorTheme;
+  pendingLegacy = null;
+  saveData(); closeModal(); applyTheme(); renderAll();
+  toast(`✅ ${mapped} ancien(s) wallet(s) importé(s) — bienvenue dans la v4 !`);
+}
+
+/* ============================================================
+   PWA — installation
+   ============================================================ */
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('install-btn').style.display = 'grid';
+});
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0){
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(()=>{}); });
+}
+function installApp(){
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{ deferredPrompt = null; document.getElementById('install-btn').style.display = 'none'; });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+/* Les scripts sont en fin de <body> : le DOM est déjà prêt, on démarre directement. */
+loadData();
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (document.activeElement?.id === 'op-amount' || document.activeElement?.id === 'op-label')) submitOp();
+  if (e.key === 'Escape'){ closeDrawer(); if (walletList().length) closeModal(); }
+});
+</script>
+</body>
+</html>

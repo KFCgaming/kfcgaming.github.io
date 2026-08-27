@@ -1,0 +1,32 @@
+{
+  "name": "Bankling — Mes finances",
+  "short_name": "Bankling",
+  "description": "Gestionnaire de finances personnel, 100% local et hors-ligne : wallets personnalisés, graphiques, wrapped.",
+  "lang": "fr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#150A28",
+  "theme_color": "#8B5CF6",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
