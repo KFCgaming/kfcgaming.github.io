@@ -1,67 +1,61 @@
-# 🪴 Bankling — Gestionnaire de finances local
+<div align="center">
 
-> **« Bankling — fais pousser ton argent » 🌱**
+<img src="icon-512.png" width="140" alt="Bling, la plante-à-billets la plus kawaii du game">
 
-Application web **100 % locale et hors-ligne** (PWA) : aucune librairie externe, aucun serveur,
-aucune donnée ne quitte ton appareil. Tout est enregistré dans le `localStorage` du navigateur.
+# 🪴 Bankling
 
-- **Logo / mascotte** : *Bling* 🌱, la petite plante dont les feuilles sont des billets.
-- **Nom** : Bankling = *bank* (banque) + *-ling* (le petit en anglais) + *bling* (l'argent qui brille). ✨
+**L'app qui prend ton argent très au sérieux.**
 
----
+*Le seul gestionnaire de finances dont la mascotte est une plante dont les feuilles sont des billets.*
 
-## 🚀 Hébergement GitHub Pages (recommandé — 3 étapes, zéro config)
-
-Le projet est **pensé pour GitHub Pages** : tous les chemins sont relatifs, donc
-l'appli fonctionne à `https://<ton-user>.github.io/<ton-repo>/`, quel que soit le nom du repo.
-
-1. **Crée un repo** sur GitHub (public, nom libre, ex. `bankling`).
-2. **Ajoute les fichiers** du dossier (Drag & drop sur `Add file → Upload files`) :
-   `index.html`, `sw.js`, `manifest.webmanifest`, `README.md` et les 4 icônes
-   `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`.
-   (Rien d'autre à créer.)
-3. Active Pages : **Settings → Pages → Source : « Deploy from a branch » → main / (root) → Save**.
-   Après ~1 minute, l'appli est en ligne sur `https://<ton-user>.github.io/<ton-repo>/` ✅
-
-C'est tout : le service worker s'auto-enregistre, l'appli est installable et fonctionne hors-ligne.
-Quand tu mets à jour des fichiers, il suffit de re-pusher (les visiteurs reçoivent
-automatiquement la nouvelle version).
-
-> 💡 Pour l'installer sur téléphone : ouvre l'URL → menu ⋮ → « Ajouter à l'écran d'accueil » /
-> « Installer l'application ».
-
-### Variante : tester en local avant de publier
-```bash
-cd localbank-pwa
-python -m http.server 8080
-# → http://localhost:8080
-```
+</div>
 
 ---
 
-## ✨ Fonctionnalités v4
+## 🌱 C'est quoi, ce truc ?
 
-| Fonction | Détail |
-|---|---|
-| **Wallets libres** | Plus de CB / Espèces / PayPal imposés : tu crées tes wallets avec **nom + emoji** (ex. « Mon PayPal 🅿️ », « Livret A 🏦 »). |
-| **Import intelligent (ancien format)** | Détecte les JSON de l'ancienne version (card/cash/paypal) et te fait **choisir vers quel wallet** va chaque ancien portefeuille — **valeurs conservées**, noms/emojis à toi. |
-| **Graphique paramétrable** | **Argent / jour** ou **Argent / transaction**, intervalles : 7 j, 1 mois, 3 mois, 6 mois, 1 an, tout, personnalisé. Périmètre : wallet ou tous. Tooltip + export PNG. |
-| **Wrapped** | Bilan sur une période : dépensé / reçu, moyennes, plus grosse dépense, jour le plus dépensier, top catégories, recherche approximative (« bus » → « bus 12 », « BUS », « BZS 12 »…). |
-| **Catégories** | Directement dans l'onglet du wallet (montant → intitulé → catégorie → OK) + catégories personnalisées. |
-| **Historique amélioré** | Recherche approximative, filtres (type, catégorie, wallet), regroupement par jour, suppression d'opération (solde recalculé). |
-| **Design** | Interface refaite (cartes, gradients, navigation basse, drawer, animations) avec **8 thèmes** (violet, bleu, vert, orange, rouge, rose, sarcelle, N&B). |
-| **Mini-stats** | Dépensé / reçu ce mois-ci + solde total de tous les wallets. |
-| **Export** | Backup JSON v4 (téléchargement ou copie), import avec choix **fusionner** ou **remplacer**. |
+Bankling est une **PWA de gestion de finances personnelles** qui répond à la question que toute l'humanité se pose depuis des millénaires : *"où est-ce que mon argent est passé, exactement ?"*
 
-## 🗂 Données & migration
-- Stockage : `localStorage` (clé `bankling_v4`) — **attention** : sur `user.github.io`, toutes
-  tes repos partagent la même origine, donc la même base locale. C'est sans risque (clé unique),
-  mais ne fais pas tourner deux apps de finances sur la même origine.
-- **Migration automatique** : les données `localbank_v4` (ancien nom) sont reprises à l'ouverture.
-  Les données v3 (`personalFinanceV3_2`) déclenchent l'assistant de migration.
-- `sw.js` = simple cache offline, aucune donnée traitée.
+Ici, pas de banque, pas de compte, pas de serveur : tout se passe **sur ton appareil**, dans ton navigateur. Tu crées tes propres portefeuilles — *« Mon PayPal 🅿️ », « Livret A 🏦 », « La cachette sous le matelas 🛏️ »* — avec le nom et l'emoji que **TU** veux. Fini les wallets imposés. C'est tes sous, c'est tes règles.
 
-## 🧪 Tests
-24 tests unitaires (recherche floue, séries, wrapped) + 33 tests d'intégration de bout en bout
-(onboarding → opérations → graphique → wrapped → historique → import ancien format → migration auto
-→ export → thèmes → suppression), plus un test de **déploiement sous-chemin** (type GitHub Pages).
+Et au-dessus de tout ça, il y a **Bling** 🌱, ta conseillère financière qui ne parle pas : une petite plante kawaii dont les feuilles sont des billets. Plus tu épargnes, plus elle a l'air contente. (Elle est toujours contente. Elle ne juge pas. Elle est en feuilles.)
+
+## ✨ Ce qu'il y a dedans
+
+- 👛 **Wallets libres** — autant que tu veux, nom + emoji à ta sauce, solde global en un coup d'œil
+- 📊 **Graphique paramétrable** — argent/jour ou argent/transaction, de 7 jours à 1 an, intervalles personnalisés, wallet seul ou tous réunis, tooltip au survol, export PNG
+- 🎁 **Le Wrapped** — ton bilan sur une période : dépensé, reçu, moyennes, jour le plus dépensier, top catégories… et surtout la fameuse **recherche approximative** : tape « bus », il te sort « bus 12 », « BUS », « abonnement bus » et même « BZS 12 » (un jour, quelqu'un avait tapé avec les doigts)
+- 🏷️ **Catégories** — transport 🚌, courses 🛒, restaurants 🍔… et les tiennes en plus, directement dans l'onglet du wallet (montant → intitulé → catégorie → OK, jamais l'inverse)
+- 🧾 **Historique complet** — recherche floue, filtres par type/catégorie/wallet, groupement par jour, suppression d'une opération avec solde recalculé
+- 💶 **Mini-stats** — dépensé/reçu ce mois-ci et total de tous les wallets, sans même scroller
+- 🎨 **8 palettes** de couleurs, de la plus sérieuse (Noir & blanc) à la plus « regarde mes économies » (Sarcelle)
+- 💾 **Export/import JSON** — sauvegarde, transfert de téléphone en téléphone, choix fusion ou remplacement
+- 📴 **100 % hors-ligne** — PWA installable, service worker, zéro internet après la première visite
+- 🕰️ **Migration d'ancienne version** — notre fierté, voir ci-dessous
+
+## 🕰️ L'assistant d'import de l'ancienne version
+
+Tu viens de l'ancienne app (celle où tu étais *obligé* d'avoir exactement trois wallets : Carte Bleue, Espèces, PayPal) ? Pas de panique.
+
+Bankling détecte ton vieux JSON et te demande, pour chaque ancien portefeuille : *« où veux-tu mettre mes valeurs ? »* Tu choisis un wallet existant — ou tu en crées un nouveau, avec **TON** nom et **TON** emoji. Les montants et l'historique sont conservés ; c'est juste les étiquettes qu'on change. La « Carte Bleue » atterrit dans « Mon PayPal 🅿️ » ? Aucun problème. Personne ne vient vérifier. C'est des données, pas un contrôle d'identité.
+
+(La migration fonctionne aussi toute seule si d'anciennes données traînent encore dans le navigateur. On est prévoyants. 🤓)
+
+## 🔒 Vie privée, niveau bunker
+
+Pas de compte. Pas de serveur. Pas de trace. Tout vit dans le `localStorage` de **ton** navigateur (clé `bankling_v4`) — tes finances ne s'envolent nulle part, même pas en mode avion.
+
+Seule exception, assumée : **toi** et ton cerveau. L'app ne peut rien pour toi face à l'achat impulsif de chaussures. *« C'est pas une dépense, c'est un investissement émotionnel »* — non, Bling a vu. 🌱
+
+## 🤖 Fait 100 % à l'IA
+
+Ce projet a été **entièrement généré par IA** — le code, le design, le logo (Bling, la plante-à-billets), les 8 palettes, le graphique maison, la recherche approximative, les 57 tests automatisés, et les jeux de mots (même ceux qu'on a écartés, ils existent quelque part). Aucun humain n'a touché une ligne de code. Des billets, oui. Du code, non. 🪴✨
+
+---
+
+<div align="center">
+
+*Bankling fait pousser ton argent. Le reste, c'est entre toi et Bling.* 🌱
+
+
+</div>
