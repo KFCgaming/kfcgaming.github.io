@@ -1,61 +1,71 @@
 <div align="center">
 
-<img src="icon-512.png" width="140" alt="Bling, la plante-à-billets la plus kawaii du game">
+<img src="icon-512.png" width="140" alt="Flamingo, le flamant-carotte le plus sérieux du game">
 
-# 🪴 Bankling
+# 🦩 Flamingo
 
-**L'app qui prend ton argent très au sérieux.**
+**L'app qui prend ta flamme très au sérieux.**
 
-*Le seul gestionnaire de finances dont la mascotte est une plante dont les feuilles sont des billets.*
+*Le seul tracker de "productivité personnelle" avec un flamant orange à fanes de carotte.*
 
 </div>
 
 ---
 
-## 🌱 C'est quoi, ce truc ?
+## 🥕 C'est quoi, ce truc ?
 
-Bankling est une **PWA de gestion de finances personnelles** qui répond à la question que toute l'humanité se pose depuis des millénaires : *"où est-ce que mon argent est passé, exactement ?"*
+Flamingo est une **PWA de suivi quotidien** répondant à la question que toute l'humanité se pose depuis des millénaires : *"est-ce que la carotte a été aiguisée aujourd'hui ?"*
 
-Ici, pas de banque, pas de compte, pas de serveur : tout se passe **sur ton appareil**, dans ton navigateur. Tu crées tes propres portefeuilles — *« Mon PayPal 🅿️ », « Livret A 🏦 », « La cachette sous le matelas 🛏️ »* — avec le nom et l'emoji que **TU** veux. Fini les wallets imposés. C'est tes sous, c'est tes règles.
+Chaque jour, tu réponds honnêtement (le flamant te surveille 👀), et l'app entretient ta **🔥 flamme** — ta série de jours consécutifs. Un jour de repos ? La flamme s'éteint et te voilà en **🌫️ jours de cendre**. C'est la vie. La carotte se régénère. 🧘
 
-Et au-dessus de tout ça, il y a **Bling** 🌱, ta conseillère financière qui ne parle pas : une petite plante kawaii dont les feuilles sont des billets. Plus tu épargnes, plus elle a l'air contente. (Elle est toujours contente. Elle ne juge pas. Elle est en feuilles.)
+Et parce qu'on est des gens précis, l'app note aussi si **🌶️ la salsa est sortie** (= si l'aiguisage est allé jusqu'au bout, ou pas 😏). Oui, on peut aiguiser sans salsa. C'est de la science. Demande à ton pote.
 
 ## ✨ Ce qu'il y a dedans
 
-- 👛 **Wallets libres** — autant que tu veux, nom + emoji à ta sauce, solde global en un coup d'œil
-- 📊 **Graphique paramétrable** — argent/jour ou argent/transaction, de 7 jours à 1 an, intervalles personnalisés, wallet seul ou tous réunis, tooltip au survol, export PNG
-- 🎁 **Le Wrapped** — ton bilan sur une période : dépensé, reçu, moyennes, jour le plus dépensier, top catégories… et surtout la fameuse **recherche approximative** : tape « bus », il te sort « bus 12 », « BUS », « abonnement bus » et même « BZS 12 » (un jour, quelqu'un avait tapé avec les doigts)
-- 🏷️ **Catégories** — transport 🚌, courses 🛒, restaurants 🍔… et les tiennes en plus, directement dans l'onglet du wallet (montant → intitulé → catégorie → OK, jamais l'inverse)
-- 🧾 **Historique complet** — recherche floue, filtres par type/catégorie/wallet, groupement par jour, suppression d'une opération avec solde recalculé
-- 💶 **Mini-stats** — dépensé/reçu ce mois-ci et total de tous les wallets, sans même scroller
-- 🎨 **8 palettes** de couleurs, de la plus sérieuse (Noir & blanc) à la plus « regarde mes économies » (Sarcelle)
-- 💾 **Export/import JSON** — sauvegarde, transfert de téléphone en téléphone, choix fusion ou remplacement
-- 📴 **100 % hors-ligne** — PWA installable, service worker, zéro internet après la première visite
-- 🕰️ **Migration d'ancienne version** — notre fierté, voir ci-dessous
+- 📅 **Calendrier** avec 🥕 les jours glorieux, ✖ les jours sages, 🌶️ les jours de salsa, et des badges ×2, ×3 pour les machines
+- 🔥 **Flamme & cendre** — tes séries en cours, dans un sens comme dans l'autre
+- ⏱️ **"Carotte non aiguisée depuis..."** — le compteur qui met la pression
+- ⏰ **Sessions multiples** — avec les heures pour les horlogers, ou juste le nombre pour les distraits
+- 📊 **Stats** du mois et depuis le début, dont le légendaire *👑 jour le plus productif*
+- 📈 **Graphiques & heatmap** style GitHub (enfin des commits verts dont tu es fier)
+- 🦩 **Mascotte évolutive** : de 🥚 *Œuf dormant* à 🌋 *Phénix orange* (100 jours de flamme, on y croit)
+- 🎯 **Défis hebdo** générés chaque lundi
+- 📤 **Partage** : export PNG stylé de ton calendrier, pour flexer (prudemment)
+- 🎨 **5 palettes** de couleurs, mode clair/sombre, sons cosy désactivables
+- 💾 **Export/import JSON** — ta flamme te suit de téléphone en téléphone
 
-## 🕰️ L'assistant d'import de l'ancienne version
+## 🥸 Le mode Camouflage
 
-Tu viens de l'ancienne app (celle où tu étais *obligé* d'avoir exactement trois wallets : Carte Bleue, Espèces, PayPal) ? Pas de panique.
+Un appui sur le bouton 🥸 et Flamingo devient une app de suivi **"5 fruits et légumes par jour"** tout à fait respectable. 🥦 *"As-tu mangé tes légumes ?"*, *"jours vitaminés"*, taux de cuisine maison... Maman peut regarder.
 
-Bankling détecte ton vieux JSON et te demande, pour chaque ancien portefeuille : *« où veux-tu mettre mes valeurs ? »* Tu choisis un wallet existant — ou tu en crées un nouveau, avec **TON** nom et **TON** emoji. Les montants et l'historique sont conservés ; c'est juste les étiquettes qu'on change. La « Carte Bleue » atterrit dans « Mon PayPal 🅿️ » ? Aucun problème. Personne ne vient vérifier. C'est des données, pas un contrôle d'identité.
+Pour en sortir ? **Digicode obligatoire** 🔐. Et si tu l'oublies, l'app te pose LA question de sécurité ultime : *"quand est-ce que tu t'es aiguisé pour la dernière fois ?"* — clique sur le bon jour du calendrier pour prouver que ce téléphone est bien le tien. Sécurité biographique. Incassable. 🧠
 
-(La migration fonctionne aussi toute seule si d'anciennes données traînent encore dans le navigateur. On est prévoyants. 🤓)
+## 🚀 Installation
 
-## 🔒 Vie privée, niveau bunker
+Flamingo est une **PWA** : elle s'installe comme une vraie app, directement depuis le navigateur. Pas de store, pas de compte, pas de questions gênantes.
 
-Pas de compte. Pas de serveur. Pas de trace. Tout vit dans le `localStorage` de **ton** navigateur (clé `bankling_v4`) — tes finances ne s'envolent nulle part, même pas en mode avion.
+### 📱 Sur téléphone
 
-Seule exception, assumée : **toi** et ton cerveau. L'app ne peut rien pour toi face à l'achat impulsif de chaussures. *« C'est pas une dépense, c'est un investissement émotionnel »* — non, Bling a vu. 🌱
+**Android (Chrome)** : ouvre l'app dans le navigateur → menu **⋮** en haut à droite → **"Ajouter à l'écran d'accueil"** (ou "Installer l'application") → confirme. Le flamant-carotte apparaît sur ton écran d'accueil comme n'importe quelle app. 🦩
 
-## 🤖 Fait 100 % à l'IA
+**iPhone / iPad (Safari)** : ouvre l'app dans Safari → bouton **Partager** (le carré avec la flèche ⬆️) → **"Sur l'écran d'accueil"** → confirme. Et voilà.
 
-Ce projet a été **entièrement généré par IA** — le code, le design, le logo (Bling, la plante-à-billets), les 8 palettes, le graphique maison, la recherche approximative, les 57 tests automatisés, et les jeux de mots (même ceux qu'on a écartés, ils existent quelque part). Aucun humain n'a touché une ligne de code. Des billets, oui. Du code, non. 🪴✨
+### 💻 Sur PC / Mac
+
+**Chrome / Edge** : ouvre l'app → clique sur la petite **icône d'installation** (⊕ ou un écran avec une flèche) à droite de la barre d'adresse → **"Installer"**. Flamingo s'ouvre alors dans sa propre fenêtre, sans barre d'adresse, comme un vrai logiciel.
+
+Une fois installée, l'app fonctionne **même hors-ligne** (personne ne doit savoir que tu es dans le train). 🚂
+
+Tout est stocké **en local sur ton appareil** (localStorage). Aucun serveur, aucun compte, aucune fuite. Ce qui se passe dans Flamingo reste dans Flamingo. 🤫
+
+## 🤖 Fait 100% à l'IA
+
+Ce projet a été **entièrement généré par IA** — le code, le design, le logo flamant-carotte, les blagues (surtout les blagues). Aucun humain n'a aiguisé la moindre ligne de code. 🦩✨
 
 ---
 
 <div align="center">
 
-*Bankling fait pousser ton argent. Le reste, c'est entre toi et Bling.* 🌱
-
+*Flamingo garde ta flamme allumée. Le reste, c'est entre toi et ta carotte.* 🥕🔥
 
 </div>
