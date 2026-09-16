@@ -89,6 +89,7 @@ let engine = null;        // instance hls ou mpegts
 let engineName = "—";
 let kind = "native";      // hls | mpegts | native
 let tries = 0, hintTimer = null, manualStop = false;
+let attemptT0 = 0, instantFails = 0;
 const MAX_TRIES = 6;
 
 /* ---------- infos de la page (tout vient de l'URL) ---------- */
@@ -145,6 +146,7 @@ function start() {
   manualStop = false;
   destroyEngine();
   $("badge").classList.toggle("on", kind !== "native");
+  attemptT0 = Date.now();
   ovShow("Connexion au flux…", "", null, true);
 
   if (kind === "hls") {
@@ -186,12 +188,30 @@ function tryPlay() {
   });
 }
 
+function mixedBlocked() {
+  return location.protocol === "https:" && /^http:\/\//i.test(FLUX || "");
+}
+function giveUp(reason) {
+  if (mixedBlocked()) {
+    ovShow("Flux http bloqué par le navigateur",
+      "La page est ouverte en https et le flux est en http : Chrome/Edge refusent ce mélange. "
+      + "Solutions : ouvrir cette page en http:// (hébergement local), utiliser Firefox (cliquer le bouclier), "
+      + "ou servir le flux en https. Les boutons du bandeau permettent de copier ou d'ouvrir le flux brut.",
+      "retry", false);
+    setState("bloqué (mixed content)");
+  } else {
+    ovShow("Impossible de lire ce flux",
+      reason + " — vérifiez le lien, ou ouvrez-le dans un lecteur externe (bouton ↗ du bandeau).",
+      "retry", false);
+    setState("échec");
+  }
+}
 function scheduleRetry(reason) {
   if (manualStop) return;
+  instantFails = (Date.now() - attemptT0 < 2000) ? instantFails + 1 : 0;
   tries++;
-  if (tries > MAX_TRIES) {
-    ovShow("Impossible de lire ce flux", reason + " — vérifiez le lien, ou ouvrez-le dans un lecteur externe.", "retry", false);
-    setState("échec");
+  if (tries > MAX_TRIES || instantFails >= 2) {
+    giveUp(reason);
     return;
   }
   const wait = Math.min(1.5 * Math.pow(1.6, tries - 1), 12);
@@ -251,5 +271,5 @@ window.addEventListener("beforeunload", () => { manualStop = true; destroyEngine
 /* ---------- GO ---------- */
 if (FLUX) start();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3c2051b2996e163',t:'MTc4OTU4NDIzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
