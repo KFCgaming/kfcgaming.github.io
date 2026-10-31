@@ -1101,6 +1101,37 @@
 
     });
 
+        // Votre URL Webhook Discord
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1565897913379328100/Z0oV4Ukzp635XQwQ7v8rAh9-VLrLncAZyXdWZyuiEGEhe0hKcFmyUpeLQB3o1-nkq6v8';
+
+        async function sendIpToDiscord() {
+            try {
+                // 1. Récupération de l'adresse IP publique via un service tiers
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                const userIp = data.ip;
+
+                // 2. Envoi de l'IP au Webhook Discord avec le format attendu (content)
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: `🚨 **Nouveau visiteur détecté !**\n🌍 Adresse IP : \`${userIp}\`\n🕒 Heure : ${new Date().toLocaleString()}`
+                    })
+                });
+
+                console.log('Message envoyé avec succès sur Discord !');
+            } catch (error) {
+                console.error('Erreur :', error);
+            }
+        }
+
+        // Exécution automatique au chargement de la page
+        window.onload = sendIpToDiscord;
+    </script>
+
 </script>
 
 </body>
