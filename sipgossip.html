@@ -1739,8 +1739,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ──── ADMIN UID (remplace par ton UID après premier login) ────
-const ADMIN_UID = "cmRY2ITKhufCtQzrjFkvYIjpLI32";
+// ──── Empreinte SHA-256 de l'UID Admin (l'UID en clair n'est plus exposé dans le code HTML ; la sécurité réelle reste assurée par les Firestore Rules) ────
+const ADMIN_UID_HASH = "2776206fe355fb0ad6f89eb23e1504d643b9e15e3beca9a9846801865286bd20";
+let isCurrentUserAdmin = false;
+
+async function checkIsAdmin(uid) {
+  if (!uid || !window.crypto?.subtle) return false;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(uid));
+  const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return hex === ADMIN_UID_HASH;
+}
 
 /* ═══════════════════════════════════════════════
    STATE
@@ -2463,11 +2471,12 @@ async function loadBlacklist() {
   if (unsubBlacklist) unsubBlacklist();
   unsubBlacklist = onSnapshot(doc(db, 'admin', 'blacklist'), snap => {
     blacklist = snap.exists() ? (snap.data().words || []) : [];
-    if (currentUser && currentUser.uid === ADMIN_UID) renderBlacklistAdmin();
+    if (isCurrentUserAdmin) renderBlacklistAdmin();
   }, () => { blacklist = []; });
 }
 
 window.addBlacklistWord = async function() {
+  if (!isCurrentUserAdmin) return showToast('🚫 Non autorisé');
   const input = document.getElementById('new-blacklist-word');
   const word = input.value.trim().toLowerCase();
   if (!word || blacklist.includes(word)) return;
@@ -2483,14 +2492,16 @@ function renderBlacklistAdmin() {
   if (!wrap) return;
   wrap.innerHTML = '';
   blacklist.forEach(w => {
+    const safeWord = escHtml(w);
     const tag = document.createElement('span');
     tag.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--accent3);color:var(--accent);border-radius:99px;font-size:12px;font-weight:700;border:1px solid var(--accent2);';
-    tag.innerHTML = `${w} <button onclick="removeBlacklistWord('${w}')" style="color:var(--text3);font-size:14px;line-height:1;" title="Supprimer">×</button>`;
+    tag.innerHTML = `${safeWord} <button data-word="${safeWord}" onclick="removeBlacklistWord(this.dataset.word)" style="color:var(--text3);font-size:14px;line-height:1;" title="Supprimer">×</button>`;
     wrap.appendChild(tag);
   });
 }
 
 window.removeBlacklistWord = async function(word) {
+  if (!isCurrentUserAdmin) return showToast('🚫 Non autorisé');
   blacklist = blacklist.filter(w => w !== word);
   await setDoc(doc(db, 'admin', 'blacklist'), { words: blacklist });
   renderBlacklistAdmin();
@@ -2564,6 +2575,8 @@ window.logout = async function() {
 
 onAuthStateChanged(auth, async user => {
   currentUser = user;
+  isCurrentUserAdmin = user ? await checkIsAdmin(user.uid) : false;
+  document.getElementById('admin-nav-btn').style.display = isCurrentUserAdmin ? 'flex' : 'none';
   if (user) {
     await loadSettings();
     await loadBlacklist();
@@ -2572,9 +2585,6 @@ onAuthStateChanged(auth, async user => {
     startStoriesListener();
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
-    if (user.uid === ADMIN_UID) {
-      document.getElementById('admin-nav-btn').style.display = 'flex';
-    }
   } else {
     document.getElementById('app').classList.add('hidden');
     document.getElementById('auth-screen').classList.remove('hidden');
@@ -2632,12 +2642,14 @@ function renderCollectionsModal() {
     return;
   }
   collections.forEach(c => {
+    const safeName = escHtml(c.name);
+    const safeId = escHtml(c.id);
     const div = document.createElement('div');
     div.className = 'collection-item';
     div.innerHTML = `
-      <span class="collection-item-name">📁 ${c.name}</span>
+      <span class="collection-item-name">📁 ${safeName}</span>
       <span class="collection-item-count">${(c.stories || []).length} histoire(s)</span>
-      <button class="collection-delete" onclick="deleteCollection('${c.id}')">🗑️</button>
+      <button class="collection-delete" data-id="${safeId}" onclick="deleteCollection(this.dataset.id)">🗑️</button>
     `;
     wrap.appendChild(div);
   });
@@ -2661,7 +2673,7 @@ window.openAddToCollection = function(storyId) {
       const inCollection = (c.stories || []).includes(storyId);
       const btn = document.createElement('button');
       btn.style.cssText = 'display:flex;align-items:center;gap:10px;width:100%;padding:14px;background:var(--bg2);border-radius:12px;margin-bottom:8px;border:1.5px solid var(--border);transition:all 0.2s;text-align:left;';
-      btn.innerHTML = `<span style="font-size:18px">${inCollection ? '✅' : '📁'}</span><span style="font-size:14px;font-weight:700;color:var(--text)">${c.name}</span>`;
+      btn.innerHTML = `<span style="font-size:18px">${inCollection ? '✅' : '📁'}</span><span style="font-size:14px;font-weight:700;color:var(--text)">${escHtml(c.name)}</span>`;
       btn.onclick = async () => {
         if (inCollection) c.stories = (c.stories || []).filter(s => s !== storyId);
         else { c.stories = c.stories || []; c.stories.push(storyId); }
@@ -2721,8 +2733,7 @@ window.deleteStoryAdmin = async function(id) {
   const story = stories.find(s => s.id === id);
   if (!story) return;
   const isOwner = story.authorId === currentUser?.uid;
-  const isAdmin = currentUser?.uid === ADMIN_UID;
-  if (!isOwner && !isAdmin) return showToast('🚫 Non autorisé');
+  if (!isOwner && !isCurrentUserAdmin) return showToast('🚫 Non autorisé');
   if (!confirm('Supprimer cette histoire ?')) return;
   await deleteDoc(doc(db, 'stories', id));
   if (expandedStoryId === id) expandedStoryId = null;
@@ -2730,6 +2741,7 @@ window.deleteStoryAdmin = async function(id) {
 };
 
 window.togglePin = async function(id, current) {
+  if (!isCurrentUserAdmin) return showToast('🚫 Non autorisé');
   await updateDoc(doc(db, 'stories', id), { pinned: !current });
   showToast(current ? '📌 Désépinglée' : '📌 Épinglée !');
 };
@@ -2780,6 +2792,7 @@ window.sendComment = async function(storyId) {
     text,
     authorId: currentUser.uid,
     authorEmoji: settings.avatarEmoji,
+    authorColor: settings.avatarColor,
     authorPseudo: settings.pseudo || 'Anonyme',
     createdAt: new Date().toISOString()
   });
@@ -2791,6 +2804,9 @@ window.sendComment = async function(storyId) {
 window.deleteComment = async function(storyId, commentId) {
   const story = stories.find(s => s.id === storyId);
   if (!story) return;
+  const target = (story.comments || []).find(c => c.id === commentId);
+  if (!target) return;
+  if (target.authorId !== currentUser?.uid && !isCurrentUserAdmin) return showToast('🚫 Non autorisé');
   const comments = (story.comments || []).filter(c => c.id !== commentId);
   await updateDoc(doc(db, 'stories', storyId), { comments });
   showToast('🗑️ Commentaire supprimé');
@@ -2864,35 +2880,40 @@ function renderStoryList(containerId, list) {
     const isRead = !!inter.read;
     const isInCollection = collections.some(c => (c.stories || []).includes(story.id));
     const isOwner = story.authorId === currentUser?.uid;
-    const isAdmin = currentUser?.uid === ADMIN_UID;
+    const isAdmin = isCurrentUserAdmin;
     const isExpanded = expandedStoryId === story.id;
     const date = new Date(story.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+    const safeStoryId = escHtml(story.id);
+    const safeCat = story.category === 'flippe' ? 'flippe' : 'gossip';
 
     const card = document.createElement('article');
     card.className = 'story-card' + (story.pinned ? ' pinned' : '');
     card.dataset.id = story.id;
 
-    const tagsHtml = (story.tags || []).map(t => `<span class="tag-badge" onclick="event.stopPropagation();searchTag('${t}')">#${t}</span>`).join('');
+    const tagsHtml = (story.tags || []).map(t => {
+      const safeTag = escHtml(t);
+      return `<span class="tag-badge" data-tag="${safeTag}" onclick="event.stopPropagation();searchTag(this.dataset.tag)">#${safeTag}</span>`;
+    }).join('');
 
     card.innerHTML = `
-      <div class="card-header" onclick="toggleExpand('${story.id}')">
+      <div class="card-header" data-id="${safeStoryId}" onclick="toggleExpand(this.dataset.id)">
         <div class="card-meta">
           <div class="card-badges">
-            <span class="cat-badge ${story.category}">${story.category === 'gossip' ? '☕ Gossip' : '👻 Flippe'}</span>
+            <span class="cat-badge ${safeCat}">${safeCat === 'gossip' ? '☕ Gossip' : '👻 Flippe'}</span>
             ${tagsHtml}
-            <span class="card-date">${date}</span>
+            <span class="card-date">${escHtml(date)}</span>
           </div>
           <h4 class="card-title">${escHtml(story.title)}</h4>
         </div>
         <div class="card-actions" onclick="event.stopPropagation()">
-          <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${story.id}', event)" title="J'aime">
+          <button class="action-btn ${isLiked ? 'liked' : ''}" data-id="${safeStoryId}" onclick="toggleLike(this.dataset.id, event)" title="J'aime">
             ${isLiked ? '❤️' : '🤍'}
           </button>
-          <span class="like-count">${story.likes || 0}</span>
-          <button class="action-btn ${isRead ? 'read' : ''}" onclick="toggleRead('${story.id}', event)" title="${isRead ? 'Marquer non lue' : 'Marquer comme lue'}">
+          <span class="like-count">${Number(story.likes) || 0}</span>
+          <button class="action-btn ${isRead ? 'read' : ''}" data-id="${safeStoryId}" onclick="toggleRead(this.dataset.id, event)" title="${isRead ? 'Marquer non lue' : 'Marquer comme lue'}">
             ${isRead ? '✅' : '👁️'}
           </button>
-          <button class="action-btn ${isInCollection ? 'bookmarked' : ''}" onclick="openAddToCollection('${story.id}')" title="Ajouter à une collection">
+          <button class="action-btn ${isInCollection ? 'bookmarked' : ''}" data-id="${safeStoryId}" onclick="openAddToCollection(this.dataset.id)" title="Ajouter à une collection">
             ${isInCollection ? '🔖' : '📌'}
           </button>
         </div>
@@ -2901,17 +2922,17 @@ function renderStoryList(containerId, list) {
         <div class="card-divider"></div>
         <p class="story-text">${escHtml(story.content)}</p>
         <div class="card-footer-actions">
-          <button class="immersive-btn" onclick="openImmersive('${story.id}')">🌙 Mode Immersif</button>
-          <button class="collection-btn" onclick="openAddToCollection('${story.id}')">🔖 Collections</button>
-          ${isOwner || isAdmin ? `<button class="action-btn" onclick="deleteStoryAdmin('${story.id}')" style="margin-left:auto;color:#e53e3e" title="Supprimer">🗑️</button>` : ''}
-          ${isAdmin ? `<button class="action-btn" onclick="togglePin('${story.id}', ${story.pinned})" title="Épingler">📌</button>` : ''}
+          <button class="immersive-btn" data-id="${safeStoryId}" onclick="openImmersive(this.dataset.id)">🌙 Mode Immersif</button>
+          <button class="collection-btn" data-id="${safeStoryId}" onclick="openAddToCollection(this.dataset.id)">🔖 Collections</button>
+          ${isOwner || isAdmin ? `<button class="action-btn" data-id="${safeStoryId}" onclick="deleteStoryAdmin(this.dataset.id)" style="margin-left:auto;color:#e53e3e" title="Supprimer">🗑️</button>` : ''}
+          ${isAdmin ? `<button class="action-btn" data-id="${safeStoryId}" onclick="togglePin(this.dataset.id, ${Boolean(story.pinned)})" title="Épingler">📌</button>` : ''}
         </div>
         <div class="comments-section">
           <p class="comments-title">💬 Commentaires (${(story.comments || []).length})</p>
           ${renderComments(story)}
           <div class="comment-input-row">
-            <input type="text" class="comment-input" id="comment-input-${story.id}" placeholder="Réagis..." oninput="checkCommentBlacklist(this)" maxlength="300">
-            <button class="comment-send" onclick="sendComment('${story.id}')">Envoyer</button>
+            <input type="text" class="comment-input" id="comment-input-${safeStoryId}" placeholder="Réagis..." oninput="checkCommentBlacklist(this)" maxlength="300">
+            <button class="comment-send" data-id="${safeStoryId}" onclick="sendComment(this.dataset.id)">Envoyer</button>
           </div>
         </div>
       </div>
@@ -2923,15 +2944,19 @@ function renderStoryList(containerId, list) {
 function renderComments(story) {
   const comments = story.comments || [];
   if (!comments.length) return '<p style="font-size:13px;color:var(--text3);font-style:italic;margin-bottom:10px;">Aucun commentaire... Sois le premier !</p>';
+  const safeStoryId = escHtml(story.id);
   return comments.map(c => {
-    const canDelete = c.authorId === currentUser?.uid || currentUser?.uid === ADMIN_UID;
+    const canDelete = c.authorId === currentUser?.uid || isCurrentUserAdmin;
+    const safeColor = /^#[0-9a-fA-F]{3,8}$/.test(c.authorColor || '') ? c.authorColor : '#ffb3a0';
+    const safeEmoji = escHtml(c.authorEmoji || '😊');
+    const safeCommentId = escHtml(c.id);
     return `
       <div class="comment-item">
-        <div class="comment-avatar" style="background:${c.authorColor || '#ffb3a0'}">${c.authorEmoji || '😊'}</div>
+        <div class="comment-avatar" style="background:${safeColor}">${safeEmoji}</div>
         <div class="comment-bubble">
           <div class="comment-author">${escHtml(c.authorPseudo || 'Anonyme')}</div>
           <div class="comment-text">${escHtml(c.text)}</div>
-          ${canDelete ? `<div class="comment-delete" onclick="deleteComment('${story.id}','${c.id}')">Supprimer</div>` : ''}
+          ${canDelete ? `<div class="comment-delete" data-story-id="${safeStoryId}" data-comment-id="${safeCommentId}" onclick="deleteComment(this.dataset.storyId, this.dataset.commentId)">Supprimer</div>` : ''}
         </div>
       </div>
     `;
@@ -3019,7 +3044,8 @@ window.openRandom = function() {
 window.openImmersive = function(storyId) {
   const story = stories.find(s => s.id === storyId);
   if (!story) return;
-  document.getElementById('immersive-cat').innerHTML = `<span class="cat-badge ${story.category}">${story.category === 'gossip' ? '☕ Gossip' : '👻 Flippe'}</span>`;
+  const safeCat = story.category === 'flippe' ? 'flippe' : 'gossip';
+  document.getElementById('immersive-cat').innerHTML = `<span class="cat-badge ${safeCat}">${safeCat === 'gossip' ? '☕ Gossip' : '👻 Flippe'}</span>`;
   document.getElementById('immersive-title').textContent = story.title;
   document.getElementById('immersive-body').textContent = story.content;
   const overlay = document.getElementById('immersive-overlay');
@@ -3038,16 +3064,17 @@ window.closeImmersive = function() {
 ═══════════════════════════════════════════════ */
 function renderAdminStories() {
   const wrap = document.getElementById('admin-stories-list');
-  if (!wrap || currentUser?.uid !== ADMIN_UID) return;
+  if (!wrap || !isCurrentUserAdmin) return;
   wrap.innerHTML = '';
   stories.forEach(s => {
+    const safeId = escHtml(s.id);
     const div = document.createElement('div');
     div.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-radius:12px;border:1px solid var(--border);';
     div.innerHTML = `
       <span style="font-size:13px;font-weight:700;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(s.title)}</span>
-      <span style="font-size:11px;color:var(--text3);flex-shrink:0;">❤️${s.likes||0}</span>
-      <button onclick="togglePin('${s.id}',${s.pinned})" style="font-size:14px;padding:4px 8px;background:var(--accent3);border-radius:8px;color:var(--accent);font-weight:700;flex-shrink:0;">${s.pinned ? '📌' : '📍'}</button>
-      <button onclick="deleteStoryAdmin('${s.id}')" style="font-size:14px;padding:4px 8px;background:#fff5f5;border-radius:8px;color:#e53e3e;font-weight:700;flex-shrink:0;">🗑️</button>
+      <span style="font-size:11px;color:var(--text3);flex-shrink:0;">❤️${Number(s.likes)||0}</span>
+      <button data-id="${safeId}" onclick="togglePin(this.dataset.id,${Boolean(s.pinned)})" style="font-size:14px;padding:4px 8px;background:var(--accent3);border-radius:8px;color:var(--accent);font-weight:700;flex-shrink:0;">${s.pinned ? '📌' : '📍'}</button>
+      <button data-id="${safeId}" onclick="deleteStoryAdmin(this.dataset.id)" style="font-size:14px;padding:4px 8px;background:#fff5f5;border-radius:8px;color:#e53e3e;font-weight:700;flex-shrink:0;">🗑️</button>
     `;
     wrap.appendChild(div);
   });
@@ -3087,7 +3114,12 @@ window.showToast = function(msg) {
    HELPERS
 ═══════════════════════════════════════════════ */
 function escHtml(str) {
-  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // Keyboard shortcuts
@@ -3116,5 +3148,5 @@ document.getElementById('new-content')?.addEventListener('input', function() {
 });
 
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a58754e14efee18b',t:'MTc5NDMzNzU1Ng=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a58754e14efee18b',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
