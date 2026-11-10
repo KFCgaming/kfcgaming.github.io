@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://kfcgaming.github.io/Avatar/Aucun.png" type="image/x-icon">
+    <title>MonumWorld - KFCavatar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1000;
+        }
+
+        h1 {
+            text-align: center;
+            color: #66B6E8;
+            
+        }
+        h2 {
+        	text-align: center;
+            color: #3DA0DE;
+    		text-shadow: -2px -2px 0 #074368, 2px -2px 0 #074368, -2px 2px 0 #074368, 2px 2px 0 #074368;
+        } 
+        #content {
+            text-align: center;
+        }
+        #avatarContainer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .avatar {
+            margin: 10px;
+            text-align: center;
+        }
+
+        .avatar img {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #007aff;
+            border-radius: 25%;
+            margin-bottom: 10px;
+        }
+        buttonmenu {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 13px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        .lienBloc {
+            cursor: pointer;
+            background-color: #247FB8;
+            border: 2px solid #3DA0DE;
+            border-radius: 10px;
+            padding: 3px;
+            margin: -5px;
+            text-align: center;
+        }
+        .logo {
+            margin: 35px;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 150px;
+            height: 75px;
+            margin-bottom: 10px;
+        }
+        form {
+                background-color: rgba(23, 114, 233, 0.8);
+                border-radius: 5px;
+                padding: 5px;
+                margin: 20px auto;
+                max-width: 55%;
+            }
+    </style>
+</head>
+<body>    
+	<!-- Video Background --> <video autoplay muted loop id="video-background"><source src="https://raw.githubusercontent.com/KFCgaming/kfcgaming.github.io/main/Assets/ParisBackgroundPixabay.mp4" type="video/mp4">Votre navigateur ne prend pas en charge la balise vidéo.</video>
+    <div>
+    <form id="title"><h1><b>MonumWorld 🗼</b></h1></form>
+    <form id="othercollection" style="text-align: center; padding-bottom: 20px; padding-top: 20px;"><div id="content"><buttonmenu onclick="XBAvatar()">XB Avatar 🍞👨</buttonmenu><buttonmenu onclick="MNW()">MonumWorld 🗼</buttonmenu></div></form>
+    <br>
+    <form id="mostpopular"><h2><ins>Les Plus Populaires 🔥</ins></h2><div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div>
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div></div></form>
+    
+	<form id="europeanmonuments"><h2><ins>Monuments Européens 🏛️🌍</ins></h2><div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div></div></form>
+  	<form id="americanmonuments"><h2><ins>Monuments Américains 🏛️🌎</ins></h2><div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div></div></form>
+  	<form id="africanmonuments"><h2><ins>Monuments Africains 🏛️🌍</ins></h2><div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div></div></form>
+  	<form id="asianmonuments"><h2><ins>Monuments Asiatiques 🏛️🌏</ins></h2><div id="avatarContainer">
+        <div class="avatar">
+            <img src="https://kfcgaming.github.io/Avatar/Aucun.png" alt="Aucun" title="Aucun">
+            <div class="lienBloc" onclick="telechargerImage('https://kfcgaming.github.io/Avatar/Aucun.png')">Télécharger📥</div>
+        </div></div></form>
+
+
+</body>
+<script>
+    function XBAvatar(url) {
+        window.location.href = "https://kfcgaming.github.io/KFCAvatar/XBavatar.html";
+    }
+</script>
+<script>
+    function MNW(url) {
+        window.location.href = "https://kfcgaming.github.io/KFCAvatar/MonumWorld.html";
+    }
+</script>
+<script>
+    function telechargerImage(url) {
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const urlBlob = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = urlBlob;
+                a.download = 'MNWAvatar.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            })
+            .catch(error => console.error('Erreur lors du téléchargement de l\'image :', error));
+    }
+</script>
+</html>

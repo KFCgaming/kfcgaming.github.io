@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel= "icon" type="ES." href="ES.png">
+	<title>Présenation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff0080, #7928ca, #00f2fe);
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+        }
+
+        header h2 {
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            width: 320px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: transform 0.4s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.03);
+        }
+
+        /* Modifié pour accepter une vraie image img */
+        .photo {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: auto;
+            border: 5px solid white;
+            overflow: hidden; /* Pour que l'image ne dépasse pas du cercle */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Ajout pour l'image Star Academy */
+        .star-ac-img {
+            width: 100%;
+            border-radius: 15px;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .card h3 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.4em;
+        }
+
+        .card p {
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .door {
+            background: linear-gradient(135deg, #00ffcc, #00ccff);
+            padding: 20px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #111;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            transition: 0.4s;
+        }
+
+        .door:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #ffe600, #ff9100);
+        }
+
+        footer {
+            text-align: center;
+            opacity: 0.7;
+            padding-bottom: 20px;
+        }
+		#photo {
+            width: 40%;
+            height: auto;
+            border-radius: 5%;
+            margin: auto;
+            border: 5px solid white;
+            overflow: hidden; /* Pour que l'image ne dépasse pas du cercle */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+		.close {margin-left: 30%}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>SOILIHI Elyas</h1>
+    <h2>1ère 3 — NSI / Mathématiques / SES</h2>
+</header>
+
+<div class="container">
+    <div class="card">
+        <div class="photo">
+	<img src=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEpo40xIYXpZNV6zFZS45bna3D7I0GblTnWQ&s" alt="photo">
+        </div>
+        <h3>📸 Photo de l'élève</h3>
+        <p>TROP BEAU TIE !</p>
+    </div>
+
+    <div class="card">
+        <h3>🎓 Orientation post-bac</h3>
+        <p><strong>Faire la Star Academy ✨</strong></p>
+        <img src="data:image/webp;base64,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" alt="Star Academy Logo" class="star-ac-img">
+    </div>
+
+    <div class="card">
+        <h3>🎶 Passions</h3>
+        <p>
+            Chant 🎤<br>
+            Danse 💃<br>
+            Piano 🎹<br><br>
+            <em>(pas l'école c'est guez.. 😭)</em>
+        </p>
+    </div>
+</div>
+
+<div class="footer">
+    <a class="door" href="sources.html">🚪 Sources</a>
+    <a class="door" href="histoire.html">🚪 Histoire</a>
+</div>
+<!-- La fenêtre modale (Pop-up) -->
+<div id="myModal" class="modal">
+
+    <div class="modal-content">
+        <span class="close" id="closeBtn" style="font-size:200%">&times;</span>
+			<h2 style="text-align:center"><b>PUB ⭐</b></h2>
+        <a href="https://www.fnacspectacles.com/event/star-academy-tournee-le-dome-21141512/" target="_blank">
+            <img id="photo" src="https://www.leclercbilletterie.com/statics/artiste/48162_img.jpg" alt="Publicité" /> <!-- Remplace cette URL par l'image de ta pub -->
+        </a>
+    </div>
+</div>
+<footer>
+    © 2026 - Elyas | Site HTML full style 💥
+</footer>
+
+</body>
+<script>
+    // Récupérer la modale et le bouton de fermeture
+    var modal = document.getElementById("myModal");
+    var closeBtn = document.getElementById("closeBtn");
+
+    // Afficher la modale après 5 secondes
+    setTimeout(function() {
+        modal.style.display = "block"; // Affiche la modale
+    }, 1000); // 5000 ms = 5 secondes
+
+    // Fermer la modale lorsque l'utilisateur clique sur "X"
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Fermer la modale si l'utilisateur clique en dehors de la fenêtre
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+</html>

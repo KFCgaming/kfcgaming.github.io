@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://truckersmp.com/assets/icons/favicon-32x32.png" type="image/x-icon">
+    <title>ETS2 Radio Creator</title>
+    <style>
+        /* Votre CSS ici */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+       #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1000;
+        }
+        h1 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+        h4 {
+            text-align: center;
+            color: #e6e6e6;
+        }
+        
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            max-width: 450px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        /* Style pour les boutons */
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 7px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Style pour la liste de radios */
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .supprimerRadioButton {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+    </style>
+</head>
+<body>
+     <video autoplay muted loop id="video-background">
+          <source src="https://raw.githubusercontent.com/KFCgaming/kfcgaming.github.io/main/Assets/ETS2%20-%20Background.mp4" type="video/mp4">
+          Votre navigateur ne prend pas en charge la balise vidéo.
+      </video>
+    <h1>Créateur de Liste Radio pour ETS2 🚚</h1>
+    <h4><ins>Crée avec Chat GPT par KFCgaming 🍗 V1</ins></h4>
+
+    <form id="radioForm">
+        <label for="urlMP3">URL de la Radio :</label>
+        <input type="text" id="urlMP3" name="urlMP3" required><br>
+
+        <label for="nomRadio">Nom de la Radio :</label>
+        <input type="text" id="nomRadio" name="nomRadio" required><br>
+
+        <label for "genre">Genre :</label>
+        <input type="text" id="genre" name="genre" required><br>
+
+        <label for "pays">Pays :</label>
+        <input type="text" id="pays" name="pays" required><br>
+
+        <p style="text-align: center;"><b>Tutoriel:</b> Faites votre liste, telechargez-là puis mettez-là dans le dossier suivant : </p>
+        <p style="text-align: center;"><i><ins>C:\Users\Nom utilisateur\Documents\Euro Truck Simulator 2</ins></i></p>
+        
+        <button type="button" onclick="ajouterRadio()">Ajouter Radio➕</button>
+        <button type="button" id="supprimerToutButton">Supprimer Tout🚮</button>
+        <button type="button" id="telechargerListeButton">Télécharger la liste📥</button>
+    </form>
+
+	<h2 style="color : #e6e6e6" >Liste de Radios :</h2>
+    <ul id="listeRadios">
+        <!-- Les radios seront affichées ici -->
+    </ul>
+
+    <script>
+        function ajouterRadio() {
+            // Récupérez les valeurs des champs de formulaire
+            var urlMP3 = document.getElementById("urlMP3").value;
+            var nomRadio = document.getElementById("nomRadio").value;
+            var genre = document.getElementById("genre").value;
+            var pays = document.getElementById("pays").value;
+
+            // Récupérez le nombre de radios déjà présentes
+            var numeroRadio = document.getElementById("listeRadios").children.length + 1;
+
+            // Créez un élément de liste pour afficher les détails de la radio
+            var radioItem = document.createElement("li");
+            
+            // Ajoutez les guillemets autour de l'URL et après le dernier "0"
+            radioItem.innerHTML = ` stream_data[${numeroRadio}]: "${urlMP3}|${nomRadio}|${genre}|${pays}|0|0" <button class="supprimerRadioButton" onclick="supprimerRadio(this)"></button>`;
+
+            // Ajoutez l'élément de liste à la liste des radios
+            document.getElementById("listeRadios").appendChild(radioItem);
+
+            // Effacez les champs du formulaire
+            document.getElementById("urlMP3").value = "";
+            document.getElementById("nomRadio").value = "";
+            document.getElementById("genre").value = "";
+            document.getElementById("pays").value = "";
+        }
+
+        function supprimerRadio(button) {
+            var listeRadios = document.getElementById("listeRadios");
+            var radioItem = button.parentNode;
+            listeRadios.removeChild(radioItem);
+        }
+
+        function supprimerTout() {
+            var listeRadios = document.getElementById("listeRadios");
+            while (listeRadios.firstChild) {
+                listeRadios.removeChild(listeRadios.firstChild);
+            }
+        }
+
+        // Fonction pour télécharger la liste au format spécifié
+        function telechargerListe() {
+            var listeRadios = document.getElementById("listeRadios").children;
+            var data = "SiiNunit\n{\nlive_stream_def : _nameless.1e3.6103.b2f0 {\n stream_data: " + listeRadios.length + `\n stream_data[0]: "http://128.0.0.0|Crée avec ETS2 Radio Creator|Credit|00|0|0"\n`;
+
+            for (var i = 0; i < listeRadios.length; i++) {
+                var radioDetails = listeRadios[i].textContent;
+                data += radioDetails + "  \n"; // Ajoutez un espace après le dernier "0"
+            }
+
+            data += "}\n\n}\n";
+
+            var blob = new Blob([data], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "live_streams.sii";
+            a.click();
+        }
+
+        // Lorsque l'utilisateur clique sur le bouton de téléchargement
+        document.getElementById("telechargerListeButton").addEventListener("click", telechargerListe);
+
+        // Lorsque l'utilisateur clique sur le bouton de suppression de tout
+        document.getElementById("supprimerToutButton").addEventListener("click", supprimerTout);
+    </script>
+</body>
+</html>

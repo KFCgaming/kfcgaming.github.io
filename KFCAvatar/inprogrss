@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang=fr>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="<!--Il manque l'image !!!!!!!!!!!!!-->" type="image/x-icon">
+    <title>KFCavatar Creator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin:5px;
+            max-width: 350px;
+            min-height: 280px;
+            max-height: 300px;
+        }
+        #avatarContainer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .avatar {
+            margin: 10px;
+            text-align: center;
+        }
+
+        .avatar img {
+            width: 75px;
+            height: 75px;
+            border: 3px solid #007aff;
+            border-radius: 25%;
+            margin-bottom: 10px;
+        }
+        greenbutton {
+            background-color: #00b300;
+            color: #fff;
+            border: none;
+            margin:100px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        greenbutton:hover {
+            background-color: #008000;
+        }
+    </style>
+   </head>
+   <body>
+       <h1><ins>KFCavatar - Avatar Creator ⚒️</ins></h1>
+       <form id="form">
+        <p><ins>Arrière-plan:</ins></p>
+        	<div id="avatarContainer">
+            <div class="avatar">
+            	<img src="https://kfcgaming.github.io/Avatar/ROUGE.png" alt="Rouge" title="Rouge">
+            <div class="lienBloc">
+                        <div class="avatar">
+            	<img src="https://kfcgaming.github.io/Avatar/ROUGE.png" alt="Rouge" title="Rouge">
+            <div class="lienBloc">
+                        <div class="avatar">
+            	<img src="https://kfcgaming.github.io/Avatar/ROUGE.png" alt="Rouge" title="Rouge">
+            <div class="lienBloc">
+        </div>
+
+        </div>
+    </form>
+    	<br>
+        <form id="radioForm">
+        <p><ins>Personnage:</ins></p>
+        <button type="button" onclick="ajouterRadio()">test 1</button>
+        <button type="button" id="supprimerToutButton">Supprimer Tout🚮</button>
+        <button type="button" id="telechargerListeButton">Télécharger la liste📥</button>
+    </form>
+    <br>
+    <greenbutton type="button" onclick="ajouterRadio()">Appliquer ✅</button>
+
+            
+            
+            
+            
